@@ -1,0 +1,67 @@
+workflows:
+    ios-swiftly:
+      name: ios_swiftly
+      environment:
+        vars:
+          XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here. 
+          XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+          # Set up env vars for manual codesigning (See - https://docs.codemagic.io/code-signing-yaml/signing-ios/)
+          CM_CERTIFICATE: Encrypted(...) # <-- Put your encrypted distribution certificate here. 
+          CM_CERTIFICATE_PASSWORD: Encrypted(...) # <-- Put your encrypted distribution certificate password here.
+          CM_PROVISIONING_PROFILE: Encrypted(...) # <-- Put your encrypted provisioning profile here.
+        xcode: latest
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: 'master'
+            include: true
+            source: true
+      scripts:
+        - name: Initialize keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: set up provisioning profiles
+          script: |
+            PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
+            mkdir -p "$PROFILES_HOME"
+            PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
+            echo ${CM_PROVISIONING_PROFILE} | base64 --decode > $PROFILE_PATH
+            echo "Saved provisioning profile $PROFILE_PATH"
+        - name: Add signing certificate to keychain
+          script: |
+            echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
+            keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
+        - name: Increment build number
+          script: |
+            # increment build number
+            #!/bin/sh
+            set -e
+            set -x
+            cd $FCI_BUILD_DIR
+            agvtool new-version -all $(($BUILD_NUMBER +1))
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Build .ipa
+          script: |
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        email:
+            recipients:
+              - user1@example.com
+              - user2@example.com
+            notify:
+              success: true
+              failure: true
+        app_store_connect:                 
+            apple_id: yourAppleId@example.com  # <- Put your Apple Id here
+            password: Encrypted(...) # <-- Put your Encrypted App-specific Password here (use the Codemagic Webapp to do this). For more information visit: https://support.apple.com/en-us/HT204397
+    
+      

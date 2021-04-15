@@ -1,0 +1,136 @@
+definitions:
+  instance_mac_pro: &instance_mac_pro
+    instance_type: mac_pro
+    max_build_duration: 120
+  env_versions: &env_versions
+    flutter: stable
+    xcode: latest
+    cocoapods: default
+  environment:
+    automatic_ios_signing: &automatic_ios_signing
+      vars:
+        # Update the environment variables below as required
+        APPLE_ID: Encrypted(...)
+        APP_SPECIFIC_PASSWORD: Encrypted(...)
+        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...)
+        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...)
+        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...)
+        APP_STORE_APP_ID: Encrypted(...)
+        CERTIFICATE_PRIVATE_KEY: Encrypted(...)
+        BUNDLE_ID: "com.example.yourapp"
+        XCODE_WORKSPACE: "App.xcworspace"
+        XCODE_SCHEME: "App"
+        XCODE_CONFIG: "Release-dev"
+  artifacts:
+    - &ipa build/ios/ipa/*.ipa
+    - &xcode_log /tmp/xcodebuild_logs/*.log
+    - &dsym $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    - &app $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+  scripts:
+    - &ios_initialize_keychain
+      name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+      script: |
+        keychain initialize
+    - &fetch_signing_files
+      name: Fetch signing files
+      script: |
+        app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+    - &add_certs_to_keychain
+      name: Add certs to keychain
+      script: |
+        keychain add-certificates
+    - &use_profiles
+      name: Set up code signing settings on Xcode project
+      script: |
+        xcode-project use-profiles
+    - &increment_ios_build_number
+      name: Increment build number
+      script: |
+        #!/bin/sh
+        set -ex
+        cd $FCI_BUILD_DIR
+        # agvtool new-version -all $(($BUILD_NUMBER + 1))
+        agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number $APP_STORE_APP_ID) + 1))
+    - &build_ipa
+      name: Build ipa
+      script: |
+        # cd . && xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME --config $XCODE_CONFIG
+        cd . && xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME
+  email_release: &email_release
+    email:
+      recipients:
+        - user_1@example.com
+        - user_2@example.com
+      notify:
+        success: true
+        failure: true
+  email_develop: &email_develop
+    email:
+      recipients:
+        - user_3@example.com
+        - user_4@example.com
+        - user_5@example.com
+      notify:
+        success: true
+        failure: true
+  ios_app_store_publish: &ios_app_store_publish
+    app_store_connect:
+      apple_id: $APPLE_ID
+      password: $APP_SPECIFIC_PASSWORD
+  slack_publish: &slack_publish
+    slack:
+      channel: "#builds"
+workflows:
+  ios-release:
+    name: iOS release
+    <<: *instance_mac_pro
+    environment:
+      <<: *automatic_ios_signing
+      <<: *env_versions
+    triggering:
+      events:
+        - tag
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+    scripts:
+      - *ios_initialize_keychain
+      - *fetch_signing_files
+      - *add_certs_to_keychain
+      - *use_profiles
+      - *increment_ios_build_number
+      - *build_ipa
+    artifacts:
+      - *ipa
+      - *dsym
+    publishing:
+      <<: *email_release
+      <<: *ios_app_store_publish
+  ios-staging:
+    name: iOS develop
+    <<: *instance_mac_pro
+    environment:
+      <<: *automatic_ios_signing
+      <<: *env_versions
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'develop'
+          include: true
+          source: true
+    scripts:
+      - *ios_initialize_keychain
+      - *fetch_signing_files
+      - *add_certs_to_keychain
+      - *use_profiles
+      - *increment_ios_build_number
+      - *build_ipa
+    artifacts:
+      - *ipa
+      - *xcode_log
+    publishing:
+      <<: *email_develop
+      <<: *slack_publish
+

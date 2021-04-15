@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "940201993799",
+    "firebase_url": "https://cmrnapp.firebaseio.com",
+    "project_id": "cmrnapp",
+    "storage_bucket": "cmrnapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940201993799:android:a9039e5b5c34d88754f362",
+        "android_client_info": {
+          "package_name": "com.codemagicreactnative"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940201993799-8lm87behcbb0l41a4fa8es18222i1gdk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzAAomugh0Uz8wVJLyhSUr6BO0Av3321g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940201993799-8lm87behcbb0l41a4fa8es18222i1gdk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

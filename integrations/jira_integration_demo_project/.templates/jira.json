@@ -1,0 +1,206 @@
+{
+    "body": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+            {
+                "type": "heading",
+                "attrs": {
+                    "level": 2
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Swiftly [$TYPE]"
+                    }
+                ]
+            },
+            {
+                "type": "heading",
+                "attrs": {
+                    "level": 4
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Build $VERSION_NAME ($BUILD_VERSION)"
+                    }
+                ]
+            },
+            {
+                "type": "heading",
+                "attrs": {
+                    "level": 5
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "$BUNDLE"
+                    }
+                ]
+            },
+            {
+                "type": "panel",
+                "attrs": {
+                    "panelType": "success"
+                },
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "commit ",
+                                "marks": [
+                                    {
+                                        "type": "strong"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "text",
+                                "text": "$FCI_COMMIT"
+                            },
+                            {
+                                "type": "text",
+                                "text": " | $GIT_COMMIT_MESSAGE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "table",
+                "attrs": {
+                    "isNumberColumnEnabled": false,
+                    "layout": "default"
+                },
+                "content": [
+                    {
+                        "type": "tableRow",
+                        "content": [
+                            {
+                                "type": "tableHeader",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "Date",
+                                                "marks": [
+                                                    {
+                                                        "type": "strong"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "tableHeader",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "Filename",
+                                                "marks": [
+                                                    {
+                                                        "type": "strong"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "tableHeader",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "Installer",
+                                                "marks": [
+                                                    {
+                                                        "type": "strong"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "tableRow",
+                        "content": [
+                            {
+                                "type": "tableCell",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "$BUILD_DATE"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "tableCell",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "$ARTIFACT_NAME"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "tableCell",
+                                "attrs": {},
+                                "content": [
+                                    {
+                                        "type": "paragraph",
+                                        "content": [
+                                            {
+                                                "type": "text",
+                                                "text": "Install",
+                                                "marks": [
+                                                    {
+                                                        "type": "link",
+                                                        "attrs": {
+                                                            "href": "$IPA_URL"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

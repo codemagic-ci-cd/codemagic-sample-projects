@@ -1,0 +1,69 @@
+workflows:
+  android-workflow:
+    name: Android Workflow
+    instance_type: mac_mini
+    max_build_duration: 120
+    environment:
+      vars:
+        GCLOUD_KEY_FILE: Encrypted(...) # <-- Put your encrypted Google Cloud Key file here
+        GOOGLE_CREDENTIALS: Encrypted(...) # <-- Put your encrypted google-services.json here if publishing to Google Play
+        FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_NAME" # <-- Put your Firebase Project Name here
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up debug.keystore
+        script: |
+          rm -f ~/.android/debug.keystore
+          keytool -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg 'RSA' -keysize 2048 -validity 10000
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages  
+        script: |
+          cd . && flutter packages pub get
+      - name: Build APK with Flutter  
+        script: |
+          cd . && flutter build apk --debug
+      - name: Create debug and test APK  
+        script: |
+          set -ex
+          cd android
+          ./gradlew app:assembleAndroidTest
+          ./gradlew app:assembleDebug -Ptarget="$FCI_BUILD_DIR/integration_test/app_test.dart" 
+      - name: Run Firebase Test Lab tests
+        script: |
+          set -ex
+
+          echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json
+
+          gcloud auth activate-service-account --key-file=gcloud_key_file.json
+      
+          gcloud --quiet config set project $FIREBASE_PROJECT
+      
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --timeout 3m
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+      notify:
+        success: true     # To not receive a notification when a build succeeds
+        failure: false    # To not receive a notification when a build fails
+      slack: 
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: '#channel-name'
+        notify_on_build_start: true   # To receive a notification when a build starts
+        notify:
+          success: true               # To not receive a notification when a build succeeds
+          failure: false              # To not receive a notification when a build fails

@@ -1,0 +1,12 @@
+{
+  "appId": "com.codemagicionic",
+  "appName": "codemagicioniccapacitor",
+  "bundledWebRuntime": true,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
