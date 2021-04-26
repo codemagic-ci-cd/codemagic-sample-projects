@@ -1,0 +1,112 @@
+definitions:
+  environment:
+    automatic_ios_signing: &automatic_ios_signing
+      vars:
+          XCODE_WORKSPACE: "wand.xcworkspace" # <-- Put the name of your workspace here.
+          XCODE_SCHEME: "wand" # <-- Put the name of your scheme here.
+          
+          # https://docs.codemagic.io/code-signing-yaml/signing-ios/
+          # You might want to provide these enviroment variables via the Codemagic API if you are publishing with different Apple accounts
+          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
+          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
+          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
+          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
+          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific Password Key here 
+          APPLE_ID: Encrypted(...) # <-- Put your encrypted Apple Id Email here 
+
+          # The environment values below are provided when the build is triggered using the Codemagic API
+          BUNDLE_VERSION: _
+          BUNDLE_ID: _
+          BUNDLE_DISPLAY_NAME: _
+          APP_STORE_APP_ID: _
+          ASSET_GIT_BRANCH: _
+          ASSET_GIT_REPO: _
+workflows:
+    ios-prod:
+      name: ios-prod
+      environment:
+        <<: *automatic_ios_signing
+        xcode: 12.5
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: main
+            include: true
+            source: true
+      scripts:
+        - name: Clone assets
+          script: |
+            git clone -b "$ASSET_GIT_BRANCH" --single-branch "$ASSET_GIT_REPO"
+        - name: Set app assets
+          script: |
+            ./.scrips/assets.sh
+        - name: Install dependencies
+          script: |
+            pod repo update
+            pod install            
+        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: Fetch signing files
+          script: |
+            app-store-connect fetch-signing-files $BUNDLE_ID \
+            --type IOS_APP_STORE \
+            --create 
+        - name: Use system default keychain
+          script: |
+            keychain add-certificates
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Increment build number
+          script: |
+            #!/bin/sh
+            set -ex
+            cd $FCI_BUILD_DIR
+            # agvtool new-version -all $(($BUILD_NUMBER + 1))
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number $APP_STORE_APP_ID) + 1))
+        - name: iOS test
+          script: |
+            #!/bin/sh
+            set -ex
+            xcode-project run-tests \
+              --workspace $XCODE_WORKSPACE \
+              --scheme $XCODE_SCHEME \
+              --device "iPhone 12"
+          test_report: build/ios/test/*.xml
+        - name: Create changelog to publish to slack
+          script: |
+            if [[ -z ${FCI_PREVIOUS_COMMIT} ]]
+            then
+              echo "No finished builds found to generate changelog" | tee release_notes.txt
+            else
+              echo "$(git-changelog generate --previous-commit $FCI_PREVIOUS_COMMIT)" | tee release_notes.txt
+            fi
+        - name: Build ipa for distribution
+          script: |
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
+          apple_id: $APPLE_ID
+          password: $APP_SPECIFIC_PASSWORD
+        email:
+            recipients:
+              - user1@example.com
+              - user2@example.com
+            notify:
+              success: true
+              failure: true
+        slack:
+            channel: '#builds'
+            notify_on_build_start: true    # To receive a notification when a build starts
+            notify:
+              success: false               # To not receive a notification when a build succeeds
+              failure: false               # To not receive a notification when a build fails
+    
