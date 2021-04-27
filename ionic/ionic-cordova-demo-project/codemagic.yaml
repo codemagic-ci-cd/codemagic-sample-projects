@@ -1,0 +1,147 @@
+workflows:
+  ios-workflow:
+    name: iOS workflow
+    environment:
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
+        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
+        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
+        CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here         
+        APPLE_ID: Encrypted(...) # <-- Put your encrypted Apple Id Email here 
+        APPLE_APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific Password Key here 
+        BUNDLE_ID: "io.codemagic.ioniccordova" # <-- Put your Bundle Id here 
+      xcode: 12.4
+      node: 12
+      npm: 6
+    cache:
+      cache_paths:
+        - $FCI_BUILD_DIR/node_modules
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm ci
+          cvm install 9.0.0
+          cvm use 9.0.0
+          npm install -g ionic
+          ionic info   
+      - name: Setup iOS
+        script: |
+          ionic cordova platform remove ios --nosave
+          ionic cordova platform add ios --confirm --no-interactive --noresources --save  
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+      - name: Add certificates to keychain
+        script: |
+          keychain add-certificates         
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Build iOS
+        script: |
+          package_type=$(defaults read ~/export_options.plist method)
+          identity=$(defaults read ~/export_options.plist signingCertificate)
+          team=$(defaults read ~/export_options.plist teamID)
+          profile=$(find '/Users/builder/Library/MobileDevice/Provisioning Profiles' -name "*.mobileprovision")
+          profile_uuid=$(grep UUID -A1 -a "$profile" | grep -io "[-A-F0-9]\{36\}")
+        
+          cat <<EOF > build.json
+              {
+                "ios": {
+                  "release": {
+                    "codeSignIdentity": "$identity",
+                    "developmentTeam": "$team",
+                    "packageType": "$package_type",
+                    "provisioningProfile": "$profile_uuid"
+                  }
+                }
+              }
+          EOF
+          ionic cordova build ios --release --device --buildConfig='build.json' 
+    artifacts:
+      - /Users/builder/clone/platforms/ios/build/device/*.ipa
+      - /tmp/xcodebuild_logs/*.log           
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true     # To not receive a notification when a build succeeds
+          failure: false    # To not receive a notification when a build fails
+      slack: 
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: '#channel-name'
+        notify_on_build_start: true   # To receive a notification when a build starts
+        notify:
+          success: true               # To not receive a notification when a build succeeds
+          failure: false              # To not receive a notification when a build fails
+      app_store_connect:                 
+          apple_id: $APPLE_ID
+          password: $APP_SPECIFIC_PASSWORD         
+  android-workflow:
+    name: Android workflow
+    environment:
+      vars:
+        KEYSTORE: Encrypted(...) # <-- Put your encrypted keystore file here
+        KEYSTORE_PATH: '/tmp/keystore.keystore'
+        KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
+        KEY_ALIAS_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore alias password here
+        KEY_ALIAS: Encrypted(...) # <-- Put your encrypted alias password here
+      xcode: 12.4
+      node: 12
+      npm: 6        
+    cache:
+      cache_paths:
+        - $FCI_BUILD_DIR/node_modules
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm ci
+          cvm install 9.0.0
+          cvm use 9.0.0
+          npm install -g ionic
+          ionic info        
+      - name: Add Android platform
+        script: |
+          set -x
+          ionic cordova platform remove android --nosave
+          ionic cordova platform add android --confirm --no-interactive --noresources
+      - name: Build Android
+        script: |    
+          set -x
+          set -e
+          ionic cordova build android --release --no-interactive --prod --device
+          echo $KEYSTORE | base64 --decode > $KEYSTORE_PATH
+          UNSIGNED_APK_PATH=$(find platforms/android/app/build/outputs -name "*.apk" | head -1)
+          jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore "${KEYSTORE_PATH}" -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_ALIAS_PASSWORD}" "${UNSIGNED_APK_PATH}" "${KEY_ALIAS}"
+          mv $UNSIGNED_APK_PATH $(echo $UNSIGNED_APK_PATH | sed 's/-unsigned//')
+    artifacts:
+      - platforms/android/app/build/outputs/**/*.apk
+      - platforms/android/app/build/outputs/**/mapping.txt
+    publishing:
+        # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+        email:
+            recipients:
+                - user_1@example.com
+                - user_2@example.com
+            notify:
+              success: true     # To not receive a notification when a build succeeds
+              failure: false    # To not receive a notification when a build fails
+        slack: 
+          # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+          channel: '#channel-name'
+          notify_on_build_start: true   # To receive a notification when a build starts
+          notify:
+            success: true               # To not receive a notification when a build succeeds
+            failure: false              # To not receive a notification when a build fails
+        google_play:
+          # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+          credentials: Encrypted(...) # <-- Put your encrypted google-services.json here
+          track: alpha      
