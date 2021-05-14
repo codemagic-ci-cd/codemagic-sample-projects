@@ -3,7 +3,7 @@
 ## Flutter Samples
 * [Flutter YAML sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-yaml-demo-project)
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
-* [Flutter flavors](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
+* [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
 
 ## iOS (Native) Samples
 * [Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project)
