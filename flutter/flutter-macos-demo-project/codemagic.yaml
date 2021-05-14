@@ -13,6 +13,8 @@ workflows:
         APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...)
         CERTIFICATE_PRIVATE_KEY: Encrypted(...)
         BUNDLE_ID: "your.bundle.id"
+        APPLE_ID: Encrypted(...)
+        APPLE_APP_SPECIFIC_PASSWORD: Encrypted(...)
     scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
@@ -73,8 +75,8 @@ workflows:
       - build/macos/**/*.pkg
     publishing:
       app_store_connect:
-        apple_id: email@example.com
-        password: Encrypted(...)
+        apple_id: $APPLE_ID
+        password: $APPLE_APP_SPECIFIC_PASSWORD
       email:
         recipients:
           - email@example.com
