@@ -128,7 +128,7 @@ workflows:
                 agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
             - name: Set up code signing settings on Xcode project
               script: |
-                xcode-project use-profiles
+                xcode-project use-profiles --warn-only
             - name: Build ipa for distribution
               script: |
                 xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" 
