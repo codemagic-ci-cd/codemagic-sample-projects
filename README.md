@@ -31,7 +31,19 @@
 * [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)
 
 
+## Getting help and support
 
+Click the URL below to join the Codemagic Slack Community:
+
+https://slack.codemagic.io/
+
+Customers who have enabled billing can use the in-app chat widget to get support. 
+
+## Raising issues
+
+If there are any use cases are not covered in the sample projects you can create an issue to request them:
+
+[https://github.com/codemagic-ci-cd/codemagic-sample-projects/issues](https://github.com/codemagic-ci-cd/codemagic-sample-projects/issues)
 
 
 
