@@ -11,6 +11,8 @@ workflows:
           APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
           APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
           CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
+          APPLE_ID_EMAIL: Encrypted(...) # <-- Put your encrypted Apple Id email address here
+          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password address here
         xcode: latest
         cocoapods: default
       triggering:
@@ -50,8 +52,8 @@ workflows:
         - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
       publishing:
         app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
-          apple_id: appleId@example.com # <-- Put your Apple Id here    
-          password: Encrypted(...) # <-- Put your encrypted App-specific password here
+          apple_id: $APPLE_ID_EMAIL   
+          password: $APP_SPECIFIC_PASSWORD
         email:
             recipients:
               - user1@example.com
