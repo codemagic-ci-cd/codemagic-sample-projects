@@ -53,7 +53,8 @@ workflows:
           --build-name=1.0.0 \
           --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
           --export-options-plist=/Users/builder/export_options.plist \
-          --flavor="$XCODE_SCHEME"      
+          --flavor="$XCODE_SCHEME" \
+          -t "$ENTRY_POINT"      
     artifacts: 
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
