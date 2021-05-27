@@ -42,7 +42,7 @@ workflows:
             - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
               script: |
                 keychain initialize
-            - name: 
+            - name: Fetch signing files
               script: |
                 # update your bundle id below!
                 app-store-connect fetch-signing-files "io.codemagic.detoxer" --type IOS_APP_STORE --create 
