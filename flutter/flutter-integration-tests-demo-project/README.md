@@ -91,7 +91,7 @@ To run your integration tests on an emulator running on your local machine or a 
 
 ```
 
-flutter driver --driver=test_driver/integration_driver.dart --tartget=integration_test/app_test.dart
+flutter driver --driver=test_driver/integration_driver.dart --target=integration_test/app_test.dart
 
 
 ```
