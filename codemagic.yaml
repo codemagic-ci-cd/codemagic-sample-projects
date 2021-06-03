@@ -1,0 +1,70 @@
+workflows:
+    ios-staging-workflow:
+      name: iOS Staging Workflow
+      working_directory: ios/ios-automatic-code-signing-demo-project
+      environment:
+        vars:
+          XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
+          XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+          BUNDLE_ID: "io.codemagic.cmswiftly" # <-- Put your Bundle Id here.
+          # https://docs.codemagic.io/code-signing-yaml/signing-ios/
+          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
+          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
+          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
+          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
+          APPLE_ID_EMAIL: Encrypted(...) # <-- Put your encrypted Apple Id email address here
+          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password address here
+          APPLE_APP_ID: 1570610860
+        xcode: latest
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: 'develop'
+            include: true
+            source: true
+      scripts:
+        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: Fetch signing files
+          script: |
+            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+        - name: Use system default keychain
+          script: |
+            keychain add-certificates
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Increment build number
+          script: |
+            #!/bin/sh
+            set -e
+            set -x
+            cd $FCI_BUILD_DIR
+            agvtool new-version -all $(($BUILD_NUMBER + 1))
+        - name: Build ipa for distribution
+          script: |
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
+          apple_id: $APPLE_ID_EMAIL   
+          password: $APP_SPECIFIC_PASSWORD
+        email:
+            recipients:
+              - user1@example.com
+            notify:
+              success: true
+              failure: true
+        slack:
+            channel: '#builds'
+            notify_on_build_start: true    # To receive a notification when a build starts
+            notify:
+              success: false               # To not receive a notification when a build succeeds
+              failure: false               # To not receive a notification when a build fails
