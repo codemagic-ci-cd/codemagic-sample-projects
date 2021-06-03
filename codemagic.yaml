@@ -47,6 +47,7 @@ workflows:
             set -x
             agvtool new-version -all $(($BUILD_NUMBER + 1))
         - name: Build ipa for distribution
+          working_directory: ios/ios-automatic-code-signing-demo-project        
           script: |
             xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
       artifacts:
