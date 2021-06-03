@@ -41,6 +41,7 @@ workflows:
           script: |
             xcode-project use-profiles
         - name: Increment build number
+          working_directory: ios/ios-automatic-code-signing-demo-project
           script: |
             #!/bin/sh
             set -e
