@@ -57,9 +57,9 @@ workflows:
         recipients:
           - user_1@example.com
           - user_2@example.com
-      notify:
-        success: true     # To not receive a notification when a build succeeds
-        failure: false    # To not receive a notification when a build fails
+        notify:
+          success: true     # To not receive a notification when a build succeeds
+          failure: false    # To not receive a notification when a build fails
       slack: 
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: '#channel-name'
