@@ -7,9 +7,9 @@
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
 
 ## iOS (Native) Samples
-* [Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project)
-* [Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project)
-* [White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
+* [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project)
+* [iOS Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project)
+* [iOS White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
 
 ## Android (Native) Samples
 * [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
