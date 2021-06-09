@@ -143,7 +143,7 @@ workflows:
     ios-flutter-yaml:
       name: iOS flutter yaml
       instance_type: mac_pro
-      working_directory: ios/flutter-yaml-demo-project 
+      working_directory: flutter/flutter-yaml-demo-project 
       max_build_duration: 120
       environment:
         vars:
