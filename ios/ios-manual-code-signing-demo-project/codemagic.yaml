@@ -9,6 +9,8 @@ workflows:
           CM_CERTIFICATE: Encrypted(...) # <-- Put your encrypted distribution certificate here. 
           CM_CERTIFICATE_PASSWORD: Encrypted(...) # <-- Put your encrypted distribution certificate password here.
           CM_PROVISIONING_PROFILE: Encrypted(...) # <-- Put your encrypted provisioning profile here.
+          APPLE_ID: Encrypted(...) # <-- Put your encrypted Apple ID email address here
+          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your Encrypted App-specific Password here. For more information visit: https://support.apple.com/en-us/HT204397
         xcode: latest
         cocoapods: default
       triggering:
@@ -17,7 +19,7 @@ workflows:
           - tag
           - pull_request
         branch_patterns:
-          - pattern: 'master'
+          - pattern: 'develop'
             include: true
             source: true
       scripts:
@@ -61,7 +63,7 @@ workflows:
               success: true
               failure: true
         app_store_connect:                 
-            apple_id: yourAppleId@example.com  # <- Put your Apple Id here
-            password: Encrypted(...) # <-- Put your Encrypted App-specific Password here (use the Codemagic Webapp to do this). For more information visit: https://support.apple.com/en-us/HT204397
+            apple_id: $APPLE_ID
+            password: $APP_SPECIFIC_PASSWORD
     
       
