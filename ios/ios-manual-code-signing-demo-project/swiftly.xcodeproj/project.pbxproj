@@ -570,10 +570,10 @@
 			baseConfigurationReference = 598075D6C5F322AF6B941B1C /* Pods-swiftly.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Suhajda (Z3BFA7A6ZR)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_ASSET_PATHS = "\"swiftly/Preview Content\"";
-				DEVELOPMENT_TEAM = Z3BFA7A6ZR;
+				DEVELOPMENT_TEAM = X8NNQ9CYL2;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = swiftly/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -582,7 +582,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.cmswifter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Swiftly Distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "io codemagic cmswifter";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
