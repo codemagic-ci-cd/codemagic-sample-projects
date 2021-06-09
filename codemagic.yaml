@@ -74,6 +74,7 @@ workflows:
     ios-manual-code-signing:
       name: iOS manual code signing
       instance_type: mac_pro
+      working_directory: ios/ios-manual-code-signing-demo-project      
       environment:
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here. 
