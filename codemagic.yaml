@@ -73,6 +73,7 @@ workflows:
               failure: false               # To not receive a notification when a build fails
     ios-manual-code-signing:
       name: iOS manual code signing
+      instance_type: mac_pro
       environment:
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here. 
