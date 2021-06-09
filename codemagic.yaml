@@ -1,5 +1,5 @@
 workflows:
-    ios-staging-workflow:
+    ios-automatic-code-signing:
       name: iOS automatic code signing
       instance_type: mac_pro
       working_directory: ios/ios-automatic-code-signing-demo-project
