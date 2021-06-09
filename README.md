@@ -7,9 +7,9 @@
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
 
 ## iOS (Native) Samples
-* [Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-staging-workflow/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-staging-workflow/latest_build)
-* [Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project)
-* [White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
+* [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project)[![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-staging-workflow/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-staging-workflow/latest_build)
+* [iOS Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project)
+* [iOS White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
 
 ## Android (Native) Samples
 * [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
