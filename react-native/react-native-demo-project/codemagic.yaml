@@ -89,7 +89,7 @@ workflows:
                 BUNDLE_ID: "YOUR_BUNDLE_ID_HERE" # <-- Put your Bundle Id here e.g com.domain.myapp
                 APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
             node: latest
-            xcode: latest
+            xcode: 12.5
             cocoapods: default
         triggering:
             events:
