@@ -77,7 +77,7 @@ workflows:
             vars:
                 # Env vars for automatic iOS code signing
                 # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
-                XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
+                XCODE_WORKSPACE: "ios/YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
                 XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
                 APPLE_ID: Encrypted(...) # <-- Put you encrypted Apple ID here
                 APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific Password here. For more information visit: https://support.apple.com/en-us/HT204397
