@@ -144,8 +144,8 @@ workflows:
         app_store_connect:                 
             apple_id: $APPLE_ID_EMAIL
             password: $APP_SPECIFIC_PASSWORD
-    ios-flutter-yaml:
-      name: iOS flutter yaml
+    flutter-yaml-ios:
+      name: Flutter yaml iOS
       instance_type: mac_pro
       working_directory: flutter/flutter-yaml-demo-project 
       max_build_duration: 120
