@@ -226,7 +226,7 @@ workflows:
         working_directory: react-native/react-native-demo-project
         environment:
             vars:
-                XCODE_WORKSPACE: "ios/codemagicreactnative.xcworkspace"
+                XCODE_WORKSPACE: "ios/cmreactnative.xcworkspace"
                 XCODE_SCHEME: "codemagicreactnative"
                 APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmd1S0p2TGp6elRIY2thcURYb24zdFE1YzBDSk54OUhmbmMyT3F2aGJoUXU3Z3BZdjJycnJrTFpfaE16VU4tbzFURTBzeXdYc1dfYUR0UEdIZExYeTQwNGlBQUxsVWdYbVdNWlVPOURIaTRRdFdWLXB4QWJGbm9XWS1vX2JwbHhQNTFqU0o=)
                 APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(Z0FBQUFBQmd1S0tIamJ3UjZMbUJkMXB5eXZfTXItSkdnZVNQNFFjQkdLUFV1THlaYUd5cTBNVkFfdEZSM2p5bHJkZGl5bWZkUVJ5alpFV2s0aERnX2ZxYXVpOTlSbE90SUE9PQ==) 
