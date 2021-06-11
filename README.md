@@ -15,7 +15,7 @@
 * [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
 
 ## React Native Samples
-* [React Native sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
+* [React Native sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/react-native-ios/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/react-native-ios/latest_build)
 * [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project)
 
 ## Ionic Samples
