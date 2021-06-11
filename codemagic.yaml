@@ -296,5 +296,5 @@ workflows:
               success: true               # To not receive a notification when a build succeeds
               failure: false              # To not receive a notification when a build fails
           app_store_connect:                 
-              apple_id: $APPLE_ID
+              apple_id: $APPLE_ID_EMAIL
               password: $APP_SPECIFIC_PASSWORD                        
