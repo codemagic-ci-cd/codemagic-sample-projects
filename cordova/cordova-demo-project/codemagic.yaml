@@ -92,7 +92,7 @@ workflows:
         KEYSTORE_PATH: '/tmp/keystore.keystore'
         KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
         KEY_ALIAS_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore alias password here
-        KEY_ALIAS: Encrypted(...) # <-- Put your encrypted alias password here
+        KEY_ALIAS: Encrypted(...) # <-- Put your encrypted keystore alias here
       xcode: 12.4
       node: 12
       npm: 6        
