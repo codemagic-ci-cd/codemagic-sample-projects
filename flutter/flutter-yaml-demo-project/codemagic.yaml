@@ -82,8 +82,6 @@ workflows:
         APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
         APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
         CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
-        APPLE_ID: Encrypted(...) # <-- Put your encrypted Apple Id email address here
-        APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password here. See here for more information - https://support.apple.com/en-us/HT204397
         BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
         APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID. 
       flutter: stable
