@@ -142,5 +142,5 @@ workflows:
           success: true               # To receive a notification when a build succeeds
           failure: false              # To not receive a notification when a build fails
       app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
-        apple_id: $APPLE_ID    
-        password: $APP_SPECIFIC_PASSWORD
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY   
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
