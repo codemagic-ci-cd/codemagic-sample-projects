@@ -150,7 +150,7 @@ workflows:
       working_directory: ios/ios-magic-actions-demo-project
       environment:
         vars:
-          XCODE_PROJECT: "swiftly.xcodeproj"
+          XCODE_WORKSPACE: "swiftly.xcworkspace"
           XCODE_SCHEME: "swiftly"
           BUNDLE_ID: "io.codemagic.cmswiftly"
           APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmd1S0p2TGp6elRIY2thcURYb24zdFE1YzBDSk54OUhmbmMyT3F2aGJoUXU3Z3BZdjJycnJrTFpfaE16VU4tbzFURTBzeXdYc1dfYUR0UEdIZExYeTQwNGlBQUxsVWdYbVdNWlVPOURIaTRRdFdWLXB4QWJGbm9XWS1vX2JwbHhQNTFqU0o=)
