@@ -176,7 +176,7 @@ workflows:
             set -ex
             pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
             keychain initialize
-            pod install
+            pod init && pod install
             app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
             keychain add-certificates
             xcode-project use-profiles
