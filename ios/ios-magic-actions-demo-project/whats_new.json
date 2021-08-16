@@ -1,0 +1,15 @@
+[
+    {
+        "locale": "en-GB",
+        "whats_new": "*British English release notes text\n\n*Test biometric login.\n\nTest password reset."
+    },
+    {
+        "locale": "en-US",
+        "whats_new": "The US English release notes text."
+    },
+    {
+        "locale": "fr-FR",
+        "whats_new": "Notes de version."
+    }
+
+]

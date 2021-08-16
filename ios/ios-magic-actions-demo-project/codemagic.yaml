@@ -1,0 +1,53 @@
+workflows:
+    ios-swiftly:
+      name: ios_swiftly
+      instance_type: mac_mini
+      environment:
+        vars:
+          XCODE_PROJECT: "swiftly.xcodeproj"
+          XCODE_SCHEME: "swiftly"
+          BUNDLE_ID: "io.codemagic.swiftly"
+          APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmhFWGpKQXlFVUZ1bzM3Z05oSWFOLTVOZ3JwYXg1RzM4M2NTWEV2SWh4alhaOXE3bTh3WTVsZWZvOVFJRGVVc3RaZTVtZEpnazNNRXZfUmFCOFE5WkFvTkIzbkJKM25GU3BxR243UU1rb1BUQ3RFVWhCWUdWcmVRUFFrU29TeFdHNDkyT3Y=)
+          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(Z0FBQUFBQmhFWGk3TmllajFxdW9XZWQ1VmpPaEVqUV9hZlJFLXN1bGxfSHRWYnZnbFRNSmhmVDdhenhUS0F5NzhFQ2Zvd2I4b1d6c3RGaHNGRzU1QnB5YnlJSDRYdmlmMVE9PQ==)
+          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(Z0FBQUFBQmdFUzBpU0pkb3ZRR2g2SmZ1RGpvM09qUElDOTUyZ3dFa1RoN0ZrM050cmFiMEQ3VWUzM2xxYUZyNHlfSFJ6TGpDTUI0LUhBVVdiQkJmclgwZTJHYkRaM2tKVDMyczAwNzJKdnBraHVjUEQ2UzlmTlVHVGUwUTU2TFI5MzNZa0lRcWF1eUhJNE9lSWkzakFIU1ZkaDduNFc0Q0JoQXB0WDdycDVtYWhPdHRyVHNGaDlXajNBQnlBZVQzTW1YUlRiLW51d0hKN3REc0tnc0xpQU0tcjBhbzVJTE5pSVU0RjNybDVfM3FTaGc3dy16MWxZa2tNS3RaM242T0tqckFQaHQ1WU5rZ1VmcnJveUFkbzVWU250X2lwckt2Yk1EZWkzTFN6QVZKM2xXYUw0XzhDQVdSSlluei1JRjBnTjNaMjk4ZnJxX3JPOVlsN3Z1LWpEZGxCbThNUW4ydl9qYThZYjB2aHMyd2h4TEpTMkZ4T2NWWnBrUU9nQ2NoRGM3clV1MW9ZdE9Hb2phT2dkQklnVjlsOUw5Qzc0TFhDOHNEMElqYVBwcGdac2NkRUtTZFAwYz0=)
+          CERTIFICATE_PRIVATE_KEY: Encrypted(Z0FBQUFBQmd1THhqZ0lQQkhkOFotZ1NYLW9NWkc2U2ctVWtxLTRaYTNLZ1FBT2JTZzBLTmtwZGNZZ0VWSk9mYlkwSGhKcHRLRVBxWFRfN0szNEZPOVVDMjM0enFRdUhYNmY5Qm1pM1dzMjJ0b0tKbUxXdFpfakRFM2ZCQVRJZW9LeUtfMF9xTDJRakFyYndOSE1pbmRROVEzQWc4UWVERTl2enVTNkplZnpOYkxQM2lqbEtHUGVybW0tQmhwdGpfZV9CdFJEOWttUnFhZFhwWldLVjdwLWJOMXBTa29fOEhrRHhiRHRXYmxIODBlbWI0V0VnSnM0SFA5QklNUGRkQTdoTVR2MnQtVEctM1JpOUhkcU5oY0hjTVJodThXcVlBUmg0TEhvdk9VWDAzb0ZIQzRaLUdCZV9jS1JaTDVBVHBoY2NkUUg5ZWFhbXpBNzNzSkZSSEtYcVppVnh6X01lTmtNVlJSeFk2M0ZxV09zcUZqZXRiVG5iSTdjQy1hMHFFTXR2QmNmUUZRZ1JKaUM1RUJYeURFWF9rcXJxNk5OWHVBSmk5aEc4Q1J3VWFaVElpTTBqZm5rODVOM2JMOWxuTl9ib3BtckswZWpUcmlVRmtXdG1EeFBxOEFrdGR0UHhlMTVVVGRuOUFORWlMYjhhUEtBdVRLWmlCM0pXQjJfMlM2Ry00N19IZ2ZlbUYyWGs5WnBiWVZ6VVBReEoxeW5EeGh3MFZpSm9LNXdiRFk3TFRWX281Zm1MUUNsVlhGaFBMelBfbTBuck4xRThRS190WVRaWmtUYm9RcERGMFAtTk90Uk5NMXR3RzlFT2J2MjhqSGNBejladW9Fa0d0UkJMUldjdHBydWxycU13TmdPMjhxVVhkMjhtLXozS2tqNzctVXlYR1BmbGJRZmplcHRybEhTTldjc3N2dXQwNUVvMGhGZ1pHckxuOWhRXzRNdlFNMzZVQWp6bC0zOTlyRFRUZ3ZpRGZ4UFlZUHpma0lrOENpV3lobkxtWU1YVnNPNnQwdFI3YUtXTzRleHFmOW56WTRXbjNXVUFkV0dkVjdvc3poNWx6a2hsTWlVZHhFbEVuTlVtdlJTNWRWZHhmOTdRcHQta2NmdHVNVzltSjJkY2huRFdwOVd3NFpYMm40Vm5RLXhILU9kSjBiblg2SU9tRm1yTUhmOTNMMm1hcU1YRFo5REUzcTlWTDZabkQ5aFlJc3dCejR4bW9NbzZGMUlYQW9WN0JYaVMxbE43Q2Y0VTFhc2h3TFdLQ2VoVzA5dE9jMFNDeTRnZC16Tmwtcm1kdXFjcVpnQ3hZQXV2LUNzZmFTekhxak9Sb3k4TDVGa191WWYzdmt0aXJDMnVLejNtU2FvTElseGc5ZU1YQi1WQkMzMXdwWG5BYWl3QlU3TVhQTDltblNzZzFySDhLNzF3R1U3NnVHelZrSWhUWkllM185c3VrQ2VZZnE0Y3MyS1dlOVQ2cVdJeHhPZTNET19jVHZaNDUyLVBBX0dUOVQ1b1gzQUNhU1Bia3h3dk9DdnZwSm5HdFNzTTI2Y3ZJUlpRVVp1TGhCN0h4OE9pcHhLOUxHcUpYN0c2YmRBTzcyczNsRjliMUdNbEFBODNGMU1BTzFnX0hXTzAwa0VnOC16TlJwQW1xZTVGWXV2ZHplN1V6SmtmM3RqRkR5SV8zcDJpSnYyTGtxWkFMeVRDeWtDTHlvbXNXV0tGbU5CbW1NRFVWZXVqRzRHLVBVNTNDRk9CUE9JUXN4dkJ2N19mMElsN3BucjZRbHRfM3NxZENKRGpTVzhwYk1YdUl5SGJ2Z0FHY2Y3YU5zdlFqTmJwQjNuTllLdVJ2VW4xdUZpNXp1ZnF0a0wyN1Zrd3JGbmRBSmlGWVl3UHlSZ0NjY2JUSDJHaE9hbjVqM2hMOExRelZGdEVGaUxJYWozaDJvdFFDVGtUa0tTV0J3R3V6ODl1YmZ5eVFpaTdRUEwxTjkyWXhOSjh3b3RvTmxkV2YyemdMSi1ZaURLQzlQZUMtSEVCOTJsZFV1MzYxaDhadmRhUFJhZ3lXVTJDbzl5WGtBRWtRWjhpUG5EMFc0TFVSVDlIazlhU1RSTFdyc0xjTnVkdmJpM01kdlZtU0hOdEFoVGNEUVhIQ3VaSm0xZ28ybjF1Sjl5eHJ2WGtKTWtBZ1I4ZlE5Q1ZleDc0OGdwdVlJRFB5cmpYVkRhMzJkd0ZBZFJlVXNvdkxrMEVwLV91SE9uTFA3Q0R4VFRuQW9fMzlYelNPRnRZcEpSQW5wVFV3enRpeXBPVENfR05icndHT1B3SVBxd0lIMmxpQWlxZ3ktZFBvd0tKSzJuRUI0V0tMcjM2a2NyUFZBX2JyTUs3cGRVcm1lY01wNW5FU29SYW40dzRzVU5KdWhxdGdUS0FhX0gwdGIxNWVHRmVXUmZEM0dKbTlrM0xyV2RISFNxVXpXUVd6d2FfS3o3S01QNHFqT1dETVZ5YVpfaHhNNVJ5VTd0cTFmOWNpWXZ6LTFDWDcxaW5hMHpVWk1lSEZrWW5hbER5cG0zN2F3anYyQTRQdEJEbnIxbk45UGd5eDR6SlpyMG1KdXhnV3VsN2stQ2NtVGlHdEh4cDRhcWdiMG1URE04OUJ6djJhTFVFd3h0cXppRkJISEhDZkhpQzdSbkVlYllFRzhhRHJaLXpkbVR0TVFPdVlENVJiUndVZmJ0N1pKRU1rZVVkR0JmV1doSmVhdDZGTHJsaU9icUZrb1NadEpNSUpwTmQ2NXZ4WC13a3NVN3JCLU1GejYtMzU5WUlNVmZ1WWFBNVVaRG9ZaDRUUG52dEZvUVFDYkdJU3loSlFHRzhFbzlialk3YTZrMEtyNmI4bGxsa19FLUl2ODBVaXpPbFlpLVJiNDEzYjRCcU02RDNyOU1BR3VuRlNncnAzTXQxQ1EycWx5cW5xUHVMQXJTd2VUa0lYTFdiRlo5eDZnYjFIMnVGc1hTUkRsYTROY1ZORzhSNmtuWkdjS1NVSlRrdUZrNGt0Z2x5WFB5NGFXdVh4c3ZIbTdXWnBndUpsemRsQ09TN25KZXEyVGtPS2VUNG13Rl91cjRRQWw0ZTVQT3dt)
+          APP_STORE_APP_ID: Encrypted(Z0FBQUFBQmhFWGlaWms5b1FESzU1TE1Ia2E0ektIM3J2Y1pPalQ3U1E0OHl6cFJNU3R3Zkx0THBtenlMal9kbXNMdUljODlZV0hzbE5qYkNYcHByQk9tLVhwaDF1TGppd0E9PQ==)
+        xcode: 12.5
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: develop
+            include: true
+            source: true
+      scripts:
+        - name: Codemagic CLI Tools build
+          script: |
+            #!/bin/sh
+            set -ex
+            pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
+            keychain initialize
+            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+            keychain add-certificates
+            xcode-project use-profiles
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+            
+            # Use Codemagic to publish to take advantage of asynchronous Magic Actions otherwise use app-store-connect publish command and pass whats_new.json for release notes.
+            # app-store-connect publish --beta-build-localizations=@file:whats_new.json 
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      publishing:
+         app_store_connect:
+           api_key: $APP_STORE_CONNECT_PRIVATE_KEY          # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+           key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER        # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+           issuer_id: $APP_STORE_CONNECT_ISSUER_ID          # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+           submit_to_testflight: false                      # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app             
+         email:
+           recipients:
+            - kevin@nevercode.io
