@@ -1,0 +1,50 @@
+# This is a basic workflow that is manually triggered
+
+name: iOS Workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  build-ios:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+    env:
+      XCODE_WORKSPACE: "swiftly.xcworkspace"
+      XCODE_SCHEME: "swiftly"
+      BUNDLE_ID: "io.codemagic.swiftly"
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY}}
+      APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID}}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Install Codemagic CLI Tools and run build
+      run: |
+        #!/usr/bin/env bash
+        set -ex
+        pip3 install codemagic-cli-tools
+        keychain initialize
+        app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+        keychain add-certificates
+        xcode-project use-profiles
+        agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+        xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+        app-store-connect publish --beta-build-localizations=@file:whats_new.json

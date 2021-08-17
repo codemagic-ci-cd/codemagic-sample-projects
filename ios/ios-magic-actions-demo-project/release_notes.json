@@ -1,0 +1,10 @@
+[
+    {
+        "language": "en-GB",
+        "text": "Please test user login and user logout"
+    },
+    {
+        "language": "fr-FR",
+        "text": "Veuillez tester connexion de l'utilisateur et déconnexion de l'utilisateur"
+    }
+]

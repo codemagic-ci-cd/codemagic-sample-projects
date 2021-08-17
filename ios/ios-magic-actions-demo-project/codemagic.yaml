@@ -1,0 +1,54 @@
+workflows:
+    ios-swiftly:
+      name: ios_swiftly
+      instance_type: mac_mini
+      environment:
+        vars:
+          XCODE_PROJECT: "swiftly.xcodeproj"
+          XCODE_SCHEME: "swiftly"
+          BUNDLE_ID: "io.codemagic.cmswiftly"
+          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
+          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
+          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
+          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
+          APP_STORE_APP_ID: Encrypted(...) # <-- Put your encrypted Apple App Id here. This can be found in App Store Connect > Your App > General > App Information > Apple Id. 
+        xcode: 12.5
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: develop
+            include: true
+            source: true
+      scripts:
+        - name: Codemagic CLI Tools build
+          script: |
+            #!/bin/sh
+            set -ex
+            pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
+            keychain initialize
+            pod init && pod install
+            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+            keychain add-certificates
+            xcode-project use-profiles
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+            
+            # Use Codemagic to publish to take advantage of asynchronous Magic Actions otherwise use app-store-connect publish command and pass whats_new.json for release notes.
+            # app-store-connect publish --beta-build-localizations=@file:whats_new.json 
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      publishing:
+         app_store_connect:
+           api_key: $APP_STORE_CONNECT_PRIVATE_KEY          # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+           key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER        # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+           issuer_id: $APP_STORE_CONNECT_ISSUER_ID          # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+           submit_to_testflight: false                      # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app             
+         email:
+           recipients:
+            - kevin@nevercode.io
