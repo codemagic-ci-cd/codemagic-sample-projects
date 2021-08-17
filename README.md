@@ -10,6 +10,7 @@
 * [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/latest_build)
 * [iOS Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-manual-code-signing/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-manual-code-signing/latest_build)
 * [iOS White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
+* [iOS Magic Actions sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-magic-actions-demo-project)[![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/latest_build)
 
 ## Android (Native) Samples
 * [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
