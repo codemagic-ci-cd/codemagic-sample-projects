@@ -20,6 +20,7 @@ workflows:
                 APP_STORE_CONNECT_KEY_IDENTIFIER: LY######22 # <-- Put your App Store Connect Key Identifier here
                 APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your App Store Connect Private Key here
                 CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your Certificate Private key here
+                APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
             node: latest
             xcode: latest
             cocoapods: default
@@ -69,7 +70,9 @@ workflows:
                 set -e
                 set -x
                 cd $FCI_BUILD_DIR/ios/App
-                agvtool new-version -all $(($BUILD_NUMBER +1))
+                # agvtool new-version -all $(($BUILD_NUMBER +1))
+                agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+
             - name: Set up code signing settings on Xcode project
               script: |
                 xcode-project use-profiles
@@ -83,8 +86,13 @@ workflows:
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
         publishing:
           app_store_connect:
-            apple_id: yourAppleId@example.com # <- put your Apple Id here
-            password: Encrypted(...) # <-- Put your App Specific Password. For more information visit: https://support.apple.com/en-us/HT204397
+              api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+              key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+              issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+              submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
+              beta_groups:                                    # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
+                - group name 1
+                - group name 2
           email:
             recipients:
                 - user_one@example.com

@@ -142,4 +142,7 @@ workflows:
       app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY   
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: 21d78e2f-b8ad-...  # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        issuer_id: 21d78e2f-b8ad-...                    # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        beta_groups:                                    # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
+          - group name 1
+          - group name 2
