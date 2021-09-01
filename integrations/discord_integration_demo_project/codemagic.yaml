@@ -1,0 +1,75 @@
+workflows:
+  default-workflow:
+    name: Default Workflow
+    instance_type: mac_mini
+    max_build_duration: 60
+    environment:
+      groups:
+        - discord 
+      flutter: stable
+      xcode: 12.5
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: '*'
+          include: true 
+          source: true
+    scripts:        
+      - name: set up debug keystore
+        script: |
+          rm -f ~/.android/debug.keystore
+          keytool -genkeypair \
+            -alias androiddebugkey \
+            -keypass android \
+            -keystore ~/.android/debug.keystore \
+            -storepass android \
+            -dname 'CN=Android Debug,O=Android,C=US' \
+            -keyalg 'RSA' \
+            -keysize 2048 \
+            -validity 10000
+      - name: set up local properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
+      - name: Get packages and build debug apk
+        script: |          
+          flutter packages pub get && flutter build apk --debug
+      - name: Create a changelog
+        script: |
+            if [[ -z ${FCI_PREVIOUS_COMMIT} ]]
+            then
+              echo "No finished builds found to generate changelog" | tee release_notes.txt
+            else
+              echo "$(git-changelog generate --previous-commit $FCI_PREVIOUS_COMMIT)" | tee release_notes.txt
+            fi      
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      scripts:
+      - name: Discord notification
+        script: |
+          set -ex
+
+          APP_LINK=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name=="app.apk") | .url')
+        
+          # Get first 7 digits of commit number
+          COMMIT=$(echo "${FCI_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+
+          # Get commit message
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 $FCI_COMMIT)
+
+          # Get commit author
+          AUTHOR=$(git show -s --format='%ae' $FCI_COMMIT)
+
+          curl -H "Content-Type: multipart/form-data" \
+          -F 'payload_json={"username" : "codemagic-bot", "content": "**Commit:** `'"$COMMIT"'`\n\n**Commit message:** '"$COMMIT_MESSAGE"'\n\n**Branch:** '"$FCI_BRANCH"'\n\n**Author:** '"$AUTHOR"'\n\n**Artifacts: **\n\n'"$APP_LINK"'\n\n"}' \
+          -F "file1=@release_notes.txt" \
+          $WEBHOOK_URL
+        
+      email:
+        recipients:
+          - user1@example.com
