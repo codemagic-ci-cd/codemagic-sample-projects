@@ -1,0 +1,13 @@
+workflows:
+    ios-fastlane:
+      name: iOS Fastlane
+      instance_type: mac_pro
+      environment:
+        groups:
+          - ios_credentials
+        xcode: 12.5
+        cocoapods: default
+      scripts:
+        # - gem install bundler:2.2.27
+        - bundle install
+        - bundle exec fastlane beta

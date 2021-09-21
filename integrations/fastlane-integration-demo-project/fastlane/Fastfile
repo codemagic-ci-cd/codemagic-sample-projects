@@ -1,0 +1,73 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+
+  before_all do |lane, options|
+	create_keychain(
+		name: ENV["MATCH_KEYCHAIN"],
+		password: ENV["MATCH_PASSWORD"],
+		default_keychain: true,
+		unlock: true,
+		timeout: 3600,
+		add_to_search_list: true,
+		verbose: true
+	)
+  end
+
+	lane :beta do 
+		api_key = app_store_connect_api_key(
+			key_id: ENV['APP_STORE_CONNECT_KEY_IDENTIFIER'],
+			issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+			key_content: ENV['APP_STORE_CONNECT_PRIVATE_KEY'],
+			duration: 1200, # optional (maximum 1200)
+			in_house: false # optional but may be required if using match/sigh
+		)
+		
+		increment_build_number(
+			build_number: latest_testflight_build_number(
+				api_key: api_key, 
+				version: "1.0.0"
+			) + 1,
+			xcodeproj: "fastly.xcodeproj"
+		) 
+		
+		clean_build_artifacts 
+		
+		match(
+			keychain_name: ENV["MATCH_KEYCHAIN"],
+            keychain_password: ENV["MATCH_PASSWORD"],
+			app_identifier: "io.codemagic.fastly", 
+			type: "appstore", 
+			readonly: true
+		)
+
+		build_app(
+			project: "fastly.xcodeproj", 
+			scheme: "fastly"
+		)
+		
+		upload_to_testflight(
+			api_key: api_key,
+			uses_non_exempt_encryption: false,
+			skip_waiting_for_build_processing: true
+		)
+		
+	end
+end
