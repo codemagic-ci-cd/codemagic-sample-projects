@@ -23,7 +23,9 @@
 * [Ionic capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
 
 ## Integrations 
-* [Jira integation sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
+* [Jira integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
+* [Discord integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
+* [Fastlane integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/fastlane-integration-demo-project)
 
 ## YAML Samples
 * [YAML anchors and aliases sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/yaml/yaml_anchors_aliases_sample)

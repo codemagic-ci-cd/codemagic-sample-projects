@@ -1,0 +1,84 @@
+workflows:
+    ios-sonarcloud:
+      name: iOS SonarCloud
+      instance_type: mac_pro
+      environment:
+        vars:
+          XCODE_PROJECT: "swiftqube.xcodeproj"
+          XCODE_SCHEME: "swiftqube"
+          BUNDLE_ID: "io.codemagic.swiftqube"
+          # https://docs.codemagic.io/code-signing-yaml/signing-ios/
+          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
+          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
+          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
+          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
+          APPLE_ID_EMAIL: Encrypted(...) # <-- Put your encrypted Apple Id email address here
+          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password address here
+          APP_STORE_APP_ID: Encrypted(...) # <-- Put your encrypted App Id here
+          SONAR_TOKEN: Encrypted(...) # <-- Put your encrypted Sonar Cloud token here
+          SONAR_PROJECT_KEY: Encrypted(...) # <-- Put your encrypted Sonar Cloud project key here
+          SONAR_ORG_KEY: Encrypted(...) # <-- Put your encrypted Sonar Cloud organisation key here
+        xcode: 12.5
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - pull_request
+        branch_patterns:
+          - pattern: branch-develop
+            include: true
+            source: true
+          - pattern: main
+            include: true
+      scripts:
+        - name: Install Sonar Scanner
+          script: | 
+            brew install sonar-scanner
+        - |
+          # Generate debug build
+          xcodebuild \
+          -project "$XCODE_PROJECT" \
+          -scheme "$XCODE_SCHEME" \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=14.5' \
+          -derivedDataPath Build/ \
+          -enableCodeCoverage YES \
+          clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        - |
+          # convert coverage report to sonarqube format
+          bash xccov-to-sonarqube-generic.sh Build/Logs/Test/*.xcresult/ > sonarqube-generic-coverage.xml
+        - |
+          # Generate and upload code analysis report
+          if [[ $FCI_PULL_REQUEST == true ]]
+          then
+            echo "Is a pull request"
+            TARGET=$FCI_PULL_REQUEST_DEST
+          else 
+            echo "NOT a pull request"
+            TARGET=$FCI_BRANCH
+          fi
+          echo "TARGET is set to ${TARGET}"
+          export PATH=$PATH:$FCI_BUILD_DIR/sonar-scanner/bin
+          sonar-scanner \
+          -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+          -Dsonar.organization=$SONAR_ORG_KEY \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.projectVersion=1.0.0-cm \
+          -Dsonar.sources=. \
+          -Dsonar.cfamily.build-wrapper-output.bypass=true \
+          -Dsonar.coverageReportPaths=sonarqube-generic-coverage.xml \
+          -Dsonar.c.file.suffixes=- \
+          -Dsonar.cpp.file.suffixes=- \
+          -Dsonar.objc.file.suffixes=- \
+          -Dsonar.branch.name=$FCI_BRANCH \
+          -Dsonar.branch.target=$TARGET
+      artifacts:
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      publishing:               
+        email:
+            recipients:
+              - user1@example.com
+            notify:
+              success: true
+              failure: true
