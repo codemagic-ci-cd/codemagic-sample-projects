@@ -200,7 +200,19 @@ workflows:
            submit_to_testflight: false                      # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app             
          email:
            recipients:
-            - kevin@nevercode.io    
+            - kevin@nevercode.io
+    ios-fastlane:
+        name: iOS Fastlane
+        instance_type: mac_pro
+        environment:
+          groups:
+            - ios_credentials
+          xcode: 12.5
+          cocoapods: default
+        scripts:
+          # - gem install bundler:2.2.27
+          - bundle install
+          - bundle exec fastlane beta  
     flutter-yaml-ios:
       name: Flutter yaml iOS
       instance_type: mac_pro
