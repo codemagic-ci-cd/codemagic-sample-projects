@@ -50,13 +50,13 @@ platform :ios do
 		
 		clean_build_artifacts 
 		
-		match(
+        match(
             keychain_name: ENV["MATCH_KEYCHAIN"],
             keychain_password: ENV["MATCH_PASSWORD"],
             app_identifier: "io.codemagic.fastly", 
             type: "appstore", 
             readonly: true
-		)
+        )
 
 		build_app(
 			project: "fastly.xcodeproj", 
