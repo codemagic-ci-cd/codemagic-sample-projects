@@ -8,11 +8,12 @@ https://docs.codemagic.io/getting-started/yaml/
 
 ## Environment variables
 
-Five **environment variables**  need to be added to your workflow for Fastlane integration: 
+Six **environment variables**  need to be added to your workflow for Fastlane integration: 
 
 - `MATCH_PASSWORD` - the password used to encrypt/decrypt the repository used to store your distrbution certificates and provisioning profiles.
-- `MATCH_KEYCHAIN` - an arbritrary name to use for the keychain on the build server e.g "codemagic_keychain"
-- `APP_STORE_CONNECT_PRIVATE_KEY` - the App Store Connect API. Copy the entire contents of the .p8 file and paste into the environment variable value field.
+- `MATCH_KEYCHAIN` - an arbitrary name to use for the keychain on the build server, e.g "codemagic_keychain"
+- `MATCH_SSH_KEY` - an SSH private key used for cloning the Match repository that contains your distrbution certificates and provisioning profiles. The public key should be added to your Github account. See [here](https://docs.codemagic.io/configuration/access-private-git-submodules/) for more information about accessing Git dependencies with SSH keys.
+- `APP_STORE_CONNECT_PRIVATE_KEY` - the App Store Connect API key. Copy the entire contents of the .p8 file and paste into the environment variable value field.
 - `APP_STORE_CONNECT_KEY_IDENTIFIER` - the key identifier of your App Store Connect API key.
 - `APP_STORE_CONNECT_ISSUER_ID` - the issuer of your App Store Connect API key.
 
@@ -35,4 +36,24 @@ If you are using dependencies from Cocoapods it might be necessary to include th
 ```
 gem "fastlane"
 gem "cocoapods"
+```
+
+## Running your Fastlane lane
+
+In the codemagic.yaml you should install your depenpendencies with `bundle install` and then execute the Fastlane lane with `bundle exec fastlane <lane_name>` as follows:
+
+```
+      scripts:
+        - bundle install
+        - bundle exec fastlane beta
+```
+
+If you need to use a specific version of bundler as defined in the Gemfile.lock file, you should install it with `gem install bundler:<version>` as follows:
+
+```
+      scripts:
+        - gem install bundler:2.2.27
+        - bundle install
+        - bundle exec fastlane beta
+       
 ```
