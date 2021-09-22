@@ -203,7 +203,7 @@ workflows:
             - kevin@nevercode.io
     ios-fastlane:
         name: iOS Fastlane
-        instance_type: mac_mini
+        instance_type: mac_pro
         working_directory: integrations/fastlane-integration-demo-project
         environment:
           groups:
