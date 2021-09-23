@@ -5,27 +5,28 @@ workflows:
         name: Native Android
         instance_type: mac_pro
         environment:
+            groups:
+                - aws_credentials # <-- (Includes: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_PROJECT_ARN, AWS_DEVICE_POOL_ARN, AWS_DEFAULT_REGION)
+                - keystore_credentials # <-- (Includes: CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+                - google_play # <-- (Includes: GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+                - other
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
             vars:
                 # AWS Device Farm Environment Variables
                 # See more information from official AWS Device Farm docs:
                 # https://docs.aws.amazon.com/devicefarm/latest/developerguide/how-to-create-test-run.html#how-to-create-test-run-cli
-                AWS_ACCESS_KEY_ID: Encrypted(...) # <-- Put your encrypted access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                AWS_SECRET_ACCESS_KEY: Encrypted(...) # <-- Put your encrypted secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                AWS_PROJECT_ARN: Encrypted(...) # <-- Put your encrypted Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
-                AWS_DEVICE_POOL_ARN: Encrypted(...) # <-- Put your encrypted Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
-                AWS_DEFAULT_REGION: "us-west-2" # See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+                # AWS_ACCESS_KEY_ID:  # <-- Put your access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                # AWS_SECRET_ACCESS_KEY: # <-- Put your secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                # AWS_PROJECT_ARN: # <-- Put your Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
+                # AWS_DEVICE_POOL_ARN: # <-- Put your Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
+                # AWS_DEFAULT_REGION: "us-west-2" # See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
                 # Set up paths to application binary and test package 
                 AWS_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
                 AWS_TEST_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
                 # Specify application and test types
                 AWS_APP_TYPE: "ANDROID_APP" # Type of the main app that is being tested. See more about `--type` flag at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/create-upload.html
                 AWS_TEST_PACKAGE_TYPE: "INSTRUMENTATION_TEST_PACKAGE" # Type of the test package that is being uploaded. See more about `--type` flag at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/create-upload.html
-                AWS_TEST_TYPE: "INSTRUMENTATION" # See more about `--test` flag `type` option at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/schedule-run.html
-                # Android Keystore environment variables
-                CM_KEYSTORE: Encrypted(...) # <-- Put your encrypted keystore file here
-                CM_KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
-                CM_KEY_ALIAS_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore alias password here
-                CM_KEY_ALIAS_USERNAME: Encrypted(...) # <-- Put your encrypted keystore alias username here     
+                AWS_TEST_TYPE: "INSTRUMENTATION" # See more about `--test` flag `type` option at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/schedule-run.html  
             node: latest
             xcode: 12.2
         triggering:
@@ -95,5 +96,5 @@ workflows:
                   success: true
                   failure: false   
             google_play:                          # For publishing your Android app to Google Play
-                credentials: Encrypted(...)       # <-- Put your Encrypted JSON key file for Google Play service account here
+                credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
                 track: alpha                      # Name of the track: internal, alpha, beta, production
