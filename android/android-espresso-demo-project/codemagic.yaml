@@ -10,11 +10,11 @@ workflows:
                 # AWS Device Farm Environment Variables
                 # See more information from official AWS Device Farm docs:
                 # https://docs.aws.amazon.com/devicefarm/latest/developerguide/how-to-create-test-run.html#how-to-create-test-run-cli
-                # AWS_ACCESS_KEY_ID:  # <-- Put your access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                # AWS_SECRET_ACCESS_KEY: # <-- Put your secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                # AWS_PROJECT_ARN: # <-- Put your Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
-                # AWS_DEVICE_POOL_ARN: # <-- Put your Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
-                # AWS_DEFAULT_REGION: "us-west-2" # See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+                # AWS_ACCESS_KEY_ID # <-- Put your access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                # AWS_SECRET_ACCESS_KEY # <-- Put your secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                # AWS_PROJECT_ARN # <-- Put your Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
+                # AWS_DEVICE_POOL_ARN # <-- Put your Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
+                # AWS_DEFAULT_REGION "us-west-2" # See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
                 - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
                 - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
                 - other
