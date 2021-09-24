@@ -6,9 +6,9 @@ workflows:
         instance_type: mac_pro
         environment:
             groups:
-                - aws_credentials # <-- (Includes: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_PROJECT_ARN, AWS_DEVICE_POOL_ARN, AWS_DEFAULT_REGION)
-                - keystore_credentials # <-- (Includes: CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
-                - google_play # <-- (Includes: GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+                - aws_credentials # <-- (Includes AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_PROJECT_ARN, AWS_DEVICE_POOL_ARN, AWS_DEFAULT_REGION)
+                - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
                 - other
             # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
             vars:
