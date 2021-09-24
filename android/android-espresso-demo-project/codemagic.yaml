@@ -6,19 +6,23 @@ workflows:
         instance_type: mac_pro
         environment:
             groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
                 - aws_credentials # <-- (Includes AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_PROJECT_ARN, AWS_DEVICE_POOL_ARN, AWS_DEFAULT_REGION)
-                # AWS Device Farm Environment Variables
-                # See more information from official AWS Device Farm docs:
-                # https://docs.aws.amazon.com/devicefarm/latest/developerguide/how-to-create-test-run.html#how-to-create-test-run-cli
-                # AWS_ACCESS_KEY_ID # <-- Put your access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                # AWS_SECRET_ACCESS_KEY # <-- Put your secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
-                # AWS_PROJECT_ARN # <-- Put your Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
-                # AWS_DEVICE_POOL_ARN # <-- Put your Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
-                # AWS_DEFAULT_REGION "us-west-2" # See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+                  # AWS Device Farm Environment Variables
+                  # See more information from official AWS Device Farm docs:
+                  # https://docs.aws.amazon.com/devicefarm/latest/developerguide/how-to-create-test-run.html#how-to-create-test-run-cli
+                  # AWS_ACCESS_KEY_ID <-- Put your access key id here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                  # AWS_SECRET_ACCESS_KEY <-- Put your secret access key here. See more info at https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys
+                  # AWS_PROJECT_ARN <-- Put your Project ARN here. Get Project ARN with `aws devicefarm list-projects`.
+                  # AWS_DEVICE_POOL_ARN <-- Put your Device Pool ARN here. Choose a Device Pool ARN using `aws devicefarm list-device-pools --arn "${AWS_PROJECT_ARN}"`.
+                  # AWS_DEFAULT_REGION "us-west-2" <-- See available options at https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
                 - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+                  # CM_KEYSTORE <-- Put your keystore file here
+                  # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+                  # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
+                  # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
                 - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
                 - other
-            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
             vars:
                 # Set up paths to application binary and test package 
                 AWS_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
