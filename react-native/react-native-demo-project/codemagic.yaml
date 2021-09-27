@@ -72,7 +72,7 @@ workflows:
             google_play:
               # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
               credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-              track: alpha   # Name of the track: internal, alpha, beta, production
+              track: alpha   # Any default or custom track that is not in ‘draft’ status
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
