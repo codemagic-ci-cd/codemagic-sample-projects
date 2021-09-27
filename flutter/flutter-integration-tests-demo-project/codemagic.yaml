@@ -5,7 +5,7 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-        - google_credentials # <-- (GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
+        - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
           # GCLOUD_KEY_FILE <-- Put your Google Cloud Key file here
           # GOOGLE_CREDENTIALS <-- Put your google-services.json here if publishing to Google Play
       vars:
