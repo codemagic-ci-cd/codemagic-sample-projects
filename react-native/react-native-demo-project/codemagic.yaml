@@ -7,13 +7,17 @@ workflows:
         max_build_duration: 120
         instance_type: mac_mini
         environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+                - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+                  # CM_KEYSTORE <-- Put your keystore file here
+                  # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+                  # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
+                  # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
+                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+                - other
             vars:
-                GCLOUD_SERVICE_ACCOUNT_CREDENTIALS: Encrypted(...) # <-- Put encrypted CONTENTS of your Gloud crendentials file here
                 PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp
-                CM_KEYSTORE: Encrypted(...) # <-- Put your encrypted keystore file here
-                CM_KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
-                CM_KEY_ALIAS_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore alias password here
-                CM_KEY_ALIAS_USERNAME: Encrypted(...) # <-- Put your encrypted keystore alias username here 
             node: latest
         triggering:
             events:
@@ -67,23 +71,26 @@ workflows:
                 failure: false              # To not receive a notification when a build fails
             google_play:
               # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
-              credentials: Encrypted(...) # <-- Put your encrypted google-services.json here
+              credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
               track: alpha
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
         instance_type: mac_mini
         environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+                - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+                  # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+                  # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+                  # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+                  # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+                  # https://appstoreconnect.apple.com/access/api
+                - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+                - other
             vars:
-                # Env vars for automatic iOS code signing
-                # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
                 XCODE_WORKSPACE: "ios/YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
                 XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
-                # https://appstoreconnect.apple.com/access/api
-                APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your App Store Connect Issuer Id here
-                APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your App Store Connect Key Identifier here
-                APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your App Store Connect Private Key here
-                CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your Certificate Private key here
                 BUNDLE_ID: "YOUR_BUNDLE_ID_HERE" # <-- Put your Bundle Id here e.g com.domain.myapp
                 APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
             node: latest
