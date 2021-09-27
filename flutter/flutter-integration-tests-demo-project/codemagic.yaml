@@ -4,9 +4,11 @@ workflows:
     instance_type: mac_mini
     max_build_duration: 120
     environment:
+      groups:
+        - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
+          # GCLOUD_KEY_FILE <-- Put your Google Cloud Key file here
+          # GOOGLE_CREDENTIALS <-- Put your google-services.json here if publishing to Google Play
       vars:
-        GCLOUD_KEY_FILE: Encrypted(...) # <-- Put your encrypted Google Cloud Key file here
-        GOOGLE_CREDENTIALS: Encrypted(...) # <-- Put your encrypted google-services.json here if publishing to Google Play
         FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_NAME" # <-- Put your Firebase Project Name here
       flutter: stable
       xcode: latest

@@ -3,12 +3,18 @@ workflows:
     name: Android Workflow
     max_build_duration: 120
     environment:
+      groups:
+       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_PASSWORD, FCI_KEY_ALIAS)
+          # FCI_KEYSTORE <-- Put your keystore file here
+          # FCI_KEYSTORE_PASSWORD <-- Put your keystore password here
+          # FCI_KEY_PASSWORD <-- Put your keystore alias password here
+          # FCI_KEY_ALIAS <-- Put your keystore alias username here
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+        - firebase_token # <-- (Includes ANDROID_FIREBASE_SECRET)
+        - other
       vars:
         FCI_KEYSTORE_PATH: /tmp/keystore.keystore
-        FCI_KEYSTORE: Encrypted(...) # <-- Put your encrypted keystore here
-        FCI_KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
-        FCI_KEY_PASSWORD: Encrypted(...) # <-- Put your encrypted key alias password here
-        FCI_KEY_ALIAS: Encrypted(...) # <-- Put your encrypted key alias here
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -62,11 +68,11 @@ workflows:
           success: true               # To not receive a notification when a build succeeds
           failure: false              # To not receive a notification when a build fails
       google_play:
-        credentials: Encrypted("")
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         in_app_update_priority: 0
       firebase:
-        firebase_token: Encrypted(...)
+        firebase_token: $ANDROID_FIREBASE_SECRET
         android:
           app_id: x:xxxxxxxxxxxx:android:xxxxxxxxxxxxxxxxxxxxxx
           groups: 
@@ -77,16 +83,20 @@ workflows:
     # instance_type: mac_mini
     max_build_duration: 120
     environment:
+      groups:
+       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+          # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+          # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+          # https://appstoreconnect.apple.com/access/api
+        - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+        - firebase_token # <-- (Includes IOS_FIREBASE_SECRET)
+        - other
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"                
-        # https://docs.codemagic.io/code-signing-yaml/signing-ios/
-        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
-        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
-        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
-        CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
-        APPLE_ID: Encrypted(...) # <-- Put your encrypted Apple Id email address here
-        APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password here. See here for more information - https://support.apple.com/en-us/HT204397
         BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
         APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID. 
       flutter: stable
@@ -153,7 +163,7 @@ workflows:
         #      - group name 1
         #      - group name 2  
       firebase:
-        firebase_token: Encrypted(...)
+        firebase_token: $IOS_FIREBASE_SECRET
         ios: 
            app_id: x:xxxxxxxxxxxx:ios:xxxxxxxxxxxxxxxxxxxxxx
            groups:

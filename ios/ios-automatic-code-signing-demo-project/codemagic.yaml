@@ -2,15 +2,20 @@ workflows:
     ios-workflow:
       name: iOS Workflow
       environment:
+        groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+            # https://appstoreconnect.apple.com/access/api
+          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - other
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
           XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
           BUNDLE_ID: "io.codemagic.swiftly" # <-- Put your Bundle Id here.
-          # https://docs.codemagic.io/code-signing-yaml/signing-ios/
-          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
-          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
-          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
-          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
           APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         xcode: latest
         cocoapods: default

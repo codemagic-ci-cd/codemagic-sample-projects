@@ -14,7 +14,7 @@ workflows:
                   # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
                   # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
                   # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
-                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
                 - other
             vars:
                 PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp

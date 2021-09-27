@@ -3,21 +3,27 @@ workflows:
       name: iOS SonarCloud
       instance_type: mac_pro
       environment:
+        groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+            # https://appstoreconnect.apple.com/access/api
+          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - sonar_credentials # <-- (Includes SONAR_TOKEN, SONAR_PROJECT_KEY, SONAR_ORG_KEY)
+            # SONAR_TOKEN <-- Put your Sonar Cloud token here
+            # SONAR_PROJECT_KEY <-- Put your Sonar Cloud project key here
+            # SONAR_ORG_KEY <-- Put your Sonar Cloud organisation key here
+          - other # <-- (Includes APPLE_ID_EMAIL, APP_SPECIFIC_PASSWORD, APP_STORE_APP_ID)
+            # APPLE_ID_EMAIL <-- Put your Apple Id email address here
+            # APP_SPECIFIC_PASSWORD <-- Put your App Specific password address here
+            # APP_STORE_APP_ID <-- Put your App Id here      
         vars:
           XCODE_PROJECT: "swiftqube.xcodeproj"
           XCODE_SCHEME: "swiftqube"
           BUNDLE_ID: "io.codemagic.swiftqube"
-          # https://docs.codemagic.io/code-signing-yaml/signing-ios/
-          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
-          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
-          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
-          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here 
-          APPLE_ID_EMAIL: Encrypted(...) # <-- Put your encrypted Apple Id email address here
-          APP_SPECIFIC_PASSWORD: Encrypted(...) # <-- Put your encrypted App Specific password address here
-          APP_STORE_APP_ID: Encrypted(...) # <-- Put your encrypted App Id here
-          SONAR_TOKEN: Encrypted(...) # <-- Put your encrypted Sonar Cloud token here
-          SONAR_PROJECT_KEY: Encrypted(...) # <-- Put your encrypted Sonar Cloud project key here
-          SONAR_ORG_KEY: Encrypted(...) # <-- Put your encrypted Sonar Cloud organisation key here
         xcode: 12.5
         cocoapods: default
       triggering:
