@@ -16,7 +16,7 @@ workflows:
             # SONAR_TOKEN <-- Put your Sonar Cloud token here
             # SONAR_PROJECT_KEY <-- Put your Sonar Cloud project key here
             # SONAR_ORG_KEY <-- Put your Sonar Cloud organisation key here
-          - other # <-- (APPLE_ID_EMAIL, APP_SPECIFIC_PASSWORD, APP_STORE_APP_ID)
+          - other # <-- (Includes APPLE_ID_EMAIL, APP_SPECIFIC_PASSWORD, APP_STORE_APP_ID)
             # APPLE_ID_EMAIL <-- Put your Apple Id email address here
             # APP_SPECIFIC_PASSWORD <-- Put your App Specific password address here
             # APP_STORE_APP_ID <-- Put your App Id here      
