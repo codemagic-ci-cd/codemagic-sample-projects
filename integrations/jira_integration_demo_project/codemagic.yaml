@@ -3,25 +3,24 @@ workflows:
       name: iOS Workflow
       instance_type: mac_mini
       environment:
+        groups:
+      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - jira_credentials # <-- (JIRA_AUTH, JIRA_BASE_URL, JIRA_ISSUE, JIRA_TRANSITION_ID)
+            # JIRA_AUTH <-- Base64 encoded Basic auth e.g user@domain.com:API_TOKEN encoded: echo -n 'email:token' | openssl base64
+            # JIRA_BASE_URL <--  "YOUR_SUBDOMAIN.atlassian.net" - Put your Atlassian domain
+            # JIRA_ISSUE <-- Put your issue key 
+            # JIRA_TRANSITION_ID <-- Integer value of Jira transition obtained using API - https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-get
+          -other
         vars:
-          # Env vars for automatic iOS code signing
-          # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
           XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
           XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
-          BUNDLE_ID: "YOUR_BUNDLE_ID" # <-- Put the name of your Bundle Id here
-
-          # Create an App Store Connect API key in your account at the following URL - https://appstoreconnect.apple.com/access/api
-          # https://docs.codemagic.io/code-signing-yaml/signing-ios/#saving-the-api-key-to-environment-variables
-          APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here
-          APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here
-          APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here
-          CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private key here          
-          # Environment variables to use with Jira
-          JIRA_AUTH: "2113Sashkh1213hdy12ykjhsadiy12iykjadshi1273" # <-- Base64 encoded Basic auth e.g user@domain.com:API_TOKEN encoded: echo -n 'email:token' | openssl base64
-          JIRA_BASE_URL: "YOUR_SUBDOMAIN.atlassian.net" # <-- Change to your Atlassian domain
-          JIRA_ISSUE: "ABCD-1" # <-- Change to your issue key 
-          JIRA_TRANSITION_ID: 51 # <-- Integer value of Jira transition obtained using API - https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-get
-        node: latest
+          BUNDLE_ID: "YOUR_BUNDLE_ID" # <-- Put the name of your Bundle Id here          
+        node: latest 
         xcode: latest
         cocoapods: default
       triggering: # For details about triggering builds see - https://docs.codemagic.io/getting-started/yaml/#triggering
