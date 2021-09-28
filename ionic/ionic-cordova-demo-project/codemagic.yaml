@@ -2,11 +2,17 @@ workflows:
   ios-workflow:
     name: iOS workflow
     environment:
-      vars:
-        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # <-- Put your encrypted App Store Connect Issuer Id here 
-        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # <-- Put your encrypted App Store Connect Key Identifier here 
-        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted App Store Connect Private Key here 
-        CERTIFICATE_PRIVATE_KEY: Encrypted(...) # <-- Put your encrypted Certificate Private Key here         
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+            # https://appstoreconnect.apple.com/access/api
+          - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - other
+      vars:      
         BUNDLE_ID: "io.codemagic.ioniccordova" # <-- Put your Bundle Id here 
       xcode: 12.4
       node: 12
@@ -90,12 +96,16 @@ workflows:
   android-workflow:
     name: Android workflow
     environment:
-      vars:
-        KEYSTORE: Encrypted(...) # <-- Put your encrypted keystore file here
-        KEYSTORE_PATH: '/tmp/keystore.keystore'
-        KEYSTORE_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore password here
-        KEY_ALIAS_PASSWORD: Encrypted(...) # <-- Put your encrypted keystore alias password here
-        KEY_ALIAS: Encrypted(...) # <-- Put your encrypted alias password here
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - keystore_credentials # <-- (Includes KEYSTORE, KEYSTORE_PASSWORD, KEY_ALIAS_PASSWORD, KEY_ALIAS, KEYSTORE_PATH)
+          # KEYSTORE <-- Put your keystore file here
+          # KEYSTORE_PASSWORD <-- Put your keystore password here
+          # KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
+          # KEY_ALIAS <-- Put your keystore alias username here
+          # KEYSTORE_PATH: '/tmp/keystore.keystore'
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
+        - other
       xcode: 12.4
       node: 12
       npm: 6        
@@ -146,5 +156,5 @@ workflows:
             failure: false              # To not receive a notification when a build fails
         google_play:
           # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
-          credentials: Encrypted(...) # <-- Put your encrypted google-services.json here
+          credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
           track: alpha      
