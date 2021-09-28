@@ -2,13 +2,19 @@ workflows:
     ios-swiftly:
       name: ios_swiftly
       environment:
+        groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - manual_code_signing # <-- (Includes CM_CERTIFICATE, CM_CERTIFICATE_PASSWORD, CM_PROVISIONING_PROFILE)
+          - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+            # https://appstoreconnect.apple.com/access/api
+          - other
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here. 
           XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
-          # Set up env vars for manual codesigning (See - https://docs.codemagic.io/code-signing-yaml/signing-ios/)
-          CM_CERTIFICATE: Encrypted(...) # <-- Put your encrypted distribution certificate here. 
-          CM_CERTIFICATE_PASSWORD: Encrypted(...) # <-- Put your encrypted distribution certificate password here.
-          CM_PROVISIONING_PROFILE: Encrypted(...) # <-- Put your encrypted provisioning profile here.
           APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         xcode: latest
         cocoapods: default
