@@ -1,6 +1,6 @@
 While building a Cordova project, you may come across an error on uploading your .apk as follows: 
 
-``` You uploaded an APK that is not zip aligned error ```
+` You uploaded an APK that is not zip aligned error `
 
 - In this case you can make the following changes in the build step:
 ```
