@@ -1,4 +1,4 @@
-While building an Ionic project, you may come across error on uploading your .apk as follows:
+While building a Cordova project, you may come across an error on uploading your .apk as follows: 
 
 ``` You uploaded an APK that is not zip aligned error ```
 
@@ -15,7 +15,8 @@ While building an Ionic project, you may come across error on uploading your .ap
           zipalign -v 4 $UNSIGNED_APK_PATH app-release.apk
           mv $UNSIGNED_APK_PATH $(echo $UNSIGNED_APK_PATH | sed 's/-unsigned//')
 ```
-- If you require an apksigner, then use the below code block:
+
+- If you require an `apksigner` instead of `jarsigner`, then use the below code block:
 
 ```
       - name: Build Android
