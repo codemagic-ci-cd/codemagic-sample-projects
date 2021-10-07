@@ -14,15 +14,16 @@ Documentation for YAML builds can be found at the following URL:
 
 https://docs.codemagic.io/getting-started/yaml/
 
-## Encrypted Environment Variables
+## Storing Environment Variables
 
-Use the Codemagic web app to securely encrypt environment variables that are included in the codemagic.yaml. 
+Add the group environment variables in Codemagic UI (either in Application/Team variables). Entering values in the Variable value input and marking the Secure checkbox will automatically encrypt those values.
 
-Encrypted environment variabsles can only be accessed on the Codemagic build servers.
+The generated group name must be used in the yaml file under environment section. 
+Secure marked environment variables can only be accessed on the Codemagic build servers.
 
-Please note that encrypted values are specific to your personal account or team. 
+Please note that values are specific to your personal account or team. 
 
-If you move your app from personal account to a Team or vice versa you will need to re-encrypt these values.
+If you move your app from personal account to a Team or vice versa you may need to re-secure these values.
 
 ## How to Build your iOS app using the codemagic.yaml
 
