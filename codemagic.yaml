@@ -368,9 +368,8 @@ workflows:
           app_store_connect:                 
               apple_id: $APPLE_ID_EMAIL
               password: $APP_SPECIFIC_PASSWORD
-
-    ios-flutter-flavors:
-      name: iOS Flutter Flavors
+    ios-flutter-flavors-dev:
+      name: iOS Flutter Flavors Dev
       max_build_duration: 120
       working_directory: flutter/flutter-flavors-demo-project
       environment:
@@ -389,6 +388,80 @@ workflows:
           XCODE_SCHEME: dev
           BUNDLE_ID: io.codemagic.flutterflavors.dev
           ENTRY_POINT: lib/main_dev.dart
+        flutter: 2.0.5
+        xcode: 12.5
+        cocoapods: default
+      triggering:
+        events:
+          - push
+        branch_patterns:
+          - pattern: 'main'
+            include: true
+            source: true
+      scripts:
+        - name: Get Flutter Packages
+          script: |
+            cd . && flutter packages pub get
+        - name: Pod install
+          script: |
+            find . -name "Podfile" -execdir pod install \;
+        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: Fetch signing files
+          script: |
+            app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+        - name: Add certs to keychain
+          script: |
+            keychain add-certificates
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Flutter build ipa and automatic versioning
+          script: |
+            flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --flavor="$XCODE_SCHEME" \
+            -t "$ENTRY_POINT"      
+      artifacts: 
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - flutter_drive.log
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        email: 
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true
+            failure: true
+        app_store_connect:
+          api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+          key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+          issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+    ios-flutter-flavors-prod:
+      name: iOS Flutter Flavors Prod
+      max_build_duration: 120
+      working_directory: flutter/flutter-flavors-demo-project
+      environment:
+        groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - ios_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+          - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+        vars:
+          XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+          # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
+          APP_STORE_APP_ID: 1589804841 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+          XCODE_CONFIG: Release-prod
+          XCODE_SCHEME: prod
+          BUNDLE_ID: io.codemagic.flutterflavors.prod
+          ENTRY_POINT: lib/main_prod.dart
         flutter: 2.0.5
         xcode: 12.5
         cocoapods: default
