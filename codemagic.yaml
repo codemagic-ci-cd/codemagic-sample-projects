@@ -372,7 +372,7 @@ workflows:
     ios-flutter-flavors:
       name: iOS Flutter Flavors
       max_build_duration: 120
-      working_directory: ios/ios-flutter-flavors
+      working_directory: flutter/flutter-flavors-demo-project
       environment:
         groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
