@@ -454,7 +454,7 @@ workflows:
                 APPLE_ID_EMAIL: Encrypted(Z0FBQUFBQmd1S0xRNDBqLVQ1UkJac29IeEVxWjZQRmNRbTQ5U1pFb2cyRlEwUHBSMGtnLWZqc3ktRE5VeHJYRnF0TmJDSjh5MDNGM3dGZnI5ZHQ3MzY3bWN2TGJ3RGVnY0pSUnJpRWY4VkZSRWMzaEl1T25nZzQ9)
                 APP_SPECIFIC_PASSWORD: Encrypted(Z0FBQUFBQmd1S01mbTZWTnRqbTc0U2tDeGh1TTZkZjQybHNFeUthT3FvaUx1ZXY4eWVkbkxxV1NuaVJrU2lKT3VMY0VWLThBbnVkVEVwZ0xyVThaU0JJMUxORmxyUXVOcnA3Tm1BQzhUeEpxbVVnS1NpWS01TGM9)
                 APP_STORE_APP_ID: 1571903173
-            node: latest
+            node: 16.11.1
             xcode: 12.5
             cocoapods: default
         triggering:
