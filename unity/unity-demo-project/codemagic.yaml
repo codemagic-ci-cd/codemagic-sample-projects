@@ -1,0 +1,97 @@
+workflows:
+  unity-ios-workflow:
+    name: Unity iOS Workflow
+    max_build_duration: 120
+    environment:
+      groups:
+      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        UNITY_IOS_DIR: ios
+        XCODE_PROJECT: "Unity-iPhone.xcodeproj"
+        XCODE_SCHEME: "Unity-iPhone"
+        BUNDLE_ID: "com.domain.yourappname" # <-- Put your Bundle Id here.
+        APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+        cocoapods: default
+    scripts:
+      - name: Set up macOS keychain using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize       
+      - name: Export Unity
+        script: |
+          ./export_unity.sh ios
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE
+      - name: Use system default keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          cd ios && agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa --project "$UNITY_IOS_DIR/$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+    artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+        app_store_connect:            
+            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         
+            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+            issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+  unity-android-workflow:
+      name: Unity Android Workflow
+      max_build_duration: 120
+      environment:
+          groups:
+          # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+              - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+              - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+              - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+              - other
+          vars:
+              PACKAGE_NAME: "com.domain.yourappname" # <-- Put your package name here e.g. com.domain.myapp
+      triggering:
+          events:
+              - push
+              - tag
+              - pull_request
+          branch_patterns:
+              - pattern: develop
+                include: true
+                source: true
+      scripts:
+          - name: Export Unity
+            script: |
+              ./export_unity.sh android        
+          - name: Set Android SDK location
+            script: |
+              echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
+          - name: Set up keystore
+            script: |
+                  echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+                  cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
+                  storePassword=$CM_KEYSTORE_PASSWORD
+                  keyPassword=$CM_KEY_ALIAS_PASSWORD
+                  keyAlias=$CM_KEY_ALIAS_USERNAME
+                  storeFile=/tmp/keystore.keystore
+                  EOF               
+          - name: Build Android release
+            script: |
+              # Set environment variable so it can be used to increment build number in android/app/build.gradle
+              # Note that tracks can be specified when retrieving latest build number from Google Play, for example:
+              # export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+              export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+              cd android && ./gradlew assembleRelease
+      artifacts:
+          - android/app/build/outputs/**/*.apk
+      publishing:
+          google_play:
+            # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+            credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+            track: alpha   # Any default or custom track that is not in ‘draft’ status
