@@ -87,7 +87,7 @@ workflows:
               cp -vr ./Gradle/* ./android
               cd android && ./gradlew bundleRelease
       artifacts:
-          - android/app/build/outputs/**/*.apk
+          - android/launcher/build/outputs/**/*.aab
       publishing:
           google_play:
             # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
