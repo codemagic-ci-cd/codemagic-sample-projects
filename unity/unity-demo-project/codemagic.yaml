@@ -53,7 +53,6 @@ workflows:
               - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
               - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
               - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-              - other
           vars:
               PACKAGE_NAME: "com.domain.yourappname" # <-- Put your package name here e.g. com.domain.myapp
       triggering:
@@ -68,10 +67,7 @@ workflows:
       scripts:
           - name: Export Unity
             script: |
-              ./export_unity.sh android        
-          - name: Set Android SDK location
-            script: |
-              echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
+              ./export_unity.sh android
           - name: Set up keystore
             script: |
                   echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
@@ -84,12 +80,11 @@ workflows:
           - name: Build Android release
             script: |
               # Set environment variable so it can be used to increment build number in android/app/build.gradle
-              # Note that tracks can be specified when retrieving latest build number from Google Play, for example:
-              # export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-              export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
-              cd android && ./gradlew assembleRelease
+              export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+              cp -vr ./Gradle/* ./android
+              cd android && ./gradlew bundleRelease
       artifacts:
-          - android/app/build/outputs/**/*.apk
+          - android/launcher/build/outputs/**/*.aab
       publishing:
           google_play:
             # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
