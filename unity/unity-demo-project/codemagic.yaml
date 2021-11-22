@@ -53,7 +53,6 @@ workflows:
               - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
               - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
               - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-              - other
           vars:
               PACKAGE_NAME: "com.domain.yourappname" # <-- Put your package name here e.g. com.domain.myapp
       triggering:
