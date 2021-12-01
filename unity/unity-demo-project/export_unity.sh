@@ -30,9 +30,9 @@ else
 fi
 
 UNITY_PROJECT_PATH="./"
-UNITY_LOG_FILE_IOS="$UNITY_PROJECT_PATH/Logs/unity_build_ios.log"
-UNITY_LOG_FILE_ANDROID="$UNITY_PROJECT_PATH/Logs/unity_build_android.log"
-UNITY_LOG_FILE="$UNITY_PROJECT_PATH/Logs/unity_build.log"
+UNITY_LOG_FILE_IOS="${UNITY_PROJECT_PATH}Logs/unity_build_ios.log"
+UNITY_LOG_FILE_ANDROID="${UNITY_PROJECT_PATH}Logs/unity_build_android.log"
+UNITY_LOG_FILE="${UNITY_PROJECT_PATH}Logs/unity_build.log"
 
 echo "UNITY_PROJECT_PATH=$UNITY_PROJECT_PATH"
 echo "UNITY_LOG_FILE_IOS=$UNITY_LOG_FILE_IOS"
@@ -46,14 +46,14 @@ echo "UNITY LICENSE END"
 if [ $APP_TYPE = "ios" ]
 then
   echo "UNITY BUILD IOS START"
-  $UNITY_BIN -quit -batchmode -projectPath $UNITY_PROJECT_PATH -executeMethod BuildScript.BuildXcode -nographics -logfile $UNITY_LOG_FILE_IOS
+  $UNITY_BIN -quit -batchmode -projectPath $UNITY_PROJECT_PATH -executeMethod BuildScript.BuildXcode -nographics 2>&1 | tee $UNITY_LOG_FILE_IOS
   echo "UNITY BUILD IOS END"
 fi
 
 if [ $APP_TYPE = "android" ]
 then
   echo "UNITY BUILD ANDROID START"
-  $UNITY_BIN -quit -batchmode -projectPath $UNITY_PROJECT_PATH -executeMethod BuildScript.BuildAndroid -nographics -logfile $UNITY_LOG_FILE_ANDROID
+  $UNITY_BIN -quit -batchmode -projectPath $UNITY_PROJECT_PATH -executeMethod BuildScript.BuildAndroid -nographics 2>&1 | tee $UNITY_LOG_FILE_ANDROID
   "UNITY BUILD ANDROID END"
 fi
 
