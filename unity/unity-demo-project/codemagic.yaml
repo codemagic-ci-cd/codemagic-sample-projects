@@ -20,7 +20,7 @@ workflows:
           keychain initialize       
       - name: Export Unity
         script: |
-          ./export_unity.sh ios
+          python3 export_unity.py ios
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE
@@ -71,7 +71,7 @@ workflows:
           - name: Set build number and export Unity
             script: |
               export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-              ./export_unity.sh android        
+              python3 export_unity.py android        
       artifacts:
           - android/*.aab
       publishing:
