@@ -10,7 +10,8 @@ public static class BuildScript
     public static void BuildAll()
     {
         BuildAndroid();
-        BuildXcode();
+        BuildIos();
+        BuildWindows();
     }
 
     
@@ -92,8 +93,8 @@ public static class BuildScript
         Debug.Log("Built Android");
     }
 
-    [MenuItem("Build/Build Xcode")]
-    public static void BuildXcode()
+    [MenuItem("Build/Build iOS")]
+    public static void BuildIos()
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
         buildPlayerOptions.locationPathName = "ios";
@@ -104,6 +105,20 @@ public static class BuildScript
         Debug.Log("Building iOS");
         BuildPipeline.BuildPlayer(buildPlayerOptions);
         Debug.Log("Built iOS");
+    }
+
+    [MenuItem("Build/Build Windows")]
+    public static void BuildWindows()
+    {
+        BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+        buildPlayerOptions.locationPathName = "windows/" + Application.productName + ".exe";
+        buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+        buildPlayerOptions.options = BuildOptions.None;
+        buildPlayerOptions.scenes = GetScenes();
+
+        Debug.Log("Building StandaloneWindows64");
+        BuildPipeline.BuildPlayer(buildPlayerOptions);
+        Debug.Log("Built StandaloneWindows64");
     }
 
 
