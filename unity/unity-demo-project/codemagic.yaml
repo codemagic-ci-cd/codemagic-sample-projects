@@ -8,6 +8,8 @@ workflows:
         - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
         - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
+        UNITY_BIN: /Applications/Unity/Hub/Editor/2020.3.20f1/Unity.app/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildIos      
         UNITY_IOS_DIR: ios
         XCODE_PROJECT: "Unity-iPhone.xcodeproj"
         XCODE_SCHEME: "Unity-iPhone"
@@ -18,9 +20,12 @@ workflows:
       - name: Set up macOS keychain using Codemagic CLI 'keychain' command
         script: |
           keychain initialize       
-      - name: Export Unity
-        script: |
-          python3 export_unity.py ios
+      - name: Activate Unity License
+        script: | 
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+      - name: Build the Xcode project
+        script: | 
+          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics          
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE
@@ -40,42 +45,53 @@ workflows:
         - build/ios/ipa/*.ipa
         - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
-        app_store_connect:            
-            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         
-            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-            issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+      scripts:
+        - name: Deactivate Unity License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics    
+      app_store_connect:            
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY         
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
   unity-android-workflow:
       name: Unity Android Workflow
       max_build_duration: 120
       environment:
-          groups:
+        groups:
           # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-              - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
-              - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_ALIAS_PASSWORD, FCI_KEY_ALIAS_USERNAME)
-              - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-          vars:
-              PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
+          - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+          - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_ALIAS_PASSWORD, FCI_KEY_ALIAS_USERNAME)
+          - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+        vars:
+          UNITY_BIN: /Applications/Unity/Hub/Editor/2020.3.20f1/Unity.app/Contents/MacOS/Unity
+          BUILD_SCRIPT: BuildAndroid
+          PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
       triggering:
-          events:
-              - push
-              - tag
-              - pull_request
-          branch_patterns:
-              - pattern: develop
-                include: true
-                source: true
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: develop
+            include: true
+            source: true
       scripts:
-          - name: Set up keystore
-            script: |
-              echo $FCI_KEYSTORE | base64 --decode > /tmp/keystore.keystore            
-          - name: Set build number and export Unity
-            script: |
-              export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-              python3 export_unity.py android        
+        - name: Activate Unity License
+          script: | 
+            $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}      
+        - name: Set up keystore
+          script: |
+            echo $FCI_KEYSTORE | base64 --decode > /tmp/keystore.keystore            
+        - name: Set build number and export Unity
+          script: |
+            export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+            $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics        
       artifacts:
-          - android/*.aab
+        - android/*.aab
       publishing:
-          google_play:
-            # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
-            credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-            track: alpha   # Any default or custom track that is not in ‘draft’ status
+        scripts:
+          - name: Deactivate Unity License
+            script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+        google_play:
+          # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+          credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+          track: alpha   # Any default or custom track.
