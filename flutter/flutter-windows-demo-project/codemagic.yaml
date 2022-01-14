@@ -1,0 +1,73 @@
+workflows:
+  # This workflow is for a normal windows build consisting of the `.exe` file
+  windows-workflow:
+    name: Windows workflow
+    instance_type: windows_x2
+    max_build_duration: 60
+    environment:
+      flutter: master
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Configure for Windows
+        script: flutter config --enable-windows-desktop
+      - name: Build Windows
+        script: flutter build windows
+      - name: Export bundle
+        script: |
+          cd build/windows/runner/Release
+          7z a -r ../release.zip ./*
+    artifacts:
+      - build/windows/runner/*.zip
+    publishing:
+      email:
+        recipients:
+          - sbis1999@gmail.com
+  # This workflow is for a MSIX package build that can be published to Microsoft Store using Partner Center
+  windows-release-workflow:
+    name: Windows release workflow
+    instance_type: windows_x2
+    max_build_duration: 60
+    environment:
+      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+      groups:
+        - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
+      flutter: master
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Configure for Windows
+        script: flutter config --enable-windows-desktop
+      - name: Build Windows
+        script: flutter build windows
+      # 1. You should have `msix` dependency under `dev_dependencies` section in pubspec.yaml.
+      # 2. If you have defined the MSIX build configurations inside the pubspec.yaml, 
+      #    then you can just use "msix:create" without passing any parameters.
+      #    [NOTE: This project has the configurations defined in the pubspec.yaml file]
+      - name: Package Windows
+        script: flutter pub run msix:create
+      # If you don't have the configurations created inside pubspec.yaml, then you need 
+      # to pass the configurations as parameters. Use the following script in that case:
+      # ----------------------------------------------------------------------------------
+      # - name: Package Windows
+      #   script: |
+      #     flutter pub add msix
+      #     flutter pub run msix:create --display-name='<AppName>' --publisher-display-name='<PublisherName>' --publisher='<PublisherID>' --identity-name='<PublisherName.AppName>' --version=1.0.0.0 --logo-path='./logo/<file_name.png>' --store=true
+      # ----------------------------------------------------------------------------------
+    artifacts:
+      - build/windows/**/*.msix
+    publishing:
+      partner_center:
+        store_id: <STORE_ID> # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
+        tenant_id: <TENANT_ID> # <-- You will get `tenant_id` from the Azure AD Overview page.
+        client_id: <CLIENT_ID> # <-- You will also get `client_id` from the Azure AD Overview page.
+        client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
+      email:
+        recipients:
+          - email@example.com

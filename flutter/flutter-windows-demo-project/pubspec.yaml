@@ -1,0 +1,38 @@
+name: flutter_desktop_sample
+description: A new Flutter project.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  window_size:
+    git:
+      url: git://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  msix: ^2.6.5
+
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+msix_config:
+  display_name: <AppName>
+  publisher_display_name: <PublisherName>
+  identity_name: <PublisherName.AppName>
+  publisher: <PublisherID>
+  msix_version: 1.0.0.0
+  logo_path: ./logo/<file_name.png>
+  store: true
