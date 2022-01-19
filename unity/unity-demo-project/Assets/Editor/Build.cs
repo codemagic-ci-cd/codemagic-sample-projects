@@ -21,6 +21,7 @@ public static class BuildScript
     {
         
         PlayerSettings.Android.useCustomKeystore = true;
+        EditorUserBuildSettings.buildAppBundle = true;
 
         // Set bundle version
         var versionIsSet = int.TryParse(Environment.GetEnvironmentVariable("NEW_BUILD_NUMBER"), out int version);
