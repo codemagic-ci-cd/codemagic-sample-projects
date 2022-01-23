@@ -5,6 +5,7 @@
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
 * [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
+* [Flutter Windows sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-windows-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/status_badge.svg)](https://codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/latest_build)
 
 ## iOS (Native) Samples
 * [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/latest_build)
