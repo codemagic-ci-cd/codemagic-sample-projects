@@ -1,0 +1,32 @@
+workflows:
+  ios-cache-workflow:
+    name: iOS Cache Workflow
+    environment:
+      xcode: latest
+      cocoapods: default
+      vars:
+        XCODE_PROJECT: "XCRemoteCacheExample.xcodeproj"
+        XCODE_SCHEME: "XCRemoteCacheExample"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "main"
+          include: true
+          source: true
+    scripts:
+      - name: Setup XCRemoteCache
+        script: |
+          xcremotecache/xcprepare integrate --input "$XCODE_PROJECT" --mode producer --final-producer-target "$XCODE_SCHEME"
+      - name: Increment build number
+        script: |
+          #!/bin/sh
+          set -e
+          set -x
+          agvtool new-version -all $(($BUILD_NUMBER + 1))
+      - name: Build ipa for development
+        script: |
+          xcodebuild build -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" CODE_SIGN_INDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
