@@ -1,7 +1,7 @@
 # Codemagic Sample Projects
 
 ## Flutter Samples
-* [Flutter YAML sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-yaml-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/latest_build)
+* [Flutter YAML sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/latest_build)
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
 * [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
