@@ -1,0 +1,19 @@
+workflows:
+  macos-workflow:
+    name: macOS Workflow
+    environment:
+      vars:
+        XCODE_PROJECT: "macOS UITesting.xcodeproj"
+        XCODE_SCHEME: "macOS UITesting"
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Run UI and Unit tests
+        script: |
+          xcode-project run-tests \
+              --project "$XCODE_PROJECT" \
+              --scheme "$XCODE_SCHEME" \
+              --sdk macosx \
+              --test-xcargs "CODE_SIGNING_ALLOWED='no'" \
+              --output-dir build/macos/test
+        test_report: build/macos/test/*.xml
