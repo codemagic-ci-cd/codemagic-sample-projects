@@ -25,7 +25,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - sbis1999@gmail.com
+          - email@example.com
   # This workflow is for a MSIX package build that can be published to Microsoft Store using Partner Center
   windows-release-workflow:
     name: Windows release workflow
