@@ -14,13 +14,16 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
 
 
-  DesiredCapabilities capabilities = new DesiredCapabilities();
-	capabilities.setCapability("build", "your build name");
-	capabilities.setCapability("name", "your test name");
-	capabilities.setCapability("platformName", "Android");
-	capabilities.setCapability("deviceName", "Xperia Z5 Dual");
-	capabilities.setCapability("isRealMobile", true);
-	capabilities.setCapability("platformVersion","6");
+DesiredCapabilities capabilities = new DesiredCapabilities();
+capabilities.setCapability("platformName", "Android");
+capabilities.setCapability("deviceName", "Google Pixel 3");
+capabilities.setCapability("isRealMobile", true);
+capabilities.setCapability("platformVersion","10");
+capabilities.setCapability("app","lt://APP100202151634649275590734");
+capabilities.setCapability("deviceOrientation", "PORTRAIT");
+capabilities.setCapability("console",true);
+capabilities.setCapability("network",true);
+capabilities.setCapability("visual",true);
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {

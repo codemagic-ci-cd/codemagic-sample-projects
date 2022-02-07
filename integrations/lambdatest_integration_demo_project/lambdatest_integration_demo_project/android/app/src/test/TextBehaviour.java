@@ -22,13 +22,16 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public final class ChangeTextBehaviorLocalTest {
 
-  DesiredCapabilities capabilities = new DesiredCapabilities();
-	capabilities.setCapability("build", "your build name");
-	capabilities.setCapability("name", "your test name");
-	capabilities.setCapability("platformName", "Android");
-	capabilities.setCapability("deviceName", "Xperia Z5 Dual");
-	capabilities.setCapability("isRealMobile", true);
-	capabilities.setCapability("platformVersion","6");
+DesiredCapabilities capabilities = new DesiredCapabilities();
+capabilities.setCapability("platformName", "Android");
+capabilities.setCapability("deviceName", "Google Pixel 3");
+capabilities.setCapability("isRealMobile", true);
+capabilities.setCapability("platformVersion","10");
+capabilities.setCapability("app","lt://APP100202151634649275590734");
+capabilities.setCapability("deviceOrientation", "PORTRAIT");
+capabilities.setCapability("console",true);
+capabilities.setCapability("network",true);
+capabilities.setCapability("visual",true);
 
   public static final String STRING_TO_BE_TYPED = "Espresso";
 
