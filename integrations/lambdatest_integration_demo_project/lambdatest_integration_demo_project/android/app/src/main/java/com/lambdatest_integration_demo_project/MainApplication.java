@@ -13,6 +13,15 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
+
+  DesiredCapabilities capabilities = new DesiredCapabilities();
+	capabilities.setCapability("build", "your build name");
+	capabilities.setCapability("name", "your test name");
+	capabilities.setCapability("platformName", "Android");
+	capabilities.setCapability("deviceName", "Xperia Z5 Dual");
+	capabilities.setCapability("isRealMobile", true);
+	capabilities.setCapability("platformVersion","6");
+
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
