@@ -57,3 +57,13 @@ If you need to use a specific version of bundler as defined in the Gemfile.lock 
         - bundle exec fastlane beta
        
 ```
+
+## Artifacts
+
+To gather the .ipa and debug symbols from your build, add an the **artifacts** section to your codemagic.yaml as follows:
+
+```
+      artifacts:
+        - ./*.ipa
+        - ./*.dSYM.zip      
+```
