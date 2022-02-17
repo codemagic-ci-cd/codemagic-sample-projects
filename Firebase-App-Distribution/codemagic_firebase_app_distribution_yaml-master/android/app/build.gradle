@@ -49,9 +49,9 @@ signingConfigs {
                 keyPassword System.getenv()["FCI_KEY_PASSWORD"]
             } else {
                 storeFile file("/path/to/local/myreleasekey.keystore")
-                storePassword "password"
-                keyAlias "MyReleaseKey"
-                keyPassword "password"
+                storePassword System.getenv()["KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["KEY_ALIAS_USERNAME"]
+                keyPassword System.getenv()["KEY_ALIAS_PASSWORD"]
             }
         }
     }
