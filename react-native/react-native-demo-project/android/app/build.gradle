@@ -130,13 +130,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     // try to get build number from `LATEST_GOOGLE_PLAY_BUILD_NUMBER` env var. If not specified, then from `BUILD_NUMBER` env var, else 0
-    def latestGooglePlayBuildNumber = Integer.valueOf(System.env.LATEST_GOOGLE_PLAY_BUILD_NUMBER ?: System.env.BUILD_NUMBER ?: 0)
     defaultConfig {
         applicationId "com.cmreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode latestGooglePlayBuildNumber + 1
-        versionName "1.0" + String.valueOf(latestGooglePlayBuildNumber + 1)
+        versionName "1.0" )
     }
     splits {
         abi {
@@ -146,14 +145,23 @@ android {
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+signingConfigs {
+        release {
+            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["CM_KEY_ALIAS_USERNAME"]
+                keyPassword System.getenv()["CM_KEY_ALIAS_PASSWORD"]
+            } else {
+                storeFile file("/path/to/local/myreleasekey.keystore")
+                storePassword System.getenv()["KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["KEY_ALIAS_USERNAME"]
+                keyPassword System.getenv()["KEY_ALIAS_PASSWORD"]
+            }
         }
     }
+
+  
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
