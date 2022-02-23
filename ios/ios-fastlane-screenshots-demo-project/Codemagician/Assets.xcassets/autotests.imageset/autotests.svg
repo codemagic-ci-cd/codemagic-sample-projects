@@ -1,0 +1,245 @@
+<svg
+    version="1.1"
+    id="autotests"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    x="0px"
+    y="0px"
+    viewBox="0 0 600 360"
+    style="enable-background: new 0 0 600 360;"
+    xml:space="preserve"
+>
+    <filter id="dropshadow" height="150%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+        <feOffset dx="0" dy="4" result="offsetblur" />
+        <feComponentTransfer>
+            <feFuncA type="linear" slope="0.1" />
+        </feComponentTransfer>
+        <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+        </feMerge>
+    </filter>
+    <filter id="dropshadow-xs" height="150%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="6" />
+        <feOffset dx="0" dy="6" result="offsetblur" />
+        <feComponentTransfer>
+            <feFuncA type="linear" slope="0.1" />
+        </feComponentTransfer>
+        <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+        </feMerge>
+    </filter>
+    <style type="text/css">
+        .ds {
+            filter: url(#dropshadow);
+        }
+        .ds-xs {
+            filter: url(#dropshadow-xs);
+        }
+        #autotests .st0 {
+            fill-rule: evenodd;
+            clip-rule: evenodd;
+            fill: #e5e5e9;
+        }
+        #autotests .st1 {
+            fill: #fbfbfb;
+        }
+        #autotests .st2 {
+            opacity: 3e-2;
+            fill: #5d5d67;
+            enable-background: new;
+        }
+        #autotests .st3 {
+            opacity: 7e-2;
+            fill: #5d5d67;
+            enable-background: new;
+        }
+        #autotests .st4 {
+            fill: #ffffff;
+        }
+        #autotests .st5 {
+            fill: url(#autotests_SVGID_1_);
+        }
+        #autotests .st6 {
+            fill: #00ccff;
+        }
+        #autotests .st7 {
+            opacity: 6e-2;
+            fill: #5d5d67;
+            enable-background: new;
+        }
+        #autotests .st8 {
+            fill: url(#autotests_SVGID_2_);
+        }
+    </style>
+    <g id="autotests-ipad">
+        <path
+            id="autotests-ipad-bg"
+            class="st0"
+            d="M25.3,118.6c0-13.3,10.7-24,24-24h325.4c13.3,0,24,10.7,24,24v188.8c0,13.3-10.7,24-24,24H49.3
+		c-13.3,0-24-10.7-24-24C25.3,307.4,25.3,118.6,25.3,118.6z"
+        />
+        <path
+            id="autotests-screen_1_"
+            class="st1"
+            d="M50.3,100.2h323.4c11,0,20,9,20,20V306c0,11-9,20-20,20H50.3c-11,0-20-9-20-20V120.2
+		C30.3,109.2,39.3,100.2,50.3,100.2z"
+        />
+        <path
+            id="autotests-bg-swirl-big_1_"
+            class="st2"
+            d="M113.4,237.1c-72.6-12-63.9-41.9-83.1-60.2l0,129.1c0,11,9,20,20,20h323.4
+		c11,0,20-9,20-20l0-163c-11.8-0.2-25.6,0.4-41.6,1.9C266.1,152.9,220.7,254.9,113.4,237.1z"
+        />
+        <path
+            id="autotests-bg-swirl_3_"
+            class="st3"
+            d="M85.1,292.2c-31.7,0.3-46.5-7.6-54.8-18.9l0,32.7c0,11,9,20,20,20h323.4c11,0,20-9,20-20
+		l0-57.3c-21.1-8.3-59.1-17.5-117.6-19.4C171.7,225.9,179.4,291.2,85.1,292.2z"
+        />
+        <g id="autotests-icons_1_" class="ds-xs">
+            <path
+                class="st4"
+                d="M140.9,163.6H155c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-14.1c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C131.4,167.8,135.7,163.6,140.9,163.6z"
+            />
+            <path
+                class="st4"
+                d="M78.4,163.6h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5H78.4c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C68.9,167.8,73.2,163.6,78.4,163.6z"
+            />
+            <path
+                class="st4"
+                d="M329.1,122.1h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C319.6,126.3,323.8,122.1,329.1,122.1z"
+            />
+            <path
+                class="st4"
+                d="M266.6,122.1h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C257.1,126.3,261.3,122.1,266.6,122.1z"
+            />
+            <path
+                class="st4"
+                d="M204.1,122.1h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C194.6,126.3,198.8,122.1,204.1,122.1z"
+            />
+
+            <linearGradient
+                id="autotests_SVGID_1_"
+                gradientUnits="userSpaceOnUse"
+                x1="129.9927"
+                y1="917.2221"
+                x2="164.0767"
+                y2="905.5071"
+                gradientTransform="matrix(1 0 0 1 0 -776)"
+            >
+                <stop offset="0" style="stop-color: #f2ac3d;" />
+                <stop offset="1" style="stop-color: #e643f5;" />
+            </linearGradient>
+            <path
+                class="st5"
+                d="M130.9,128.3c0-5.5,4.5-10,10-10H155c5.5,0,10,4.5,10,10v13.5c0,5.5-4.5,10-10,10h-14.1c-5.5,0-10-4.5-10-10
+			V128.3z"
+            />
+            <path
+                class="st4"
+                d="M78.4,122.1h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5H78.4c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C68.9,126.3,73.2,122.1,78.4,122.1z"
+            />
+        </g>
+    </g>
+    <g id="autotests-done" class="ds">
+        <ellipse class="st6" cx="372.7" cy="98.6" rx="27.6" ry="27.6" />
+        <g>
+            <path class="st4" d="M367.5,107.3c0.4,0.4,0.9,0.7,1.5,0.7s1.1-0.2,1.5-0.7L369,106L367.5,107.3z" />
+            <path
+                class="st4"
+                d="M384.1,88.8c-0.8-0.7-2.1-0.7-2.8,0.2L369,103l-5.4-6.1c-0.7-0.8-2-0.9-2.8-0.2c-0.8,0.7-0.9,2-0.2,2.8
+			l6.9,7.8l1.5-1.3l1.5,1.3l13.8-15.7C385,90.8,385,89.5,384.1,88.8z"
+            />
+        </g>
+    </g>
+    <g id="autotests-phone">
+        <path
+            id="autotests-frame"
+            class="st0"
+            d="M412.5,76.6c0-13.3,10.7-24,24-24h91c13.3,0,24,10.7,24,24v230c0,13.3-10.7,24-24,24h-91
+		c-13.3,0-24-10.7-24-24V76.6z"
+        />
+        <path
+            id="autotests-screen"
+            class="st1"
+            d="M438.9,58.8h86.7c11,0,20,9,20,20v225.5c0,11-9,20-20,20h-86.7c-11,0-20-9-20-20V78.8
+		C418.9,67.8,427.9,58.8,438.9,58.8z"
+        />
+        <path
+            id="autotests-bg-swirl-big"
+            class="st2"
+            d="M447.8,219.8c-25.3-14.1-22.3-49.1-28.9-70.7l0,155.2c0,11,9,20,20,20h86.7c11,0,20-9,20-20
+		V109c-4.1-0.2-8.9,0.4-14.5,2.2C501.1,120.8,485.2,240.7,447.8,219.8z"
+        />
+        <path
+            id="autotests-bg-swirl"
+            class="st7"
+            d="M438,284.6c-11,0.4-16.2-8.9-19.1-22.1l0,41.8c0,11,9,20,20,20h86.7c11,0,20-9,20-20v-70.9
+		c-7.4-9.7-20.6-20.5-41-22.8C468.2,206.6,470.9,283.4,438,284.6z"
+        />
+        <g id="icons" class="ds-xs">
+            <path
+                class="st4"
+                d="M475.9,128.8H490c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-14.1c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C466.4,133.1,470.6,128.8,475.9,128.8z"
+            />
+            <path
+                class="st4"
+                d="M438.6,128.8h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C429.1,133.1,433.4,128.8,438.6,128.8z"
+            />
+            <path
+                class="st4"
+                d="M513.7,92.2h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C504.2,96.4,508.5,92.2,513.7,92.2z"
+            />
+
+            <linearGradient
+                id="autotests_SVGID_2_"
+                gradientUnits="userSpaceOnUse"
+                x1="465.1329"
+                y1="887.3423"
+                x2="499.2179"
+                y2="875.6277"
+                gradientTransform="matrix(1 0 0 1 0 -776)"
+            >
+                <stop offset="0" style="stop-color: #f2ac3d;" />
+                <stop offset="1" style="stop-color: #e643f5;" />
+            </linearGradient>
+            <path
+                class="st8"
+                d="M466.1,98.4c0-5.5,4.5-10,10-10h14.1c5.5,0,10,4.5,10,10v13.5c0,5.5-4.5,10-10,10h-14.1c-5.5,0-10-4.5-10-10
+			V98.4z"
+            />
+            <path
+                class="st4"
+                d="M438.6,92.2h13.5c5.2,0,9.5,4.3,9.5,9.5v13.5c0,5.2-4.3,9.5-9.5,9.5h-13.5c-5.2,0-9.5-4.3-9.5-9.5v-13.5
+			C429.1,96.4,433.4,92.2,438.6,92.2z"
+            />
+        </g>
+    </g>
+    <g id="done_1_" class="ds">
+        <ellipse
+            transform="matrix(0.1934 -0.9811 0.9811 0.1934 385.1431 582.0898)"
+            class="st6"
+            cx="546.6"
+            cy="56.8"
+            rx="27.6"
+            ry="27.6"
+        />
+        <path
+            class="st4"
+            d="M558.1,47c-0.8-0.7-2.1-0.7-2.8,0.2l-12.3,14l-5.4-6.1c-0.7-0.8-2-0.9-2.8-0.2c-0.8,0.7-0.9,2-0.2,2.8l6.9,7.8
+		c0.4,0.4,0.9,0.7,1.5,0.7s1.1-0.2,1.5-0.7l-1.5-1.3l0,0l1.5,1.3l13.8-15.7C559,49,558.9,47.7,558.1,47z"
+        />
+    </g>
+</svg>
