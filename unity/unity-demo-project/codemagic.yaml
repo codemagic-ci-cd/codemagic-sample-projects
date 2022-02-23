@@ -80,7 +80,7 @@ workflows:
             $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}      
         - name: Set up keystore
           script: |
-            echo $FCI_KEYSTORE | base64 --decode > /tmp/keystore.keystore            
+            echo $FCI_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/keystore.keystore            
         - name: Set build number and export Unity
           script: |
             export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
