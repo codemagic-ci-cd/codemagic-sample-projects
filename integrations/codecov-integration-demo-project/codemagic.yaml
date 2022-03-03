@@ -1,0 +1,75 @@
+workflows:
+  native-android:
+    name: Native Android
+    instance_type: mac_pro
+    environment:
+      groups:
+        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+          # CM_KEYSTORE <-- Put your keystore file here
+          # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+          # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
+          # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
+        - codecov_credentials # <-- (Includes Codecov token)
+        - gcloud_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+        - other
+      vars:
+        CM_KEYSTORE_PATH: /tmp/keystore.keystore
+        PACKAGE_NAME: "io.codemagic.yaml" # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.
+      node: v16.11.1
+      xcode: 13.2
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Set up keystore
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+          # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
+          # storePassword=$CM_KEYSTORE_PASSWORD
+          # keyPassword=$CM_KEY_ALIAS_PASSWORD
+          # keyAlias=$CM_KEY_ALIAS_USERNAME
+          # storeFile=/tmp/keystore.keystore
+          # EOF
+      - name: Build Android debug APK
+        script: |
+          ./gradlew assembleDebug
+      - name: Build Android test APK
+        script: |
+          ./gradlew assembleAndroidTest
+      - name: Build Android production release
+        script: |
+          ./gradlew assembleRelease
+      - name: Running to test
+        script: |
+          ./gradlew test
+        test_report: app/build/test-results/**/*.xml
+      - name: Uploading to Codecov
+        script: |
+          curl -Os https://uploader.codecov.io/latest/macos/codecov
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN} -f "app/build/test-results/**/*.xml"
+    artifacts:
+      - app/build/outputs/**/*.apk
+      - app/build/test-results/**/*.xml
+    publishing:
+      email:
+        recipients:
+          - user1@example.com
+          - user2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:                          # For publishing your Android app to Google Play
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha                      # Name of the track: internal, alpha, beta, production
