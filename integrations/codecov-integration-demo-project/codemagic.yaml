@@ -9,7 +9,8 @@ workflows:
           # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
           # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
           # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
-        - codecov_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+        - codecov_credentials # <-- (Includes Codecov token)
+        - gcloud_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
         - other
       vars:
         CM_KEYSTORE_PATH: /tmp/keystore.keystore
