@@ -1,7 +1,6 @@
 workflows:
     ios-automatic-code-signing:
       name: iOS automatic code signing
-      instance_type: mac_pro
       working_directory: ios/ios-automatic-code-signing-demo-project
       environment:
         vars:
@@ -216,7 +215,6 @@ workflows:
           - bundle exec fastlane beta  
     flutter-yaml-ios:
       name: Flutter yaml iOS
-      instance_type: mac_pro
       working_directory: flutter/flutter-android-and-ios-yaml-demo-project 
       max_build_duration: 120
       environment:
@@ -440,7 +438,6 @@ workflows:
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
-        instance_type: mac_pro
         working_directory: react-native/react-native-demo-project
         environment:
             vars:
