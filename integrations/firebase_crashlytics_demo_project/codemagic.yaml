@@ -1,0 +1,59 @@
+workflows:
+  ios-release:
+    name: iOS Firebase Crashlytics
+    max_build_duration: 120
+    environment:
+      groups:
+      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - appstore_connect # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.example.firebaseCrash"
+      flutter: stable
+      xcode: 13.2
+      cocoapods: default
+    scripts:
+      - name: Get Flutter Packages
+        script: |
+          cd . && flutter packages pub get
+      - name: Pod install
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Add certs to keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist    
+    artifacts: 
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      scripts:
+        - name: Crshylitics
+          script: |
+           echo "Find build artifacts"
+            dsymPath=$(find $CM_BUILD_DIR/build/ios/archive/Runner.xcarchive $CM_BUILD_DIR/build/ios/archive/Runner.xcarchive -name "*.dSYM.zip" | head -1)
+            if [[ -z ${dsymPath} ]]
+            then
+              echo "No debug symbols were found, skip publishing to Firebase Crashlytics"
+            else
+              echo "Publishing debug symbols from $dsymPath to Firebase Crashlytics"
+              ls -d -- ios/Pods/*
+              $CM_BUILD_DIR/ios/Pods/FirebaseCrashlytics/upload-symbols -gsp ios/Runner/GoogleService-Info.plist -p ios $dsymPath
+            fi
