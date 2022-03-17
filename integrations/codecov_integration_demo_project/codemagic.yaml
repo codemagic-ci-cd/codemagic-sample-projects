@@ -45,7 +45,7 @@ workflows:
         script: |
           cd . && flutter test
         ignore_failure: true    
-      - name: Testing
+      - name: Collecting code coverage and storing in a location
         script: |
            HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov
            mkdir -p test-results 
@@ -54,7 +54,7 @@ workflows:
            echo "Code Coverage: ${code_coverage}% " | bc); then { echo "uploading to codecov" }; fi 
            if (( $(echo "$code_coverage < $CODE_COVERAGE_TARGET" | bc) )); then { echo "code coverage is less than expected" && exit 1; }; fi                  
         test_report: test-results/flutter.json  
-      - name: Codecov
+      - name: Codecov upload
         script: |
            #!/bin/bash
            curl -Os https://uploader.codecov.io/latest/macos/codecov
