@@ -64,3 +64,12 @@ For Windows:
 ```
 
 
+## Getting help and support 
+
+Click the URL below to join the Codemagic Slack Community:
+
+https://slack.codemagic.io/
+
+Customers who have enabled billing can use the in-app chat widget to get support.
+
+Need a business plan with 3 Mac Pro concurrencies, unlimited build minutes, unlimited team seats and business priorty support? Click [here](https://codemagic.io/pricing/) for details.
