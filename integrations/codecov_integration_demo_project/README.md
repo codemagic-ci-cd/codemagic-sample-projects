@@ -1,17 +1,14 @@
-# codecov_integration_demo_project
+# codecov integration demo project
 
 
 
 ## Getting Started
 
-[Codecov](https://about.codecov.io/) Codecov is a tool that is used to measure the test coverage of your codebase. 
+[Codecov](https://about.codecov.io/) Codecov is a tool that is used to measure the test coverage of your codebase.
 
-It is possible to run test suite and collect code coverage via **lcov** and upload the results to **Codecov** directly from Codemagic yaml file.
+It is possible to run a test suite and collect code coverage via **lcov** and upload the results to **Codecov** directly from your codemagic.yaml file.
 
-
-To collect code coverage and set checks if coverage rate is less or more than expected and store test results in a location, the following script is needed:
-
-
+To collect code coverage and set checks if the coverage rate is less or more than expected and store test results in a location, the following script is needed:
 ```
  - name: Collecting code coverage and storing in a location
         script: |
@@ -23,10 +20,7 @@ To collect code coverage and set checks if coverage rate is less or more than ex
            if (( $(echo "$code_coverage < $CODE_COVERAGE_TARGET" | bc) )); then { echo "code coverage is less than expected" && exit 1; }; fi                  
         test_report: test-results/flutter.json  
 ```
-
-
-After successfully passing this stage, Codecov upload comes. The following script is required to install the Codecov uploader and push the results to your Codecov account:
-
+The next step is to upload the coverage results to Codecov. The following script is required to install the Codecov uploader and push the results to your Codecov account:
 ```
     - name: Codecov upload
     script: |
@@ -35,8 +29,7 @@ After successfully passing this stage, Codecov upload comes. The following scrip
         chmod +x codecov
         ./codecov -t ${CODECOV_TOKEN} -f "test-results/flutter.json" 
 ```
-
-Codecov allows you to upload from different machines types: macos, linux and windows:
+Codecov allows you to upload from different machines types: `macos`, `linux` and `windows`:
 
 For Mac:
 ```
