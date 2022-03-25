@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion rootProject.buildToolsVersion
+    defaultConfig {
+        applicationId "com.example.android.testing.espresso.BasicSample"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 259
+        versionName "2.2.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+    signingConfigs {
+        release {
+                if (System.getenv()["CI"]) {
+                    storeFile file('/tmp/keystore.keystore')
+                    storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
+                    keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
+                    keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
+                } else {
+                    storeFile file("../../keys/codemagic.keystore")
+                    storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
+                    keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
+                    keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
+                }
+        }
+    }
+    buildTypes {
+        release {
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    // App dependencies
+    implementation 'androidx.annotation:annotation:' + rootProject.androidxAnnotationVersion;
+    implementation 'com.google.guava:guava:' + rootProject.guavaVersion
+
+    // Testing-only dependencies
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    androidTestImplementation 'androidx.test:core:' + rootProject.coreVersion
+    androidTestImplementation 'androidx.test:core-ktx:' + rootProject.coreVersion
+    androidTestImplementation 'androidx.test.ext:junit:' + rootProject.extJUnitVersion
+    androidTestImplementation 'androidx.test.ext:junit-ktx:' + rootProject.extJUnitVersion
+    androidTestImplementation 'androidx.test:runner:' + rootProject.runnerVersion
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + rootProject.espressoVersion
+
+    testImplementation 'androidx.test:core:' + rootProject.coreVersion;
+    testImplementation 'androidx.test.ext:junit:' + rootProject.extJUnitVersion
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:' + rootProject.robolectricVersion
+    testImplementation 'androidx.test.espresso:espresso-core:' + rootProject.espressoVersion
+    testImplementation 'androidx.test.espresso:espresso-intents:' + rootProject.espressoVersion
+    testImplementation 'androidx.test.ext:truth:' + rootProject.extTruthVersion
+}
