@@ -1,0 +1,163 @@
+# Check out https://docs.codemagic.io/yaml/building-a-react-native-app/ for more information
+# Please review and update values
+
+workflows:
+    react-native-android:
+        name: React Native Android
+        max_build_duration: 120
+        instance_type: linux_x2
+        environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+              - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD)
+              - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+            vars:
+                PACKAGE_NAME: "io.codemagic.expoapp" # <-- Put your package name here e.g. com.domain.myapp
+            node: 16.14.2
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: develop
+                  include: true
+                  source: true
+        scripts:
+            - name: Install dependencies and Expo CLI, and eject app
+              script: |
+                yarn install
+                yarn global add expo-cli
+                expo eject
+            - name: Set up app/build.gradle
+              script: |
+                mv ./support-files/build.gradle android/app
+            - name: Set Android SDK location
+              script: |
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
+            - name: Set up keystore
+              script: |
+                echo $CM_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/keystore.keystore            
+            - name: Build Android release
+              script: |
+                # Set environment variable so it can be used to increment build number in android/app/build.gradle
+                # Note that tracks can be specified when retrieving latest build number from Google Play, for example:
+                # export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+                
+                export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+
+                # Use package.json 'version' property to set the 'versionName' propery in app/build.gradle
+                export PACKAGE_VERSION=$(cat $FCI_BUILD_DIR/package.json | jq -r '.version')
+
+                # Create an application bundle (.aab)
+                cd android && ./gradlew bundleRelease
+        artifacts:
+            - android/app/build/outputs/**/*.aab
+        publishing:
+            # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+            email:
+                recipients:
+                    - user_1@example.com
+                    - user_2@example.com
+                notify:
+                  success: true     # To not receive a notification when a build succeeds
+                  failure: false    # To not receive a notification when a build fails
+            slack: 
+              # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+              channel: '#channel-name'
+              notify_on_build_start: true   # To receive a notification when a build starts
+              notify:
+                success: true               # To not receive a notification when a build succeeds
+                failure: false              # To not receive a notification when a build fails
+            google_play:
+              # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+              credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+              track: alpha   # Any default or custom track that is not in ‘draft’ status
+    react-native-ios:
+        name: React Native iOS
+        max_build_duration: 120
+        instance_type: mac_pro
+        environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+                - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+                  # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
+                  # https://appstoreconnect.apple.com/access/api
+            vars:
+                XCODE_WORKSPACE: "ExpoApp.xcworkspace" # <-- Put the name of your Xcode workspace here
+                XCODE_SCHEME: "ExpoApp" # <-- Put the name of your Xcode scheme here
+                BUNDLE_ID: "io.codemagic.expoapp" # <-- Put your Bundle Id here e.g com.domain.myapp
+                APP_STORE_APP_ID: 1616629701 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+            node: 16.14.2
+            xcode: 13.1
+            cocoapods: default
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: develop
+                  include: true
+                  source: true
+        scripts:
+            - name: Install dependencies, Expo CLI and eject app
+              script: |
+                yarn install
+                yarn global add expo-cli
+                expo eject
+            - name: Set Info.plist values
+              script: |
+                PLIST=$FCI_BUILD_DIR/$XCODE_SCHEME/Info.plist
+                PLIST_BUDDY=/usr/libexec/PlistBuddy
+                $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install
+            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+              script: |
+                keychain initialize
+            - name: Fetch signing files
+              script: |
+                # For information about Codemagic CLI commands visit: https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/README.md
+                # For details about the --type paramater below - https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/fetch-signing-files.md#--typeios_app_adhoc--ios_app_development--ios_app_inhouse--ios_app_store--mac_app_development--mac_app_direct--mac_app_store--mac_catalyst_app_development--mac_catalyst_app_direct--mac_catalyst_app_store--tvos_app_adhoc--tvos_app_development--tvos_app_inhouse--tvos_app_store
+                app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+            - name: Use system default keychain
+              script: |
+                keychain add-certificates
+            - name: Increment build number
+              script: |
+                cd $FCI_BUILD_DIR/ios
+                agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles --warn-only
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" 
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+          # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+          email:
+            recipients:
+              - user_1@example.com
+              - user_2@example.com
+            notify:
+              success: true     # To not receive a notification when a build succeeds
+              failure: false    # To not receive a notification when a build fails
+          slack: 
+            # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+            channel: '#channel-name'
+            notify_on_build_start: true   # To receive a notification when a build starts
+            notify:
+              success: true               # To not receive a notification when a build succeeds
+              failure: false              # To not receive a notification when a build fails
+          app_store_connect:                 
+            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+            issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+    
