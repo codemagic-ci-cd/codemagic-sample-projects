@@ -10,8 +10,8 @@ workflows:
                 - emulatorwtf # <-- (Includes EW_API_TOKEN)
             vars:
                 # Set up paths to application binary and test package 
-                EW_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
-                EW_TEST_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+                EW_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
+                EW_TEST_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
             node: latest
             xcode: 12.2
         triggering:
@@ -26,12 +26,12 @@ workflows:
         scripts:
             - name: Set Android SDK location
               script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/local.properties"
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
             - name: Set up keystore
               script: |
                     echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
                     # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-                    # cat >> "$FCI_BUILD_DIR/key.properties" <<EOF
+                    # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
                     # storePassword=$CM_KEYSTORE_PASSWORD
                     # keyPassword=$CM_KEY_ALIAS_PASSWORD
                     # keyAlias=$CM_KEY_ALIAS_USERNAME
