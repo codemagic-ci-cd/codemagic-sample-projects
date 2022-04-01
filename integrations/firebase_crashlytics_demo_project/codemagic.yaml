@@ -45,7 +45,7 @@ workflows:
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
       scripts:
-        - name: Crshylitics
+        - name: Crashlytics
           script: |
            echo "Find build artifacts"
             dsymPath=$(find $CM_BUILD_DIR/build/ios/archive/Runner.xcarchive -name "*.dSYM" | head -1)
