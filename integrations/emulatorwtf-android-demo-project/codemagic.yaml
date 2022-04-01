@@ -1,0 +1,52 @@
+# Check out https://docs.codemagic.io/getting-started/yaml/for more information
+
+workflows:
+    native-android:
+        name: Native Android
+        instance_type: mac_pro
+        environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+                - emulatorwtf # <-- (Includes EW_API_TOKEN)
+            vars:
+                # Set up paths to application binary and test package 
+                EW_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
+                EW_TEST_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+            node: latest
+            xcode: 12.2
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: develop
+                  include: true
+                  source: true
+        scripts:
+            - name: Set Android SDK location
+              script: |
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+            - name: Set up keystore
+              script: |
+                    echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+                    # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+                    # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
+                    # storePassword=$CM_KEYSTORE_PASSWORD
+                    # keyPassword=$CM_KEY_ALIAS_PASSWORD
+                    # keyAlias=$CM_KEY_ALIAS_USERNAME
+                    # storeFile=/tmp/keystore.keystore
+                    # EOF
+            - name: Build Android debug APK
+              script: |
+                ./gradlew assembleDebug
+            - name: Build Android test APK
+              script: |
+                ./gradlew assembleAndroidTest
+            - name: Run tests with emulator.wtf
+              script: |
+                ew-cli --app $EW_APK_PATH --test $EW_TEST_APK_PATK
+              test_results: results/**/*.xml
+        artifacts:
+            - app/build/outputs/**/*.apk
+            - results/**/logcat.txt
