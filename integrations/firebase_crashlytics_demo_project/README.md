@@ -18,7 +18,7 @@ dependencies:
   firebase_crashlytics: ^2.5.2
 ```
 
-As soon as your build finishes successfully, debug symbols are generated, however if they need them to be present in the **Codemagic UI**, then the following path needs to be configured in **codemagic.yaml** under the artifacts section:
+As soon as your build finishes successfully, debug symbols are generated.  However, if you want them to be displayed in the **Codemagic UI** on the build page, then the following path needs to be configured in **codemagic.yaml** under the artifacts section:
 ```
  - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 ```
