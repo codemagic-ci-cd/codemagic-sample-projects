@@ -1,0 +1,70 @@
+workflows:
+  react-native-ios:
+        name: React Native iOS
+        max_build_duration: 120
+        instance_type: mac_pro
+        environment:
+            groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+              - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+                # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
+                # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+                # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
+              - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+              - sentry_credentials #  <-- (Includes Sentry access token, Organization and Project names)
+              - other       
+            node: 14.16.1
+            xcode: latest
+            cocoapods: default
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+                npm install --save @sentry/react-native
+            - name: Install CocoaPods dependencies
+              script: |      
+                cd ios 
+                pod install
+            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+              script: |
+                keychain initialize
+            - name: Increment build number
+              script: |
+                #!/bin/sh
+                set -e
+                set -x
+                cd $FCI_BUILD_DIR/ios
+                # agvtool new-version -all $(($BUILD_NUMBER + 1))
+                agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+            - name: Fetch signing files
+              script: |
+                # For information about Codemagic CLI commands visit: https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/README.md
+                # For details about the --type paramater below - https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/fetch-signing-files.md#--typeios_app_adhoc--ios_app_development--ios_app_inhouse--ios_app_store--mac_app_development--mac_app_direct--mac_app_store--mac_catalyst_app_development--mac_catalyst_app_direct--mac_catalyst_app_store--tvos_app_adhoc--tvos_app_development--tvos_app_inhouse--tvos_app_store
+                app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_ADHOC  --create
+            - name: Use system default keychain
+              script: |
+                keychain add-certificates
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles  --project="ios/codemagic_react_native.xcodeproj"
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa --workspace "$XCODE_WORKSPACE"  --scheme "$XCODE_SCHEM" 
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+           scripts:
+               - name: Sntry Upload
+                 script: | 
+                     echo "Find build artifacts"
+                     dsymPath=$(find $CM_BUILD_DIR/build/ios/xcarchive/*.xcarchive -name "*.dSYM" | head -1)
+                     if [[ -z ${dsymPath} ]]
+                     then
+                       echo "No debug symbols were found, skip publishing to Sentry"
+                     else
+                       echo "Publishing debug symbols from $dsymPath to Sentry"
+                       sentry-cli --auth-token $SENTRY_ACCESS_TOKEN upload-dif --org $SENTRY_ORGANIZATION_NAME --project $SENTRY_PROJECT_NAME $dsymPath
+                     fi
