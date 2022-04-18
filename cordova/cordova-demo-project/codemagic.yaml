@@ -13,12 +13,12 @@ workflows:
         XCODE_WORKSPACE: "platforms/ios/HelloCordova.xcworkspace" # <-- Put the name of your workspace here.
         XCODE_SCHEME: "HelloCordova" # <-- Put the name of your scheme here.       
         BUNDLE_ID: "io.codemagic.cordova" # <-- Put your Bundle Id here.
-      xcode: 12.4
-      node: 12
+      xcode: latest
+      node: v16.11.1
       npm: 6
     cache:
       cache_paths:
-        - $FCI_BUILD_DIR/node_modules
+        - $CM_BUILD_DIR/node_modules
     scripts:
       - name: Install dependencies
         script: |
@@ -109,7 +109,7 @@ workflows:
       npm: 6        
     cache:
       cache_paths:
-        - $FCI_BUILD_DIR/node_modules
+        - $CM_BUILD_DIR/node_modules
     scripts:
       - name: Install dependencies
         script: |

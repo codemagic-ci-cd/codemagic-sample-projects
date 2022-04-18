@@ -5,11 +5,11 @@ workflows:
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_PASSWORD, FCI_KEY_ALIAS)
-          # FCI_KEYSTORE <-- Put your keystore file here
-          # FCI_KEYSTORE_PASSWORD <-- Put your keystore password here
-          # FCI_KEY_PASSWORD <-- Put your keystore alias password here
-          # FCI_KEY_ALIAS <-- Put your keystore alias username here
+        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
+          # CM_KEYSTORE <-- Put your keystore file here
+          # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+          # CM_KEY_PASSWORD <-- Put your keystore alias password here
+          # CM_KEY_ALIAS <-- Put your keystore alias username here
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
         - codecov_credentials # <-- Codecov token
         - other
@@ -24,9 +24,9 @@ workflows:
     scripts:
       - name: Set up key properties
         script: |
-          echo $FCI_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+          echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
           # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-          # cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
+          # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
           # storePassword=$FCI_KEYSTORE_PASSWORD
           # keyPassword=$FCI_KEY_PASSWORD
           # keyAlias=$FCI_KEY_ALIAS
@@ -50,7 +50,7 @@ workflows:
            HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov
            mkdir -p test-results 
            flutter test --coverage --machine > test-results/flutter.json  
-           code_coverage=$(lcov --list $FCI_BUILD_DIR/coverage/lcov.info | sed -n "s/.*Total:|\(.*\)%.*/\1/p")
+           code_coverage=$(lcov --list $CM_BUILD_DIR/coverage/lcov.info | sed -n "s/.*Total:|\(.*\)%.*/\1/p")
            echo "Code Coverage: ${code_coverage}% " | bc); then { echo "uploading to codecov" }; fi 
            if (( $(echo "$code_coverage < $CODE_COVERAGE_TARGET" | bc) )); then { echo "code coverage is less than expected" && exit 1; }; fi                  
         test_report: test-results/flutter.json  

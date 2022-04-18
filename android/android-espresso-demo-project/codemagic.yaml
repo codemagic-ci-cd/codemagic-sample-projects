@@ -25,14 +25,14 @@ workflows:
                 - other
             vars:
                 # Set up paths to application binary and test package 
-                AWS_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
-                AWS_TEST_APK_PATH: "$FCI_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+                AWS_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/debug/app-debug.apk"
+                AWS_TEST_APK_PATH: "$CM_BUILD_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
                 # Specify application and test types
                 AWS_APP_TYPE: "ANDROID_APP" # Type of the main app that is being tested. See more about `--type` flag at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/create-upload.html
                 AWS_TEST_PACKAGE_TYPE: "INSTRUMENTATION_TEST_PACKAGE" # Type of the test package that is being uploaded. See more about `--type` flag at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/create-upload.html
                 AWS_TEST_TYPE: "INSTRUMENTATION" # See more about `--test` flag `type` option at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/schedule-run.html  
-            node: latest
-            xcode: 12.2
+            node: v16.11.1
+            xcode: latest
         triggering:
             events:
                 - push
@@ -55,12 +55,12 @@ workflows:
                 EOF
             - name: Set Android SDK location
               script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/local.properties"
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
             - name: Set up keystore
               script: |
                     echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
                     # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-                    # cat >> "$FCI_BUILD_DIR/key.properties" <<EOF
+                    # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
                     # storePassword=$CM_KEYSTORE_PASSWORD
                     # keyPassword=$CM_KEY_ALIAS_PASSWORD
                     # keyAlias=$CM_KEY_ALIAS_USERNAME
@@ -79,7 +79,7 @@ workflows:
               script: |
                 set -e
                 set -x
-                export AWS_RESULT=$(cat $FCI_BUILD_DIR/.scripts/test-result.json | jq -r '.run.result')
+                export AWS_RESULT=$(cat $CM_BUILD_DIR/.scripts/test-result.json | jq -r '.run.result')
                 if [ $AWS_RESULT != "PASSED" ] 
                 then
                   echo "AWS tests did not pass, the result was $AWS_RESULT"

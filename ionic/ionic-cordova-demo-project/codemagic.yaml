@@ -14,8 +14,8 @@ workflows:
           - other
       vars:      
         BUNDLE_ID: "io.codemagic.ioniccordova" # <-- Put your Bundle Id here 
-      xcode: 12.4
-      node: 12
+      xcode: latest
+      node: v16.11.1
       npm: 6
     cache:
       cache_paths:
@@ -111,7 +111,7 @@ workflows:
       npm: 6        
     cache:
       cache_paths:
-        - $FCI_BUILD_DIR/node_modules
+        - $CM_BUILD_DIR/node_modules
     scripts:
       - name: Install dependencies
         script: |

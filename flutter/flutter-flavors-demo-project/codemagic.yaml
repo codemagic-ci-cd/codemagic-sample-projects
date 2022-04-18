@@ -19,7 +19,7 @@ workflows:
         BUNDLE_ID: _
         ENTRY_POINT: _
       flutter: 2.0.5
-      xcode: 12.5
+      xcode: latest
       cocoapods: default
     triggering:
       events:

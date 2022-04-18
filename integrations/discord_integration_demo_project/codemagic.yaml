@@ -31,17 +31,17 @@ workflows:
             -validity 10000
       - name: set up local properties
         script: |
-          echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get packages and build debug apk
         script: |          
           flutter packages pub get && flutter build apk --debug
       - name: Create a changelog
         script: |
-            if [[ -z ${FCI_PREVIOUS_COMMIT} ]]
+            if [[ -z ${CM_PREVIOUS_COMMIT} ]]
             then
               echo "No finished builds found to generate changelog" | tee release_notes.txt
             else
-              echo "$(git-changelog generate --previous-commit $FCI_PREVIOUS_COMMIT)" | tee release_notes.txt
+              echo "$(git-changelog generate --previous-commit $CM_PREVIOUS_COMMIT)" | tee release_notes.txt
             fi      
     artifacts:
       - build/**/outputs/**/*.apk
@@ -54,19 +54,19 @@ workflows:
         script: |
           set -ex
 
-          APP_LINK=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name=="app.apk") | .url')
+          APP_LINK=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name=="app.apk") | .url')
         
           # Get first 7 digits of commit number
-          COMMIT=$(echo "${FCI_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+          COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
 
           # Get commit message
-          COMMIT_MESSAGE=$(git log --format=%B -n 1 $FCI_COMMIT)
+          COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
 
           # Get commit author
-          AUTHOR=$(git show -s --format='%ae' $FCI_COMMIT)
+          AUTHOR=$(git show -s --format='%ae' $CM_COMMIT)
 
           curl -H "Content-Type: multipart/form-data" \
-          -F 'payload_json={"username" : "codemagic-bot", "content": "**Commit:** `'"$COMMIT"'`\n\n**Commit message:** '"$COMMIT_MESSAGE"'\n\n**Branch:** '"$FCI_BRANCH"'\n\n**Author:** '"$AUTHOR"'\n\n**Artifacts: **\n\n'"$APP_LINK"'\n\n"}' \
+          -F 'payload_json={"username" : "codemagic-bot", "content": "**Commit:** `'"$COMMIT"'`\n\n**Commit message:** '"$COMMIT_MESSAGE"'\n\n**Branch:** '"$CM_BRANCH"'\n\n**Author:** '"$AUTHOR"'\n\n**Artifacts: **\n\n'"$APP_LINK"'\n\n"}' \
           -F "file1=@release_notes.txt" \
           $WEBHOOK_URL
         
