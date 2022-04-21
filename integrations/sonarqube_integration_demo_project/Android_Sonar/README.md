@@ -17,7 +17,7 @@ plugins {
 }
 ```
 
-Let’s define the build pipeline script in the codemagic.yaml file for both the Android project.
+Let’s define the build pipeline script in the codemagic.yaml file for the Android project.
 
 #### Android Project
 ```
@@ -53,3 +53,21 @@ workflows:
 Once the build is successful, you can check your code analysis on SonarQube UI. 
 
 ![](https://blog.codemagic.io/uploads/2022/04/aws_3.png)
+
+### Automatically detecting pull requests
+
+For SonarQube to automatically detect pull requests when using Codemagic, you need to add an event in the triggering section of your `codemagic.yaml` file as shown in the following snippet:
+```
+    triggering:
+      events:
+        - pull_request
+```
+For **triggering** to work, you also need to set up [webhook](https://docs.codemagic.io/configuration/webhooks/) between Codemagic and your DevOps platform (Bitbucket, Github, etc.).
+
+### Caching the .sonar folder
+Caching the `.sonar` folder would save build time on subsequent analyses. For this, add the following snippet to your `codemagic.yaml` file:
+```
+    cache:
+      cache_paths:
+        - ~/.sonar
+```
