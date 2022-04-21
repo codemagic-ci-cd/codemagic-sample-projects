@@ -16,6 +16,7 @@ workflows:
             node: 14.16.1
             xcode: latest
             cocoapods: default
+            XCODE_PROJECT: "ios/codemagic_react_native.xcodeproj"
         scripts:
             - name: Install npm dependencies
               script: |
@@ -30,7 +31,6 @@ workflows:
                 keychain initialize
             - name: Increment build number
               script: |
-                #!/bin/sh
                 set -e
                 set -x
                 cd $FCI_BUILD_DIR/ios
@@ -46,7 +46,7 @@ workflows:
                 keychain add-certificates
             - name: Set up code signing settings on Xcode project
               script: |
-                xcode-project use-profiles  --project="ios/codemagic_react_native.xcodeproj"
+                xcode-project use-profiles  --project=$XCODE_PROJECT
             - name: Build ipa for distribution
               script: |
                 xcode-project build-ipa --workspace "$XCODE_WORKSPACE"  --scheme "$XCODE_SCHEM" 
