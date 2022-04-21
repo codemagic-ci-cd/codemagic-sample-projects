@@ -1,0 +1,73 @@
+workflows:
+  ios-workflow:
+    name: ios_workflow
+    instance_type: mac_pro
+    cache:
+      cache_paths:
+        - ~/.sonar
+    environment:
+      groups:
+        - sonar
+      vars:
+        XCODE_WORKSPACE: "Sonar.xcodeproj"  # PUT YOUR WORKSPACE NAME HERE
+        XCODE_SCHEME: "Sonar" # PUT THE NAME OF YOUR SCHEME HERE
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
+    scripts:
+      - name: Run tests
+        script: |
+          xcodebuild \
+          -project "$XCODE_WORKSPACE" \
+          -scheme "$XCODE_SCHEME" \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 12,OS=15.4' \
+          clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - name: Build debug app
+        script: |
+          xcodebuild build -project "$XCODE_WORKSPACE" \
+          -scheme "$XCODE_SCHEME" \
+          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+      - name: Sonar
+        script: |
+            # download and install the SonarScanner
+            wget -O $FCI_BUILD_DIR/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-macosx.zip
+            unzip $FCI_BUILD_DIR/sonar-scanner.zip
+            mv sonar-scanner-* sonar-scanner
+      - name: Coverage tests
+        script: |
+            xcodebuild \
+            -project "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 11 Pro,OS=15.4' \
+            -derivedDataPath Build/ \
+            -enableCodeCoverage YES \
+            clean build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - name: convert coverage report to sonarqube format
+        script: |
+            bash xccov-to-sonarqube-generic.sh Build/Logs/Test/*.xcresult/ > sonarqube-generic-coverage.xml
+      - name: Generate and upload code analysis report
+        script: |
+            export PATH=$PATH:$FCI_BUILD_DIR/sonar-scanner/bin
+            sonar-scanner \
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.host.url=$SONARQUBE_URL \
+            -Dsonar.c.file.suffixes=- \
+            -Dsonar.cpp.file.suffixes=- \
+            -Dsonar.coverageReportPaths=sonarqube-generic-coverage.xml \
+    artifacts:
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+            - kalgi@nevercode.io
