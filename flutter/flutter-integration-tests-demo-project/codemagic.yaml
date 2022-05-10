@@ -20,7 +20,7 @@ workflows:
           keytool -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg 'RSA' -keysize 2048 -validity 10000
       - name: Set up local.properties
         script: |
-          echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages  
         script: |
           cd . && flutter packages pub get
@@ -32,7 +32,7 @@ workflows:
           set -ex
           cd android
           ./gradlew app:assembleAndroidTest
-          ./gradlew app:assembleDebug -Ptarget="$FCI_BUILD_DIR/integration_test/app_test.dart" 
+          ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart" 
       - name: Run Firebase Test Lab tests
         script: |
           set -ex

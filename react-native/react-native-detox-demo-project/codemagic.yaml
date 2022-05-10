@@ -16,7 +16,7 @@ workflows:
             vars:
                 XCODE_WORKSPACE: "detoxer.xcworkspace" # <-- Put the name of your Xcode workspace here
                 XCODE_SCHEME: "detoxer" # <-- Put the name of your Xcode scheme here
-            node: latest
+            node: v16.11.1
             xcode: latest
             cocoapods: default
         triggering:
@@ -55,7 +55,7 @@ workflows:
                 #!/bin/sh
                 set -e
                 set -x
-                cd $FCI_BUILD_DIR/ios
+                cd $CM_BUILD_DIR/ios
                 agvtool new-version -all $(($BUILD_NUMBER + 1))
             - name: Set up code signing settings on Xcode project
               script: |
@@ -74,7 +74,7 @@ workflows:
                 detox test -c ios.sim.release -l verbose
             - name: Build ipa for distribution
               script: |
-                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+                xcode-project build-ipa --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
         artifacts:
             - build/ios/ipa/*.ipa
             - /tmp/xcodebuild_logs/*.log

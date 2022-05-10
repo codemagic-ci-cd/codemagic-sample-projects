@@ -34,10 +34,10 @@ workflows:
                 mv ./support-files/build.gradle android/app
             - name: Set Android SDK location
               script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
             - name: Set up keystore
               script: |
-                echo $CM_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/keystore.keystore            
+                echo $CM_KEYSTORE | base64 --decode > $CM_BUILD_DIR/keystore.keystore            
             - name: Build Android release
               script: |
                 # Set environment variable so it can be used to increment build number in android/app/build.gradle
@@ -47,7 +47,7 @@ workflows:
                 export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
 
                 # Use package.json 'version' property to set the 'versionName' propery in app/build.gradle
-                export PACKAGE_VERSION=$(cat $FCI_BUILD_DIR/package.json | jq -r '.version')
+                export PACKAGE_VERSION=$(cat $CM_BUILD_DIR/package.json | jq -r '.version')
 
                 # Create an application bundle (.aab)
                 cd android && ./gradlew bundleRelease

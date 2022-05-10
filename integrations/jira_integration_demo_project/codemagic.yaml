@@ -15,7 +15,7 @@ workflows:
             # JIRA_BASE_URL <--  "YOUR_SUBDOMAIN.atlassian.net" - Put your Atlassian domain
             # JIRA_ISSUE <-- Put your issue key 
             # JIRA_TRANSITION_ID <-- Integer value of Jira transition obtained using API - https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-get
-          -other
+          - other
         vars:
           XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
           XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here

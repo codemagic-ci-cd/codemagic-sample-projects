@@ -18,7 +18,7 @@ workflows:
                 - other
             vars:
                 PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp
-            node: latest
+            node: v16.11.1
         triggering:
             events:
                 - push
@@ -39,7 +39,7 @@ workflows:
               script: |
                     echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
                     # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-                    # cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
+                    # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
                     # storePassword=$CM_KEYSTORE_PASSWORD
                     # keyPassword=$CM_KEY_ALIAS_PASSWORD
                     # keyAlias=$CM_KEY_ALIAS_USERNAME
@@ -94,7 +94,7 @@ workflows:
                 XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
                 BUNDLE_ID: "YOUR_BUNDLE_ID_HERE" # <-- Put your Bundle Id here e.g com.domain.myapp
                 APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-            node: latest
+            node: v16.11.1
             xcode: 12.5
             cocoapods: default
         triggering:
