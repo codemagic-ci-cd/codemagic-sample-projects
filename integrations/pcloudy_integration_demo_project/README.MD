@@ -13,8 +13,8 @@ In order to achive the above-mentioned steps, you need use the curl commands bel
 ```
  - name: pCloudy upload
    script: |      
-    APP_URL=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token')             
-    curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_URL" -F "filter=all" https://device.pcloudy.com/api/upload_file
+    APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token')             
+    curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
 ```
 
 After that, you can find a success message in the Codemagic logs and uploaded artefacts in the pCloudy dashboard. 
