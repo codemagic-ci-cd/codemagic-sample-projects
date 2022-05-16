@@ -12,6 +12,7 @@ workflows:
                   # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
                   # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
                 - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+                - pcloudy_credentials # <-- ($PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN envrionment variables)
                 - other
             vars:
                 PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp
@@ -54,10 +55,10 @@ workflows:
                 cd android && ./gradlew assembleAndroidTest
             - name: pCloudy Upload
               script: | 
-                 APP_URL=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token') 
+                 APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token') 
        
-                 curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_URL" -F "filter=all" https://device.pcloudy.com/api/upload_file
-                 curl -X POST -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" -F "source_type=raw" -F "token=$APP_URL" -F "filter=all" https://device.pcloudy.com/api/upload_file
+                 curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
+                 curl -X POST -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
         artifacts:
             - android/app/build/outputs/**/*.apk
         publishing:
