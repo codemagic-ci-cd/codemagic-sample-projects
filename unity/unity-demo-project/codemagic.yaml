@@ -4,12 +4,12 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
         - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
         UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
-        BUILD_SCRIPT: BuildIos      
+        BUILD_SCRIPT: BuildIos
         UNITY_IOS_DIR: ios
         XCODE_PROJECT: "Unity-iPhone.xcodeproj"
         XCODE_SCHEME: "Unity-iPhone"
@@ -19,13 +19,13 @@ workflows:
     scripts:
       - name: Set up macOS keychain using Codemagic CLI 'keychain' command
         script: |
-          keychain initialize       
+          keychain initialize
       - name: Activate Unity License
-        script: | 
+        script: |
           $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
       - name: Build the Xcode project
-        script: | 
-          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics          
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE
@@ -42,56 +42,138 @@ workflows:
         script: |
           xcode-project build-ipa --project "$UNITY_IOS_DIR/$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
     artifacts:
-        - build/ios/ipa/*.ipa
-        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
       scripts:
         - name: Deactivate Unity License
-          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics    
-      app_store_connect:            
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY         
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
   unity-android-workflow:
-      name: Unity Android Workflow
-      max_build_duration: 120
-      environment:
-        groups:
-          # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
-          - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_ALIAS_PASSWORD, FCI_KEY_ALIAS_USERNAME)
-          - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-        vars:
-          UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
-          BUILD_SCRIPT: BuildAndroid
-          PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
-      triggering:
-        events:
-          - push
-          - tag
-          - pull_request
-        branch_patterns:
-          - pattern: develop
-            include: true
-            source: true
+    name: Unity Android Workflow
+    max_build_duration: 120
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_ALIAS_PASSWORD, FCI_KEY_ALIAS_USERNAME)
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+      vars:
+        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildAndroid
+        PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Activate Unity License
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+      - name: Set up keystore
+        script: |
+          echo $FCI_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/keystore.keystore
+      - name: Set build number and export Unity
+        script: |
+          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+    artifacts:
+      - android/*.aab
+    publishing:
       scripts:
-        - name: Activate Unity License
-          script: | 
-            $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}      
-        - name: Set up keystore
+        - name: Deactivate Unity License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+      google_play:
+        # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha # Any default or custom track.
+  unity-windows-workflow:
+    name: Unity Windows Workflow
+    max_build_duration: 120
+    instance_type: windows_x2
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+      vars:
+        BUILD_SCRIPT: BuildWindows
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Activate & Build Unity Using a Command Prompt
+        script: |
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_USERNAME -password $env:UNITY_PASSWORD
+      - name: Export Unity
+        script: |
+          cd windows
+          7z a -r release.zip ./*
+    artifacts:
+      - windows/*.zip
+    publishing:
+      scripts:
+        - name: Deactivate Unity License using a Command Prompt
           script: |
-            echo $FCI_KEYSTORE | base64 --decode > $FCI_BUILD_DIR/keystore.keystore            
-        - name: Set build number and export Unity
+            cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -returnlicense -nographics
+      slack:
+        channel: "#your-channel-name"
+        notify_on_build_start: true
+  unity-android-workflow-win-machine:
+    name: Unity Android Workflow
+    max_build_duration: 120
+    instance_type: windows_x2
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        # - keystore_credentials # Uncomment this if you're not using code-signing-identities <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+      vars:
+        BUILD_SCRIPT: BuildAndroid
+        PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
+      android_signing:
+        - unity_test
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: false
+    scripts:
+      - name: Set up keystore
+        script: |
+          # [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("$env:CM_KEYSTORE")) | Out-File -FilePath $env:CM_KEYSTORE_PATH # <-- Uncomment this line if you're not using the code-signing-identities and you want to manually decode the CM_KEYSTORE to CM_KEYSTORE_PATH  
+      - name: Set build number and export Unity
+        script: |
+          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile "$env:CM_BUILD_DIR\\android\\log-android.txt" -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_USERNAME -password $env:UNITY_PASSWORD
+    artifacts:
+      - android/*.aab
+      - android/*.apk
+      - android/*.txt #the log files
+    publishing:
+      scripts:
+        - name: Deactivate Unity License
           script: |
-            export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-            $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics        
-      artifacts:
-        - android/*.aab
-      publishing:
-        scripts:
-          - name: Deactivate Unity License
-            script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
-        google_play:
-          # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
-          credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-          track: alpha   # Any default or custom track.
+            cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -returnlicense -nographics
+      slack:
+        channel: "#your-channel-name"
+        notify_on_build_start: true
+      google_play:
+        # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha # Any default or custom track.
