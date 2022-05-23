@@ -1,0 +1,44 @@
+workflows:
+  unity-win64-workflow:
+      name: Unity Win64 Workflow
+      environment:
+        groups:
+          # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+          - unity # <-- (Includes UNITY_SERIAL, UNITY_USERNAME, UNITY_PASSWORD)
+          - steam # <-- (Includes STEAM_USERNAME, STEAM_PASSWORD)
+        vars:
+          UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+          BUILD_SCRIPT: BuildWin64
+      triggering:
+        events:
+          - push
+        branch_patterns:
+          - pattern: 'main'
+            include: true
+            source: true
+      scripts:
+        - name: Activate License
+          script: $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+        - name: Build
+          script: $UNITY_BIN -batchmode -quit -logFile -projectPath ./HelloWorldProject -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+        - name: Zip Build
+          script: zip -r helloworld_win64.zip win64
+        - name: Install steamcmd
+          script: |
+            mkdir ../Steam
+            curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_osx.tar.gz" | tar zxvf - -C ../Steam
+        - name: Copy Sentry Files
+          script: |
+            #mkdir ~/Library/Application\ Support/Steam
+            #cp ~/clone/steam/ssfn******************* ~/Library/Application\ Support/Steam
+            #mkdir ~/Library/Application\ Support/Steam/config
+            #cp ~/clone/steam/config.vdf ~/Library/Application\ Support/Steam/config            
+        - name: Upload Build to Steam
+          script: |
+            ../Steam/steamcmd.sh +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build ~/clone/steam/app_build.vdf +quit 
+      artifacts:
+          - helloworld_win64.zip
+      publishing:
+        scripts:
+          - name: Deactivate License
+            script: $UNITY_BIN -batchmode -quit -returnlicense -nographics

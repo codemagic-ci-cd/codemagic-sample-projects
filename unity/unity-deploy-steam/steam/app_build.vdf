@@ -1,0 +1,15 @@
+"AppBuild"
+{
+	"AppID" "1850160" // Your AppID
+	"Desc" "Test" // internal description for this build
+	"Preview" "0" // make this a preview build only, nothing is uploaded
+	"Local" "" // put content on local content server instead of uploading to Steam
+	"SetLive" "test" // set this build live on beta branch AlphaTest
+	"ContentRoot" "..\win64" // content root folder relative to this script file
+	"BuildOutput" ".\output\" // put build cache and log files on different drive for better performance
+	"Depots"
+	{
+		// file mapping instructions for each depot are in separate script files
+		"1850161" "depot_build.vdf"
+	}
+}
