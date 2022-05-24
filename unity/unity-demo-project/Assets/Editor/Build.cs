@@ -36,7 +36,7 @@ public static class BuildScript
         }
 
         // Set keystore name
-        string keystoreName = Environment.GetEnvironmentVariable("FCI_KEYSTORE_PATH");
+        string keystoreName = Environment.GetEnvironmentVariable("CM_KEYSTORE_PATH");
         if (!String.IsNullOrEmpty(keystoreName))
         {
             Debug.Log($"Setting path to keystore: {keystoreName}");
@@ -48,7 +48,7 @@ public static class BuildScript
         }
 
         // Set keystore password
-        string keystorePass = Environment.GetEnvironmentVariable("FCI_KEYSTORE_PASSWORD");
+        string keystorePass = Environment.GetEnvironmentVariable("CM_KEYSTORE_PASSWORD");
         if (!String.IsNullOrEmpty(keystorePass))
         {
             Debug.Log("Setting keystore password");
@@ -60,7 +60,7 @@ public static class BuildScript
         }
 
         // Set keystore alias name
-        string keyaliasName = Environment.GetEnvironmentVariable("FCI_KEY_ALIAS_USERNAME");
+        string keyaliasName = Environment.GetEnvironmentVariable("CM_KEY_ALIAS");
         if (!String.IsNullOrEmpty(keyaliasName))
         {
             Debug.Log("Setting keystore alias");
@@ -72,7 +72,7 @@ public static class BuildScript
         }
 
         // Set keystore password
-        string keyaliasPass = Environment.GetEnvironmentVariable("FCI_KEY_ALIAS_PASSWORD");
+        string keyaliasPass = Environment.GetEnvironmentVariable("CM_KEY_PASSWORD");
         if (!String.IsNullOrEmpty(keyaliasPass))
         {
             Debug.Log("Setting keystore alias password");
@@ -84,7 +84,7 @@ public static class BuildScript
         }
 
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-        buildPlayerOptions.locationPathName = "android/android.aab";
+        buildPlayerOptions.locationPathName = "android/" + Application.productName + ".aab";
         buildPlayerOptions.target = BuildTarget.Android;
         buildPlayerOptions.options = BuildOptions.None;
         buildPlayerOptions.scenes = GetScenes();
