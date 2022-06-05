@@ -111,7 +111,7 @@ workflows:
         - name: Add signing certificate to keychain
           script: |
             # echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
-            # keychain add-certificates --certificate /tmp/certificate.p12
+            keychain add-certificates --certificate ~/Library/MobileDevice/Certificates/*.p12
         - name: Increment build number
           script: |
             agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
