@@ -77,8 +77,8 @@ workflows:
             - swiftly-profile
           certificates:
             - ios-distribution
-        groups:
-          - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)      
+        # groups:
+        #   - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)      
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here. 
           XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
@@ -101,16 +101,9 @@ workflows:
         - name: Initialize keychain to be used for codesigning using Codemagic CLI 'keychain' command
           script: |
             keychain initialize
-        - name: set up provisioning profiles
-          script: |
-            # PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
-            # mkdir -p "$PROFILES_HOME"
-            # PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
-            # echo ${CM_PROVISIONING_PROFILE} | base64 --decode > "$PROFILE_PATH"
-            # echo "Saved provisioning profile $PROFILE_PATH"
         - name: Increment build number
           script: |
-            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+            # agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
         - name: Set up code signing settings on Xcode project
           script: |
             xcode-project use-profiles
@@ -127,10 +120,10 @@ workflows:
             notify:
               success: true
               failure: true
-        app_store_connect:                                  # https://docs.codemagic.io/publishing-yaml/distribution                          
-            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-            issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        # app_store_connect:                                  # https://docs.codemagic.io/publishing-yaml/distribution                          
+        #     api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        #     key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        #     issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
     ios-magic-actions:
       name: ios-magic-actions
       instance_type: mac_mini
