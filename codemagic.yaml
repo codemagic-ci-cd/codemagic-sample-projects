@@ -149,7 +149,7 @@ workflows:
       environment:
         ios_signing:
           provisioning_profiles:
-            - swiftly-profile
+            - swifter-profile
           certificates:
             - ios-distribution
         # groups:
