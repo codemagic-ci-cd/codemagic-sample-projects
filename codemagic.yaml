@@ -242,6 +242,7 @@ workflows:
         environment:
           groups:
             - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
+            - fastlane_credentials # <-- (group contains variables: MATCH_SSH_KEY, MATCH_KEYCHAIN, MATCH_PASSWORD)
           xcode: 13.3.1
           cocoapods: default
         scripts:
