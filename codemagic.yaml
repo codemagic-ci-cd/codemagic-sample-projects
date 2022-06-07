@@ -40,8 +40,6 @@ workflows:
             xcode-project use-profiles
         - name: Increment build number
           script: |
-            #!/bin/sh
-            set -ex
             agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
         - name: Build ipa for distribution
           working_directory: ios/ios-automatic-code-signing-demo-project        
