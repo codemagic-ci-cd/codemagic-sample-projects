@@ -189,7 +189,7 @@ workflows:
       working_directory: ios/ios-magic-actions-demo-project
       environment:
         groups:
-          - ios_creds
+          - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace"
           XCODE_SCHEME: "swiftly"
@@ -241,7 +241,7 @@ workflows:
         working_directory: integrations/fastlane-integration-demo-project
         environment:
           groups:
-            - ios_creds
+            - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
           xcode: 13.3.1
           cocoapods: default
         scripts:
@@ -255,7 +255,7 @@ workflows:
       max_build_duration: 120
       environment:
         groups:
-          - ios_creds
+          - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
         vars:
           XCODE_WORKSPACE: "Runner.xcworkspace"
           XCODE_SCHEME: "Runner"                
@@ -327,11 +327,7 @@ workflows:
       environment:
         groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - ios_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-          - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
         vars:
           XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
           # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
@@ -340,8 +336,8 @@ workflows:
           XCODE_SCHEME: dev
           BUNDLE_ID: io.codemagic.flutterflavors.dev
           ENTRY_POINT: lib/main_dev.dart
-        flutter: 2.0.5
-        xcode: 12.5
+        flutter: 2.10.0
+        xcode: 13.3.1
         cocoapods: default
       triggering:
         events:
@@ -353,7 +349,7 @@ workflows:
       scripts:
         - name: Get Flutter Packages
           script: |
-            cd . && flutter packages pub get
+            flutter packages pub get
         - name: Pod install
           script: |
             find . -name "Podfile" -execdir pod install \;
@@ -401,11 +397,7 @@ workflows:
       environment:
         groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - ios_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-          - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+          - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
         vars:
           XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
           # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
@@ -414,8 +406,8 @@ workflows:
           XCODE_SCHEME: prod
           BUNDLE_ID: io.codemagic.flutterflavors.prod
           ENTRY_POINT: lib/main_prod.dart
-        flutter: 2.0.5
-        xcode: 12.5
+        flutter: 2.10
+        xcode: 13.3.1
         cocoapods: default
       triggering:
         events:
@@ -427,7 +419,7 @@ workflows:
       scripts:
         - name: Get Flutter Packages
           script: |
-            cd . && flutter packages pub get
+            flutter packages pub get
         - name: Pod install
           script: |
             find . -name "Podfile" -execdir pod install \;
@@ -474,20 +466,23 @@ workflows:
         instance_type: mac_pro
         working_directory: react-native/react-native-demo-project
         environment:
-            vars:
-                XCODE_WORKSPACE: "ios/cmreactnative.xcworkspace"
-                XCODE_SCHEME: "cmreactnative"
-                APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmd1S0p2TGp6elRIY2thcURYb24zdFE1YzBDSk54OUhmbmMyT3F2aGJoUXU3Z3BZdjJycnJrTFpfaE16VU4tbzFURTBzeXdYc1dfYUR0UEdIZExYeTQwNGlBQUxsVWdYbVdNWlVPOURIaTRRdFdWLXB4QWJGbm9XWS1vX2JwbHhQNTFqU0o=)
-                APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(Z0FBQUFBQmd1S0tIamJ3UjZMbUJkMXB5eXZfTXItSkdnZVNQNFFjQkdLUFV1THlaYUd5cTBNVkFfdEZSM2p5bHJkZGl5bWZkUVJ5alpFV2s0aERnX2ZxYXVpOTlSbE90SUE9PQ==) 
-                APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(Z0FBQUFBQmd1S0tzUFRMV0JEX09MakRJaHk5TVc4NUkwTWNFbmhTWVJGMFlodUZabkFWRG96LTljc3BURTFhQXdEc3U2NDdHNTZaTUFFZk5vZHVnM1ZCTWN2NnhHSFppdHhPeU5TbjRPenZiSGlHQUdsNW1mMXJ5d2V3Yk5ZeWxaeVRrYUY3N2I2cjNYQ19iSFhqOGZCY1JFM0xteER4eUUxS1BNeVJIaDFUN2FabHJfeHFXMExjV2RzanVkT0s2SVh2aTV3TnZWaU01ZFhKZUExT3BsOFpaUWR6Tkh4SkVWaDZyaGp0QjZ0SGo2OEdqTVhrdUJhdnpBVWlTQm1GdUY4NTBxcERKVlJrM1JwMDRGeXRNOHNVMWd0ZHFXVF95SklVVUk4TDBUUWQ3RjktMndqd3NMU0FDQzV4TEM3SmdJYnpISXdqS05Mbl95ekNFcjY5UU04T2g5bEo0T081cGhvYmFVR2diMkMzQmppZUI0UGVycGU4Uk9hX2NURXg0QkhaRWdRT0xzekJTaXJQdGk4b0JSdjdKQm5kY1l3YnRrTTNXdXZnOGpGeW50RkpiQ3RGSGNORT0=)         
-                CERTIFICATE_PRIVATE_KEY: Encrypted(Z0FBQUFBQmd3TUNPMlNBbWFwU0FaWm8zSDB6MjNSTVNmM2NUSkJIcjdOOXdtVXphb3c2Y2ttQk9teGtKTlEzZ3pwSzNQQkUyM2pfWVlLcnhIRlpYaDZhQmVvYXJQZnJQeFlMODNjU0ptcE5OekFOTXpoLXN0UG5PNG4wQ0VVT0ZHRE5CbWhja2R0b2R0S0QtVlNLV0lQaVdHUlAzOVlxbHVtekliQ2htNThkaWllQ2E5SkdRS3pQMkljamstZ3VDeVp2RlVaNUJYcjdhQzFVZ2t4dHJucXdHMXdoV1Q1RzRxLUlpY29oZ0Y1dExvLUFJUmxFQUVqdFE3dVNoYmVSUVZMUVN0Q3U3TnZoMWdrT0hRUFJYWklOVm5WUm9yekkyZ2QyOTdwZ1Y5U0VrZUh1TjJ2U3FSb1dfZVFOTzdoVUN1ZllzdHNkWXNSOFd1Q09lQ01NVnkwQ2E5UGRUdG1LbE9OREt4YXhSR1JqODFNSXFJUWxMd1Nhak52RmJyeTlQRHZaMGhHU29NdExJVlR2dXMwZ1pac2did1NNNjVTbEVXckpPUHYtcFd3VE1oZWI1SkdpNEFoLUtLYkhOMUxqRVZHLVRFZ0lweS1aUkduMWdUbnVqR1dTTVgzQzRsUGpzZGY0QXYzemJ2TUNqalNpamFCS3FDWkpQSkx6Nlh6U3FmODZlX1phMjItcFZ1c1U3czJ3Yy1VUWRMQWYwaUN5ZkZxRUxVTUNQeVpabUFrY2JyV0lnVm55Y1pCNzBUYlZJS0JvSlJCUGNhaEV2ZHZUNGJpVm1Bam9rT29QX2htaWVuTF9tZW9JMEYxd3dKckZ0MngtS0RCQ09hVE92T25ZNUd2czhYMGk5STBBbzZuM1dsSllGeUkzZXcyck81eGR0VjN2NGlnTFJsa1VVbWM0enlaYVlQYnk1VjRTeUgwY1JOMmRYcXppMG5xbnNITThDTkNjMy11cGJpdEVOX0R5ODRjQTFWbVhtUHZFdFllYTlLYVFub0xzdDRUNlZVdnhUUWZDeU11cGQ5TC02bnd4bXlaUWh5OU80N3UtazJZUHR4TTNDbUxHWDFyMXJ0YVhGc1diVzBlajNaaTI1RDRkcmtBRXBPRFpWSFpJODdsWWFhd1pOODJHSG9vam51RXhEOWZxcDNfZ21jU2pSTEFNeV9VaURZVDA3NWFtTDBwZzVCQ1VkcHY4a1kwbmdMank2NFVzZC14UGllckJoU3pnRWwycWl0WEE1WnJBMElwTXlGRVJNcE5VTDVFZlZUeUg2SGFUTURMdUVwdlFnY2pTNU1BbldTbVN6N1R3NEVBdXlXbDhpUWcyYXRfVkJwaFBKU0pOZS1jWVdDbnVUZ2g4SFR4MTNyU3k0QklvSFFsbkZOUHBucTRYalZSMXU4Q0VvOHFGcFctRHdNd1cybzZnVWxwTzJUWTVubER3UktRYlpacm5BMEF0OUJ3TF9nS0xFSUhvdTBOYXU0dEdaRFhJaXpGakdBaVBBYWx4VDZSMnNaNlBRWTdNQmxnN1puYXlneWxhNGE3ZFpzdi1IY3RFRTZYZDhJNm15UnE3Y2d3N1duNGxtRjVHVjk1Q2xZeUdLYWFsMDRkOHIybDNIVllMd01qWjVZc2lFbEtnMVJaMFB2TTRrQl9Ubzc2clFXMm94Tmk2djFmb3ZoaG5icUU4QTU5VWhTVjViVHNoX09GNkVDMjJVeHJiYUQ3bk1QU1VVdEM3c2JTTWh5QmhVMktrU041OTRtR0hpeU0tOWlvc0xibnI0Y3lhUWxGQ3YtUUtXZFdTWWFEeHlNMzJaNy1aUVI4Nm02ZE1Pd0lfUmpMYlhXZ2NvRWhVaGhIb3dqV2J1TVlXQUkxaWNidUhZQzdKenJDV3ExcElJSmlEUWpma2w2ellsZjI3SW5vbzRBZmdxSjVPdHBQTlIzcVl6Y3hpcDF0eEpFa1lTSmxFSlJ4SU9QSzNDMXJJOS1QVXVOR1paNnlHN3gxY0tuMHZXV1p5UHE4NEhRX0k2MVBKOGhyQWF0WFNNTUszUkVTaW5LckhkQW1qa05NdU1YTEpqb3ZZbE5zdHlGcHJYTkM3UVNPdnBmWmhYdUppUW13U0RiN1J1LWtPNm0xM2FUYV9aNzVtRElJMlNzWC1KSjNqUXFNbkJJVG8yOENKQnJSeWdud0dMcjJDQVJLcVBTaTVueWdUNHd1REJLUzRXX0JBLU9uc0lxR25DTF9jR0xQTHY5VXFUMjUyRmM3Ui1XYVphZWQtaHFqSFJZTW1UWFBYaWVXdDlPb0k4ODhDVTd1UjJnekoyN2VsR0FLODVIODNQOENWTGRIRkFfb2tfa3ZZd251eTR5aWVTeFlRYVNFNmdhVnJMM0N2eGdDalgwM0NmYzBndTFMRlYxYWViTjRZZXc2a1dpN1VvbndMZmh2YkdFZkpQYkhQQ3FEQTI0a0VEYkZtQVlNVTlmbVRPZm1lTGtyRURzZjJudWZjaWJBSnZwdFM0Qnd0R1U5Uk9mLWVBbVlGMTktQW9BaGMzd1JPVVFCMUp6VWRQSzVrai1oNFo3akxnRXJJWm1FNUYwWEQ3SXl0aFJkVUUtOXEtcGFIMVhOb0theVN6TGxZSGN0TXJ1Y3lhRERSNFBEOWVTcWV1UVFxTk1VN2VGenREdkI3bmJwM2ZjQ1cwUTdWSDdrYjhsSVNRTEhDMEtCb1RoZUZPc0Ztek1oMThRUWF6RnZhS3dlZUFJcUtiRGVKYnM4am9qZTJFbC1YZmFOalNfRnNJbmpHNGpjcVhsOHYxZ0g3SllabVhYUUwxa0FhZFd2MmRKSXFVUktvTkJ0Q2NQc1JaUlFCYm92amFzSjBaZkxDd0hEekhEbjRpYkFrWFJlT0xBMDZZNTlpOEw5bkxRY2xoWm5CYkE4YkN1MlBsMzlYazZHX21wWkdQX1M2OU56REJRcEZ2MTVkTnA5M2E1WkNoeXZNMnVCOHVrSzkzeDl3VXNBV25ldGtiT1NCM3RxRElqSno4NXh3UjJIcXNmV1daeko3VFlYNmJ0QjBhSzloUVlxM2FaWW9sMHpUNllBVUt2bDVXUmpPd3JxQVhJcjlD)
-                BUNDLE_ID: "io.codemagic.cmreactnative"
-                APPLE_ID_EMAIL: Encrypted(Z0FBQUFBQmd1S0xRNDBqLVQ1UkJac29IeEVxWjZQRmNRbTQ5U1pFb2cyRlEwUHBSMGtnLWZqc3ktRE5VeHJYRnF0TmJDSjh5MDNGM3dGZnI5ZHQ3MzY3bWN2TGJ3RGVnY0pSUnJpRWY4VkZSRWMzaEl1T25nZzQ9)
-                APP_SPECIFIC_PASSWORD: Encrypted(Z0FBQUFBQmd1S01mbTZWTnRqbTc0U2tDeGh1TTZkZjQybHNFeUthT3FvaUx1ZXY4eWVkbkxxV1NuaVJrU2lKT3VMY0VWLThBbnVkVEVwZ0xyVThaU0JJMUxORmxyUXVOcnA3Tm1BQzhUeEpxbVVnS1NpWS01TGM9)
-                APP_STORE_APP_ID: 1571903173
-            node: 16.11.1
-            xcode: 12.5
-            cocoapods: default
+          groups:
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+            - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY) 
+          vars:
+            XCODE_WORKSPACE: "ios/cmreactnative.xcworkspace"
+            XCODE_SCHEME: "cmreactnative"
+            # APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmd1S0p2TGp6elRIY2thcURYb24zdFE1YzBDSk54OUhmbmMyT3F2aGJoUXU3Z3BZdjJycnJrTFpfaE16VU4tbzFURTBzeXdYc1dfYUR0UEdIZExYeTQwNGlBQUxsVWdYbVdNWlVPOURIaTRRdFdWLXB4QWJGbm9XWS1vX2JwbHhQNTFqU0o=)
+            # APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(Z0FBQUFBQmd1S0tIamJ3UjZMbUJkMXB5eXZfTXItSkdnZVNQNFFjQkdLUFV1THlaYUd5cTBNVkFfdEZSM2p5bHJkZGl5bWZkUVJ5alpFV2s0aERnX2ZxYXVpOTlSbE90SUE9PQ==) 
+            # APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(Z0FBQUFBQmd1S0tzUFRMV0JEX09MakRJaHk5TVc4NUkwTWNFbmhTWVJGMFlodUZabkFWRG96LTljc3BURTFhQXdEc3U2NDdHNTZaTUFFZk5vZHVnM1ZCTWN2NnhHSFppdHhPeU5TbjRPenZiSGlHQUdsNW1mMXJ5d2V3Yk5ZeWxaeVRrYUY3N2I2cjNYQ19iSFhqOGZCY1JFM0xteER4eUUxS1BNeVJIaDFUN2FabHJfeHFXMExjV2RzanVkT0s2SVh2aTV3TnZWaU01ZFhKZUExT3BsOFpaUWR6Tkh4SkVWaDZyaGp0QjZ0SGo2OEdqTVhrdUJhdnpBVWlTQm1GdUY4NTBxcERKVlJrM1JwMDRGeXRNOHNVMWd0ZHFXVF95SklVVUk4TDBUUWQ3RjktMndqd3NMU0FDQzV4TEM3SmdJYnpISXdqS05Mbl95ekNFcjY5UU04T2g5bEo0T081cGhvYmFVR2diMkMzQmppZUI0UGVycGU4Uk9hX2NURXg0QkhaRWdRT0xzekJTaXJQdGk4b0JSdjdKQm5kY1l3YnRrTTNXdXZnOGpGeW50RkpiQ3RGSGNORT0=)         
+            # CERTIFICATE_PRIVATE_KEY: Encrypted(Z0FBQUFBQmd3TUNPMlNBbWFwU0FaWm8zSDB6MjNSTVNmM2NUSkJIcjdOOXdtVXphb3c2Y2ttQk9teGtKTlEzZ3pwSzNQQkUyM2pfWVlLcnhIRlpYaDZhQmVvYXJQZnJQeFlMODNjU0ptcE5OekFOTXpoLXN0UG5PNG4wQ0VVT0ZHRE5CbWhja2R0b2R0S0QtVlNLV0lQaVdHUlAzOVlxbHVtekliQ2htNThkaWllQ2E5SkdRS3pQMkljamstZ3VDeVp2RlVaNUJYcjdhQzFVZ2t4dHJucXdHMXdoV1Q1RzRxLUlpY29oZ0Y1dExvLUFJUmxFQUVqdFE3dVNoYmVSUVZMUVN0Q3U3TnZoMWdrT0hRUFJYWklOVm5WUm9yekkyZ2QyOTdwZ1Y5U0VrZUh1TjJ2U3FSb1dfZVFOTzdoVUN1ZllzdHNkWXNSOFd1Q09lQ01NVnkwQ2E5UGRUdG1LbE9OREt4YXhSR1JqODFNSXFJUWxMd1Nhak52RmJyeTlQRHZaMGhHU29NdExJVlR2dXMwZ1pac2did1NNNjVTbEVXckpPUHYtcFd3VE1oZWI1SkdpNEFoLUtLYkhOMUxqRVZHLVRFZ0lweS1aUkduMWdUbnVqR1dTTVgzQzRsUGpzZGY0QXYzemJ2TUNqalNpamFCS3FDWkpQSkx6Nlh6U3FmODZlX1phMjItcFZ1c1U3czJ3Yy1VUWRMQWYwaUN5ZkZxRUxVTUNQeVpabUFrY2JyV0lnVm55Y1pCNzBUYlZJS0JvSlJCUGNhaEV2ZHZUNGJpVm1Bam9rT29QX2htaWVuTF9tZW9JMEYxd3dKckZ0MngtS0RCQ09hVE92T25ZNUd2czhYMGk5STBBbzZuM1dsSllGeUkzZXcyck81eGR0VjN2NGlnTFJsa1VVbWM0enlaYVlQYnk1VjRTeUgwY1JOMmRYcXppMG5xbnNITThDTkNjMy11cGJpdEVOX0R5ODRjQTFWbVhtUHZFdFllYTlLYVFub0xzdDRUNlZVdnhUUWZDeU11cGQ5TC02bnd4bXlaUWh5OU80N3UtazJZUHR4TTNDbUxHWDFyMXJ0YVhGc1diVzBlajNaaTI1RDRkcmtBRXBPRFpWSFpJODdsWWFhd1pOODJHSG9vam51RXhEOWZxcDNfZ21jU2pSTEFNeV9VaURZVDA3NWFtTDBwZzVCQ1VkcHY4a1kwbmdMank2NFVzZC14UGllckJoU3pnRWwycWl0WEE1WnJBMElwTXlGRVJNcE5VTDVFZlZUeUg2SGFUTURMdUVwdlFnY2pTNU1BbldTbVN6N1R3NEVBdXlXbDhpUWcyYXRfVkJwaFBKU0pOZS1jWVdDbnVUZ2g4SFR4MTNyU3k0QklvSFFsbkZOUHBucTRYalZSMXU4Q0VvOHFGcFctRHdNd1cybzZnVWxwTzJUWTVubER3UktRYlpacm5BMEF0OUJ3TF9nS0xFSUhvdTBOYXU0dEdaRFhJaXpGakdBaVBBYWx4VDZSMnNaNlBRWTdNQmxnN1puYXlneWxhNGE3ZFpzdi1IY3RFRTZYZDhJNm15UnE3Y2d3N1duNGxtRjVHVjk1Q2xZeUdLYWFsMDRkOHIybDNIVllMd01qWjVZc2lFbEtnMVJaMFB2TTRrQl9Ubzc2clFXMm94Tmk2djFmb3ZoaG5icUU4QTU5VWhTVjViVHNoX09GNkVDMjJVeHJiYUQ3bk1QU1VVdEM3c2JTTWh5QmhVMktrU041OTRtR0hpeU0tOWlvc0xibnI0Y3lhUWxGQ3YtUUtXZFdTWWFEeHlNMzJaNy1aUVI4Nm02ZE1Pd0lfUmpMYlhXZ2NvRWhVaGhIb3dqV2J1TVlXQUkxaWNidUhZQzdKenJDV3ExcElJSmlEUWpma2w2ellsZjI3SW5vbzRBZmdxSjVPdHBQTlIzcVl6Y3hpcDF0eEpFa1lTSmxFSlJ4SU9QSzNDMXJJOS1QVXVOR1paNnlHN3gxY0tuMHZXV1p5UHE4NEhRX0k2MVBKOGhyQWF0WFNNTUszUkVTaW5LckhkQW1qa05NdU1YTEpqb3ZZbE5zdHlGcHJYTkM3UVNPdnBmWmhYdUppUW13U0RiN1J1LWtPNm0xM2FUYV9aNzVtRElJMlNzWC1KSjNqUXFNbkJJVG8yOENKQnJSeWdud0dMcjJDQVJLcVBTaTVueWdUNHd1REJLUzRXX0JBLU9uc0lxR25DTF9jR0xQTHY5VXFUMjUyRmM3Ui1XYVphZWQtaHFqSFJZTW1UWFBYaWVXdDlPb0k4ODhDVTd1UjJnekoyN2VsR0FLODVIODNQOENWTGRIRkFfb2tfa3ZZd251eTR5aWVTeFlRYVNFNmdhVnJMM0N2eGdDalgwM0NmYzBndTFMRlYxYWViTjRZZXc2a1dpN1VvbndMZmh2YkdFZkpQYkhQQ3FEQTI0a0VEYkZtQVlNVTlmbVRPZm1lTGtyRURzZjJudWZjaWJBSnZwdFM0Qnd0R1U5Uk9mLWVBbVlGMTktQW9BaGMzd1JPVVFCMUp6VWRQSzVrai1oNFo3akxnRXJJWm1FNUYwWEQ3SXl0aFJkVUUtOXEtcGFIMVhOb0theVN6TGxZSGN0TXJ1Y3lhRERSNFBEOWVTcWV1UVFxTk1VN2VGenREdkI3bmJwM2ZjQ1cwUTdWSDdrYjhsSVNRTEhDMEtCb1RoZUZPc0Ztek1oMThRUWF6RnZhS3dlZUFJcUtiRGVKYnM4am9qZTJFbC1YZmFOalNfRnNJbmpHNGpjcVhsOHYxZ0g3SllabVhYUUwxa0FhZFd2MmRKSXFVUktvTkJ0Q2NQc1JaUlFCYm92amFzSjBaZkxDd0hEekhEbjRpYkFrWFJlT0xBMDZZNTlpOEw5bkxRY2xoWm5CYkE4YkN1MlBsMzlYazZHX21wWkdQX1M2OU56REJRcEZ2MTVkTnA5M2E1WkNoeXZNMnVCOHVrSzkzeDl3VXNBV25ldGtiT1NCM3RxRElqSno4NXh3UjJIcXNmV1daeko3VFlYNmJ0QjBhSzloUVlxM2FaWW9sMHpUNllBVUt2bDVXUmpPd3JxQVhJcjlD)
+            BUNDLE_ID: "io.codemagic.cmreactnative"
+            # APPLE_ID_EMAIL: Encrypted(Z0FBQUFBQmd1S0xRNDBqLVQ1UkJac29IeEVxWjZQRmNRbTQ5U1pFb2cyRlEwUHBSMGtnLWZqc3ktRE5VeHJYRnF0TmJDSjh5MDNGM3dGZnI5ZHQ3MzY3bWN2TGJ3RGVnY0pSUnJpRWY4VkZSRWMzaEl1T25nZzQ9)
+            # APP_SPECIFIC_PASSWORD: Encrypted(Z0FBQUFBQmd1S01mbTZWTnRqbTc0U2tDeGh1TTZkZjQybHNFeUthT3FvaUx1ZXY4eWVkbkxxV1NuaVJrU2lKT3VMY0VWLThBbnVkVEVwZ0xyVThaU0JJMUxORmxyUXVOcnA3Tm1BQzhUeEpxbVVnS1NpWS01TGM9)
+            APP_STORE_APP_ID: 1571903173
+          node: 16.11.1
+          xcode: 13.3.1
+          cocoapods: default
         triggering:
             events:
                 - push
@@ -544,7 +539,8 @@ workflows:
             notify:
               success: true               # To not receive a notification when a build succeeds
               failure: false              # To not receive a notification when a build fails
-          app_store_connect:                 
-              apple_id: $APPLE_ID_EMAIL
-              password: $APP_SPECIFIC_PASSWORD
+          app_store_connect:
+            api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+            key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+            issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
                         
