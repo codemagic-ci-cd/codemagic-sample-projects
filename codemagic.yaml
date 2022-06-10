@@ -125,6 +125,12 @@ workflows:
                 notify:
                   success: true
                   failure: true
+            slack:
+              channel: '#ce-builds'
+              notify_on_build_start: true    # To receive a notification when a build starts
+              notify:
+                success: false               # To not receive a notification when a build succeeds
+                failure: false               # To not receive a notification when a build fails
             app_store_connect:                                # https://docs.codemagic.io/publishing-yaml/distribution                          
               api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
               key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
@@ -179,6 +185,12 @@ workflows:
             notify:
               success: true
               failure: true
+        slack:
+          channel: '#ce-builds'
+          notify_on_build_start: true    # To receive a notification when a build starts
+          notify:
+            success: false               # To not receive a notification when a build succeeds
+            failure: false               # To not receive a notification when a build fails        
         app_store_connect:                                  # https://docs.codemagic.io/publishing-yaml/distribution                          
             api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
             key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
@@ -311,7 +323,7 @@ workflows:
             failure: false    # To not receive a notification when a build fails
         slack: 
           # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-          channel: "#builds"
+          channel: "#ce-builds"
           notify_on_build_start: true   # To receive a notification when a build starts
           notify:
             success: true               # To receive a notification when a build succeeds
@@ -531,7 +543,7 @@ workflows:
               failure: false    # To not receive a notification when a build fails
           slack: 
             # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-            channel: '#builds'
+            channel: '#ce-builds'
             notify_on_build_start: true   # To receive a notification when a build starts
             notify:
               success: true               # To not receive a notification when a build succeeds
