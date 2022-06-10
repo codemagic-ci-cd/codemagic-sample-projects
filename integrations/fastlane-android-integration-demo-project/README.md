@@ -8,7 +8,7 @@ https://docs.codemagic.io/getting-started/yaml/
 
 ## Environment variables
 
-For signing the app, upload your keystore to your team [Code Signing Identities](https://docs.codemagic.io/yaml-code-signing/code-signing-identities/).
+For signing the app, upload your keystore to your team [Code Signing Identities](../yaml-code-signing/code-signing-identities/).
 
 
 Or you can save the keystore file, keystore password (if keystore is password-protected), key alias and key alias password (if key alias is password-protected) to the respective environment variables in the **Environment variables** section in Codemagic UI. Click **Secure** to encrypt the values. Note that binary files (i.e. keystore) have to be [`base64 encoded`](../variables/environment-variable-groups/#storing-sensitive-valuesfiles) locally before they can be saved to environment variables and decoded during the build.
@@ -40,7 +40,7 @@ workflows:
         - google_play
 ```
 
-For further information about using variable groups please click [here](https://docs.codemagic.io/variables/environment-variable-groups/).
+For further information about using variable groups please click [here](../variables/environment-variable-groups/).
 
 ## Running your Fastlane lane
 
