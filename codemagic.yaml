@@ -323,6 +323,7 @@ workflows:
            submit_to_testflight: false                      # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
     flutter-flavors-ios-dev:
       name: iOS Flutter Flavors Dev
+      instance_type: mac_pro
       max_build_duration: 120
       working_directory: flutter/flutter-flavors-demo-project
       environment:
@@ -393,6 +394,7 @@ workflows:
           issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
     flutter-flavors-ios-prod:
       name: iOS Flutter Flavors Prod
+      instance_type: mac_pro
       max_build_duration: 120
       working_directory: flutter/flutter-flavors-demo-project
       environment:
