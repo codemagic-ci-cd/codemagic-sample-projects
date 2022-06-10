@@ -409,7 +409,7 @@ workflows:
           XCODE_SCHEME: prod
           BUNDLE_ID: io.codemagic.flutterflavors.prod
           ENTRY_POINT: lib/main_prod.dart
-        flutter: 2.10
+        flutter: 2.10.0
         xcode: 13.3.1
         cocoapods: default
       triggering:
