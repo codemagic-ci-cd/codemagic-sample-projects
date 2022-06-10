@@ -60,7 +60,7 @@ workflows:
               success: true
               failure: true
         slack:
-            channel: '#builds'
+            channel: '#ce-builds'
             notify_on_build_start: true    # To receive a notification when a build starts
             notify:
               success: false               # To not receive a notification when a build succeeds
