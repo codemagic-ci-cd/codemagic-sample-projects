@@ -1,0 +1,65 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+  desc "Clean assembleRelease"
+  lane :clean do
+    gradle(task: "clean assembleRelease")
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+  
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+
+  desc "Build, increment the build number and publish to the google store"
+  lane :release do
+    gradle(task: "clean assembleRelease")
+    g_key = ENV["GCLOUD_SERVICE_ACCOUNT_CREDENTIALS"].strip # to remove any newlines
+
+    gradle(
+      # task: 'assemble', #only apk
+      task: 'bundle', #apk & aab
+      build_type: 'Release',
+      print_command: true,
+      properties: { 
+        "android.injected.version.code" => google_play_track_version_codes( 
+          json_key_data: "#{g_key}",
+          track: "internal"
+          ) [0] + 1,
+      }
+    )
+    # read more about the upload_to_play_store method here: https://docs.fastlane.tools/actions/upload_to_play_store/
+    upload_to_play_store(
+      track: 'internal',
+      release_status: 'draft',
+      skip_upload_apk: true,
+      json_key_data: "#{g_key}"
+    )  
+  end
+end
