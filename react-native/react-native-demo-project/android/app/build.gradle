@@ -130,6 +130,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     // try to get build number from `LATEST_GOOGLE_PLAY_BUILD_NUMBER` env var. If not specified, then from `BUILD_NUMBER` env var, else 0
+    def latestGooglePlayBuildNumber = Integer.valueOf(System.env.LATEST_GOOGLE_PLAY_BUILD_NUMBER ?: System.env.BUILD_NUMBER ?: 0)
     defaultConfig {
         applicationId "com.cmreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
