@@ -1,0 +1,26 @@
+workflows:
+  android-fastlane:
+    name: Android Fastlane
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json content in here)
+      android_signing:
+        - codemagic_test # <-- (Upload your android keystore in your team Code Signing Identities [https://docs.codemagic.io/yaml-code-signing/code-signing-identities])
+    scripts:
+      - name: Set up local properties
+        script: |
+          #!/usr/bin/env zsh 
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - bundle install
+      - name: Build, increment the build number and publish to the store
+        script: |
+          #!/usr/bin/env zsh 
+          chmod +x gradlew # because the gradlew was denied
+          bundle exec fastlane release
+
+    artifacts:
+      - app/build/outputs/**/**/*.aab
+      - app/build/outputs/**/**/*.apk
