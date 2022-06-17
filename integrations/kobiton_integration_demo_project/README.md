@@ -1,4 +1,4 @@
-# kobiton integration with codemagic
+# Kobiton integration with Codemagic
 
 ## Getting Started
 
