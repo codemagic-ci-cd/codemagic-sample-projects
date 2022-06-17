@@ -54,9 +54,6 @@ workflows:
                 keychain add-certificates
             - name: Increment build number
               script: |
-                #!/bin/sh
-                set -e
-                set -x
                 cd $FCI_BUILD_DIR/ios
                 # agvtool new-version -all $(($BUILD_NUMBER + 1))
                 agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
@@ -65,7 +62,7 @@ workflows:
                 xcode-project use-profiles --warn-only
             - name: Build ipa for distribution
               script: |
-                xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" 
+                xcode-project build-ipa --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" 
             - name: Uploading to Kobiton
               script: |
                 CURL_RESULT=$(curl -X POST https://api.kobiton.com/v1/apps/uploadUrl \
