@@ -4,6 +4,7 @@ workflows:
     instance_type: mac_pro
     environment:
       groups:
+        # In order to skip all the manual signing processes, Codemagic offers Signing Identities feature for teams which makes the process quite straightforward. More here: https://docs.codemagic.io/yaml-code-signing/code-signing-identities/
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
           # CM_KEYSTORE <-- Put your keystore file here
