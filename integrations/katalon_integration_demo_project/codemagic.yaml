@@ -1,0 +1,66 @@
+workflows:
+  native-android:
+    name: Native Android
+    instance_type: mac_pro
+    environment:
+      groups:
+        # In order to skip all the manual signing processes, Codemagic offers Signing Identities feature for teams which makes the process quite straightforward. More here: https://docs.codemagic.io/yaml-code-signing/code-signing-identities/
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
+          # CM_KEYSTORE <-- Put your keystore file here
+          # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+        # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
+        # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+        - other
+      vars:
+      # Set up paths to application binary and test package
+      node: v16.11.1
+      xcode: 13.3.1
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Set up keystore
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
+          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+          # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
+          # storePassword=$CM_KEYSTORE_PASSWORD
+          # keyPassword=$CM_KEY_ALIAS_PASSWORD
+          # keyAlias=$CM_KEY_ALIAS_USERNAME
+          # storeFile=/tmp/keystore.keystore
+          # EOF
+      - name: Build Android debug APK
+          script: |
+            ./gradlew assembleDebug
+          - name: Test
+            script: |
+              ./gradlew test
+            test_report: app/build/test-results/**/*.xml
+          - name: Build Android production release
+            script: |
+              ./gradlew assembleRelease
+          - name: Uploading to Katalon
+            script: |
+              docker run -t --rm -v $CM_BUILD_DIR/app/build/test-results/testReleaseUnitTest/:/katalon/report -e PASSWORD=$KATALON_API_KEY -e PROJECT_ID=$KATALON_PROJECT_ID -e TYPE=junit -e REPORT_PATH=/katalon/report katalonstudio/report-uploader:0.0.8
+    artifacts:
+      - app/build/outputs/**/*.apk
+      - app/build/test-results/**/*.xml
+    publishing:
+      email:
+        recipients:
+          - user1@example.com
+          - user2@example.com
+        notify:
+          success: true
+          failure: false
