@@ -16,7 +16,7 @@ workflows:
       vars:
       # Set up paths to application binary and test package
       node: v16.11.1
-      xcode: latest
+      xcode: 13.3.1
     triggering:
       events:
         - push
