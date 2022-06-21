@@ -8,36 +8,49 @@ Each project contains the links to the workflow configuration, and Codemagic bui
 
 The first project is the famous `XcodeBenchmark` used to provide an idea about the performance of M1 Mac Mini and Mac Pro. It is a framework that includes **42 popular CocoaPods** libraries and **70+ dependencies** in total.
 
-**Test name** | **Mac Mini M1** | **Mac Pro**
---- | --- | ---
-Running Benchmark Tests | **172s** | 541s
+**Test name** | **M1 Mac Mini** | **Mac Pro** | **Mac Mini**
+--- | --- | --- | ---
+Running Benchmark Tests | **173s** | 497s | 572s
+
 
 - [`codemagic.yaml`](https://github.com/nevercode-rudrank/XcodeBenchmark/blob/master/codemagic.yaml)
-- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6269b3cc6248df946a077233/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6269b3cc6248df946a077233/build/626a62ee3b3496de627a3386)
-- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/6269b3cc6248df946a077233/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/6269b3cc6248df946a077233/build/626a62e06248df1b8e203588)
+
+- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6269b3cc6248df946a077233/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6269b3cc6248df946a077233/build/62b16e3ee5cce72604e24675)
+
+- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/6269b3cc6248df946a077233/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/6269b3cc6248df946a077233/build/62b16e2d4f03039fc7d8d42d)
+
+- Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6269b3cc6248df946a077233/ios-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6269b3cc6248df946a077233/build/62b16e454f03033493b1f807)
+
 
 ## [Signal iOS](https://github.com/signalapp/Signal-iOS)
 
 **Signal** is a popular free, open-source messaging app for simple private communication with friends. It contains numerous dependencies and hundreds of tests.
 
-**Test name** | **Mac Mini M1** | **Mac Pro**
---- | --- | ---
-Building and Running Tests with fastlane | **394s** | 690s
+**Test name** | **M1 Mac Mini** | **Mac Pro** | **Mac Mini**
+--- | --- | --- | ---
+Building and Running Tests with fastlane | **311s** | 685s | 1237s
 
 - [`codemagic.yaml`](https://github.com/nevercode-rudrank/Signal-iOS/blob/master/codemagic.yaml)
-- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/626e67f46248df64e0b79f91/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/626e67f46248df64e0b79f91/build/626f7b023b349663c0f67112)
-- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/626e67f46248df64e0b79f91/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/626e67f46248df64e0b79f91/build/626f7af53b34964c4093eb1b)
+
+- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/626e67f46248df64e0b79f91/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/626e67f46248df64e0b79f91/build/62b0b236dc456203b5704023)
+
+- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/626e67f46248df64e0b79f91/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/626e67f46248df64e0b79f91/build/62b0b236dc456203b5704022)
+
+- Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/626e67f46248df64e0b79f91/ios-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/626e67f46248df64e0b79f91/build/62b0b236dc456203b5704024)
 
 ## [Wikipedia iOS](https://github.com/wikimedia/wikipedia-ios)
 
 The official Wikipedia iOS app is open-sourced. It also contains multiple dependencies and hundreds of tests.
 
-**Test name** | **Mac Mini M1** | **Mac Pro**
---- | --- | ---
-Installing Scripts | **23s** | 278s
-Building Project | **268s** | 279s
-Running Tests | **279s** | 409s
+**Test name** | **M1 Mac Mini** | **Mac Pro** | **Mac Mini**
+--- | --- | --- | ---
+Building Project | **98s** | 186s | 259s
+Running Tests | **163s** | 325s | 422s
 
 - [`codemagic.yaml`](https://github.com/nevercode-rudrank/wikipedia-ios/blob/main/codemagic.yaml)
-- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6267c85aeb4a9a0e7b7eba1b/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6267c85aeb4a9a0e7b7eba1b/build/626fa43229657a7cdaf1d9f9) 
-- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/6267c85aeb4a9a0e7b7eba1b/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/6267c85aeb4a9a0e7b7eba1b/build/626fa43229657a7cdaf1d9f8)
+
+- M1 Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6267c85aeb4a9a0e7b7eba1b/ios-m1-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6267c85aeb4a9a0e7b7eba1b/build/62b0b1a8dc456203b5703f3d) 
+
+- Mac Pro Workflow [![Codemagic build status](https://api.codemagic.io/apps/6267c85aeb4a9a0e7b7eba1b/ios-mac-pro-workflow/status_badge.svg)](https://codemagic.io/app/6267c85aeb4a9a0e7b7eba1b/build/62b0b1a8dc456203b5703f3c)
+
+- Mac Mini Workflow [![Codemagic build status](https://api.codemagic.io/apps/6267c85aeb4a9a0e7b7eba1b/ios-mac-mini-workflow/status_badge.svg)](https://codemagic.io/app/6267c85aeb4a9a0e7b7eba1b/build/62b0b1a8dc456203b5703f3e)
