@@ -24,13 +24,6 @@ You will need to set up the following in the [Firebase console](https://firebase
 
 Please follow the guides in the [Firebase test lab documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qVwqW25QIV8iCtBh3DrwyUEAAYASAAEgLFU_D_BwE) to set up a project.
 
-
-## Encrypted Environment Variables
-
-Use the Codemagic web app to securely encrypt environment variables that are included in the codemagic.yaml. These values can only be accessed on the Codemagic build servers.
-
-Please note that encrypted values are specific to your personal account or team. If you move your app from personal account to a Team or vice versa you will need to re-encrypt these values.
-
 ## Configuring the codemagic.yaml
 
 <ol>
