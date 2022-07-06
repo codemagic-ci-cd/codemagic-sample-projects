@@ -23,6 +23,9 @@
 ## Ionic Samples
 * [Ionic capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
 
+## Kotlin Multiplatform Mobile Samples
+* [Ionic capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/kotlin-multiplatform-mobile)
+
 ## Integrations 
 * [Jira integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
 * [Discord integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
