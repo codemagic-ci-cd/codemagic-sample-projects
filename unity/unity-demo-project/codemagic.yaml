@@ -5,7 +5,7 @@ workflows:
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
         - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
         UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
@@ -22,7 +22,7 @@ workflows:
           keychain initialize
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_EMAIL?} -password ${UNITY_PASSWORD?}
       - name: Build the Xcode project
         script: |
           $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
@@ -58,7 +58,7 @@ workflows:
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
         # - keystore_credentials # Uncomment this if you're not using code-signing-identities <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
       vars:
@@ -79,7 +79,7 @@ workflows:
     scripts:
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_EMAIL?} -password ${UNITY_PASSWORD?}
       - name: Set up keystore
         script: |
           # echo $CM_KEYSTORE | base64 --decode > $CM_BUILD_DIR/keystore.keystore # <-- Uncomment this line if you're not using the code-signing-identities and you want to manually decode the CM_KEYSTORE to CM_KEYSTORE_PATH
@@ -104,7 +104,7 @@ workflows:
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
       vars:
         BUILD_SCRIPT: BuildWindows
     triggering:
@@ -119,7 +119,7 @@ workflows:
     scripts:
       - name: Activate & Build Unity Using a Command Prompt
         script: |
-          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_USERNAME -password $env:UNITY_PASSWORD
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_EMAIL -password $env:UNITY_PASSWORD
       - name: Export Unity
         script: |
           cd windows
@@ -141,7 +141,7 @@ workflows:
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
         # - keystore_credentials # Uncomment this if you're not using code-signing-identities <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
       vars:
@@ -162,7 +162,7 @@ workflows:
       - name: Set build number and export Unity
         script: |
           export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile "$env:CM_BUILD_DIR\\android\\log-android.txt" -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_USERNAME -password $env:UNITY_PASSWORD
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile "$env:CM_BUILD_DIR\\android\\log-android.txt" -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_EMAIL -password $env:UNITY_PASSWORD
     artifacts:
       - android/*.aab
       - android/*.apk
