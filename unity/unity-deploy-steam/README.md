@@ -14,7 +14,7 @@ The template is for a Windows 64 bit application and uses SteamCMD to upload the
 The following environment variables must be defined:
 ```
    UNITY_SERIAL
-   UNITY_USERNAME
+   UNITY_EMAIL
    UNITY_PASSWORD
    STEAM_USERNAME
    STEAM_PASSWORD
