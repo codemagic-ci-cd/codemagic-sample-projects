@@ -582,11 +582,11 @@ workflows:
       - name: Copy Sentry Files
         script: |
           mkdir -p ~/Library/Application\ Support/Steam/config
-          cp ~/clone/steam/$SSFN_FILE_NAME ~/Library/Application\ Support/Steam
-          cp ~/clone/steam/config.vdf ~/Library/Application\ Support/Steam/config
+          cp ~/clone/unity/unity-deploy-steam/steam/$SSFN_FILE_NAME ~/Library/Application\ Support/Steam
+          cp ~/clone/unity/unity-deploy-steam/steam/config.vdf ~/Library/Application\ Support/Steam/config
       - name: Upload Build to Steam
         script: |
-          ~/Steam/steamcmd.sh +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build ~/clone/steam/app_build.vdf +quit
+          ~/Steam/steamcmd.sh +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build ~/clone/unity/unity-deploy-steam/steam/app_build.vdf +quit
     artifacts:
       - helloworld_win64.zip
     publishing:
