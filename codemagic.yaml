@@ -554,6 +554,8 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   unity-steam-deploy:
     name: Unity Steam Deploy
+    instance_type: mac_pro
+    working_directory: unity/unity-deploy-steam
     environment:
       groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
