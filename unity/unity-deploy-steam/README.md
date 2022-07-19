@@ -1,4 +1,4 @@
-# unity deploy to steam demo project
+# Unity deploy to Steam demo project
 
 ## Prerequisites
 
