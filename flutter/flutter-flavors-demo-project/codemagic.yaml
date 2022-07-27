@@ -4,14 +4,14 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here
+          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here
           # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
         - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
       vars:
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+        XCODE_WORKSPACE: 'ios/Runner.xcworkspace' # <-- Put your encrypted Certificate Private Key here
         # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
         APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         XCODE_CONFIG: _
@@ -31,7 +31,7 @@ workflows:
     scripts:
       - name: Get Flutter Packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Pod install
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -54,14 +54,14 @@ workflows:
           --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
           --export-options-plist=/Users/builder/export_options.plist \
           --flavor="$XCODE_SCHEME" \
-          -t "$ENTRY_POINT"      
-    artifacts: 
+          -t "$ENTRY_POINT"
+    artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
-      email: 
+      email:
         recipients:
           - user_1@example.com
           - user_2@example.com
@@ -69,10 +69,10 @@ workflows:
           success: true
           failure: true
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
+        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
         #      - group name 1
-        #      - group name 2  
+        #      - group name 2

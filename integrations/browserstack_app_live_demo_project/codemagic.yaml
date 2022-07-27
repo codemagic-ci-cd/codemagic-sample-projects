@@ -5,15 +5,15 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-         - ios_credentials
+        - ios_credentials
       vars:
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"                
-        BUNDLE_ID: "com.example.integrationBrowserstack" # <-- Put your bundle id here dhfkdsf
+        XCODE_WORKSPACE: 'Runner.xcworkspace'
+        XCODE_SCHEME: 'Runner'
+        BUNDLE_ID: 'com.example.integrationBrowserstack' # <-- Put your bundle id here dhfkdsf
       flutter: stable
       xcode: 13.0
       cocoapods: default
-    scripts: 
+    scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
           keychain initialize
@@ -25,11 +25,11 @@ workflows:
           keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: |
-          xcode-project use-profiles 
+          xcode-project use-profiles
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
-        ignore_failure: true          
+          flutter packages pub get
+        ignore_failure: true
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -45,5 +45,5 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log 
+      - flutter_drive.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app

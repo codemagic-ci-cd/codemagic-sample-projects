@@ -15,8 +15,8 @@ workflows:
         - other
       vars:
         FCI_KEYSTORE_PATH: /tmp/keystore.keystore
-        PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
-        GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.  
+        PACKAGE_NAME: 'io.codemagic.flutteryaml' # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: 'alpha' # <-- This must be "alpha" or above.
         CODE_COVERAGE_TARGET: 90 # <-- Expected code coverage rate
       flutter: stable
       xcode: latest
@@ -37,32 +37,32 @@ workflows:
           echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Flutter analyze
         script: |
-          cd . && flutter analyze
+          flutter analyze
       - name: Flutter unit tests
         script: |
-          cd . && flutter test
-        ignore_failure: true    
+          flutter test
+        ignore_failure: true
       - name: Collecting code coverage and storing in a location
         script: |
-           HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov
-           mkdir -p test-results 
-           flutter test --coverage --machine > test-results/flutter.json  
-           code_coverage=$(lcov --list $CM_BUILD_DIR/coverage/lcov.info | sed -n "s/.*Total:|\(.*\)%.*/\1/p")
-           echo "Code Coverage: ${code_coverage}% " | bc); then { echo "uploading to codecov" }; fi 
-           if (( $(echo "$code_coverage < $CODE_COVERAGE_TARGET" | bc) )); then { echo "code coverage is less than expected" && exit 1; }; fi                  
-        test_report: test-results/flutter.json  
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov
+          mkdir -p test-results 
+          flutter test --coverage --machine > test-results/flutter.json  
+          code_coverage=$(lcov --list $CM_BUILD_DIR/coverage/lcov.info | sed -n "s/.*Total:|\(.*\)%.*/\1/p")
+          echo "Code Coverage: ${code_coverage}% " | bc); then { echo "uploading to codecov" }; fi 
+          if (( $(echo "$code_coverage < $CODE_COVERAGE_TARGET" | bc) )); then { echo "code coverage is less than expected" && exit 1; }; fi
+        test_report: test-results/flutter.json
       - name: Codecov upload
         script: |
-           #!/bin/bash
-           curl -Os https://uploader.codecov.io/latest/macos/codecov
-           chmod +x codecov
-           ./codecov -t ${CODECOV_TOKEN} -f "test-results/flutter.json"    
-      - name: Build APK with Flutter  
+          #!/bin/bash
+          curl -Os https://uploader.codecov.io/latest/macos/codecov
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN} -f "test-results/flutter.json"
+      - name: Build APK with Flutter
         script: |
-          cd . && flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
+          flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/mapping.txt
@@ -74,15 +74,15 @@ workflows:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true     # To not receive a notification when a build succeeds
-          failure: false    # To not receive a notification when a build fails
-      slack: 
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: '#builds'
-        notify_on_build_start: true   # To receive a notification when a build starts
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true               # To not receive a notification when a build succeeds
-          failure: false              # To not receive a notification when a build fails
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: $GOOGLE_PLAY_TRACK
