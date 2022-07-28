@@ -13,7 +13,7 @@ workflows:
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
         - other
       vars:
-        FCI_KEYSTORE_PATH: /tmp/keystore.keystore
+        CM_KEYSTORE_PATH: /tmp/keystore.keystore
         PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
         GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.  
       flutter: stable
@@ -25,9 +25,9 @@ workflows:
           echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
           # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
           # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
-          # storePassword=$FCI_KEYSTORE_PASSWORD
-          # keyPassword=$FCI_KEY_PASSWORD
-          # keyAlias=$FCI_KEY_ALIAS
+          # storePassword=$CM_KEYSTORE_PASSWORD
+          # keyPassword=$CM_KEY_PASSWORD
+          # keyAlias=$CM_KEY_ALIAS
           # storeFile=/tmp/keystore.keystore
           # EOF
       - name: Set up local.properties
@@ -35,17 +35,17 @@ workflows:
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Flutter analyze
         script: |
-          cd . && flutter analyze
+          flutter analyze
       - name: Flutter unit tests
         script: |
-          cd . && flutter test
+          flutter test
         ignore_failure: true          
       - name: Build APK with Flutter  
         script: |
-          cd . && flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
+          flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
       - name: Publish APK to Sofy
         script: |
             curl --location --request POST 'https://api.sofy.ai/api/AppTests/buildUpload' \
