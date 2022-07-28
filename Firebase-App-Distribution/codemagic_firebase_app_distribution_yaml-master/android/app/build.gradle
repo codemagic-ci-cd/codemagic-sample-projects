@@ -43,10 +43,10 @@ android {
 signingConfigs {
         release {
             if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
-                storeFile file(System.getenv()["FCI_KEYSTORE_PATH"])
-                storePassword System.getenv()["FCI_KEYSTORE_PASSWORD"]
-                keyAlias System.getenv()["FCI_KEY_ALIAS"]
-                keyPassword System.getenv()["FCI_KEY_PASSWORD"]
+                storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["CM_KEY_ALIAS"]
+                keyPassword System.getenv()["CM_KEY_PASSWORD"]
             } else {
                 storeFile file("/path/to/local/myreleasekey.keystore")
                 storePassword System.getenv()["KEYSTORE_PASSWORD"]
