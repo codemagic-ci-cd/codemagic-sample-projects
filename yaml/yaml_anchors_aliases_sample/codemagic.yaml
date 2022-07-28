@@ -18,10 +18,10 @@ definitions:
         # APP_STORE_APP_ID
         # CERTIFICATE_PRIVATE_KEY
       vars:
-        BUNDLE_ID: 'com.example.yourapp'
-        XCODE_WORKSPACE: 'App.xcworspace'
-        XCODE_SCHEME: 'App'
-        XCODE_CONFIG: 'Release-dev'
+        BUNDLE_ID: "com.example.yourapp"
+        XCODE_WORKSPACE: "App.xcworspace"
+        XCODE_SCHEME: "App"
+        XCODE_CONFIG: "Release-dev"
   artifacts:
     - &ipa build/ios/ipa/*.ipa
     - &xcode_log /tmp/xcodebuild_logs/*.log
@@ -80,7 +80,7 @@ definitions:
       password: $APP_SPECIFIC_PASSWORD
   slack_publish: &slack_publish
     slack:
-      channel: '#builds'
+      channel: "#builds"
 workflows:
   ios-release:
     name: iOS release
@@ -92,7 +92,7 @@ workflows:
       events:
         - tag
       branch_patterns:
-        - pattern: 'main'
+        - pattern: "main"
           include: true
           source: true
     scripts:
@@ -118,7 +118,7 @@ workflows:
       events:
         - push
       branch_patterns:
-        - pattern: 'develop'
+        - pattern: "develop"
           include: true
           source: true
     scripts:

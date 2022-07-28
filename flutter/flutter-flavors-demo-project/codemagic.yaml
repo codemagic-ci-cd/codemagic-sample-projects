@@ -11,7 +11,7 @@ workflows:
           # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
         - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
       vars:
-        XCODE_WORKSPACE: 'ios/Runner.xcworkspace' # <-- Put your encrypted Certificate Private Key here
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
         # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
         APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         XCODE_CONFIG: _
@@ -25,7 +25,7 @@ workflows:
       events:
         - push
       branch_patterns:
-        - pattern: 'main'
+        - pattern: "main"
           include: true
           source: true
     scripts:

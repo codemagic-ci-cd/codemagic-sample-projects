@@ -14,8 +14,8 @@ workflows:
         - other
       vars:
         FCI_KEYSTORE_PATH: /tmp/keystore.keystore
-        PACKAGE_NAME: 'io.codemagic.flutteryaml' # <-- Put your package name here
-        GOOGLE_PLAY_TRACK: 'alpha' # <-- This must be "alpha" or above.
+        PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -62,7 +62,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
       slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#builds'
+        channel: "#builds"
         notify_on_build_start: true # To receive a notification when a build starts
         notify:
           success: true # To not receive a notification when a build succeeds
@@ -85,9 +85,9 @@ workflows:
         - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
         - other
       vars:
-        XCODE_WORKSPACE: 'Runner.xcworkspace'
-        XCODE_SCHEME: 'Runner'
-        BUNDLE_ID: 'io.codemagic.flutteryaml' # <-- Put your bundle id here
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
         APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
       flutter: stable
       xcode: latest
@@ -139,7 +139,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
       slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#builds'
+        channel: "#builds"
         notify_on_build_start: true # To receive a notification when a build starts
         notify:
           success: true # To receive a notification when a build succeeds

@@ -9,7 +9,7 @@ workflows:
           # GCLOUD_KEY_FILE <-- Put your Google Cloud Key file here
           # GOOGLE_CREDENTIALS <-- Put your google-services.json here if publishing to Google Play
       vars:
-        FIREBASE_PROJECT: 'YOUR_FIREBASE_PROJECT_NAME' # <-- Put your Firebase Project Name here
+        FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_NAME" # <-- Put your Firebase Project Name here
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -64,7 +64,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
       slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#channel-name'
+        channel: "#channel-name"
         notify_on_build_start: true # To receive a notification when a build starts
         notify:
           success: true # To not receive a notification when a build succeeds

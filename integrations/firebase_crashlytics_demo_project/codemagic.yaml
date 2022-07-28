@@ -7,9 +7,9 @@ workflows:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - appstore_connect # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
       vars:
-        XCODE_WORKSPACE: 'ios/Runner.xcworkspace' # <-- Put your encrypted Certificate Private Key here
-        XCODE_SCHEME: 'Runner'
-        BUNDLE_ID: 'com.example.firebaseCrash'
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.example.firebaseCrash"
       flutter: stable
       xcode: 13.2
       cocoapods: default

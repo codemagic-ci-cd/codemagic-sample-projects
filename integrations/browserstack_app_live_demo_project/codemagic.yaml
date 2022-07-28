@@ -7,9 +7,9 @@ workflows:
       groups:
         - ios_credentials
       vars:
-        XCODE_WORKSPACE: 'Runner.xcworkspace'
-        XCODE_SCHEME: 'Runner'
-        BUNDLE_ID: 'com.example.integrationBrowserstack' # <-- Put your bundle id here dhfkdsf
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.example.integrationBrowserstack" # <-- Put your bundle id here dhfkdsf
       flutter: stable
       xcode: 13.0
       cocoapods: default
