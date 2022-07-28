@@ -28,7 +28,7 @@ workflows:
           # storePassword=$CM_KEYSTORE_PASSWORD
           # keyPassword=$CM_KEY_PASSWORD
           # keyAlias=$CM_KEY_ALIAS
-          # storeFile=/tmp/keystore.keystore
+          # storeFile=$CM_KEYSTORE_PATH
           # EOF
       - name: Set up local.properties
         script: |
