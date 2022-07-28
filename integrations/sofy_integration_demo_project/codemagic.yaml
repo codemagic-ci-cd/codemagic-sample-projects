@@ -83,7 +83,7 @@ workflows:
           failure: false    # To not receive a notification when a build fails
       slack: 
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#builds'
+        channel: "#builds"
         notify_on_build_start: true   # To receive a notification when a build starts
         notify:
           success: true               # To not receive a notification when a build succeeds
@@ -128,13 +128,13 @@ workflows:
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Flutter analyze
         script: |
-          cd . && flutter analyze
+          flutter analyze
       - name: Flutter unit tests
         script: |
-          cd . && flutter test
+          flutter test
         ignore_failure: true          
       - name: Install pods
         script: |
