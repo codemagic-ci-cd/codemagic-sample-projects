@@ -55,8 +55,8 @@ definitions:
     - &build_ipa
       name: Build ipa
       script: |
-        # cd . && xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME --config $XCODE_CONFIG
-        cd . && xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME
+        # xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME --config $XCODE_CONFIG
+        xcode-project build-ipa --workspace $XCODE_WORKSPACE --scheme $XCODE_SCHEME
   email_release: &email_release
     email:
       recipients:
@@ -92,7 +92,7 @@ workflows:
       events:
         - tag
       branch_patterns:
-        - pattern: 'main'
+        - pattern: "main"
           include: true
           source: true
     scripts:
@@ -118,7 +118,7 @@ workflows:
       events:
         - push
       branch_patterns:
-        - pattern: 'develop'
+        - pattern: "develop"
           include: true
           source: true
     scripts:
@@ -134,4 +134,3 @@ workflows:
     publishing:
       <<: *email_develop
       <<: *slack_publish
-

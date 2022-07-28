@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - keystore_credentials # <-- (Includes FCI_KEYSTORE, FCI_KEYSTORE_PASSWORD, FCI_KEY_PASSWORD, FCI_KEY_ALIAS)
           # FCI_KEYSTORE <-- Put your keystore file here
           # FCI_KEYSTORE_PASSWORD <-- Put your keystore password here
@@ -34,20 +34,20 @@ workflows:
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Flutter analyze
         script: |
-          cd . && flutter analyze
+          flutter analyze
       - name: Flutter unit tests
         script: |
-          cd . && flutter test
-        ignore_failure: true          
+          flutter test
+        ignore_failure: true
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Build APK with Flutter  
+      - name: Build APK with Flutter
         script: |
-          cd . && flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+          flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
@@ -61,13 +61,13 @@ workflows:
         notify:
           success: true
           failure: false
-      slack: 
+      slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#builds'
-        notify_on_build_start: true   # To receive a notification when a build starts
+        channel: "#builds"
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true               # To not receive a notification when a build succeeds
-          failure: false              # To not receive a notification when a build fails
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
@@ -76,7 +76,7 @@ workflows:
         firebase_token: $ANDROID_FIREBASE_SECRET
         android:
           app_id: x:xxxxxxxxxxxx:android:xxxxxxxxxxxxxxxxxxxxxx
-          groups: 
+          groups:
             - androidTesters
 
   ios-workflow:
@@ -85,10 +85,10 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
         - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
+          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here
+          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here
           # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
           # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
           # https://appstoreconnect.apple.com/access/api
@@ -97,9 +97,9 @@ workflows:
         - other
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"                
+        XCODE_SCHEME: "Runner"
         BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
-        APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID. 
+        APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -118,14 +118,14 @@ workflows:
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
+          flutter packages pub get
       - name: Flutter analyze
         script: |
-          cd . && flutter analyze
+          flutter analyze
       - name: Flutter unit tests
         script: |
-          cd . && flutter test
-        ignore_failure: true          
+          flutter test
+        ignore_failure: true
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -146,26 +146,26 @@ workflows:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true     # To receive a notification when a build succeeds
-          failure: false    # To not receive a notification when a build fails
-      slack: 
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: "#builds"
-        notify_on_build_start: true   # To receive a notification when a build starts
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true               # To receive a notification when a build succeeds
-          failure: false              # To not receive a notification when a build fails
-      app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
+        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
         #      - group name 1
-        #      - group name 2  
+        #      - group name 2
       firebase:
         firebase_token: $IOS_FIREBASE_SECRET
-        ios: 
-           app_id: x:xxxxxxxxxxxx:ios:xxxxxxxxxxxxxxxxxxxxxx
-           groups:
-              - iosTesters
+        ios:
+          app_id: x:xxxxxxxxxxxx:ios:xxxxxxxxxxxxxxxxxxxxxx
+          groups:
+            - iosTesters

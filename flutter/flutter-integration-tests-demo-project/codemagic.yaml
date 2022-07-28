@@ -21,18 +21,18 @@ workflows:
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Get Flutter packages  
+      - name: Get Flutter packages
         script: |
-          cd . && flutter packages pub get
-      - name: Build APK with Flutter  
+          flutter packages pub get
+      - name: Build APK with Flutter
         script: |
-          cd . && flutter build apk --debug
-      - name: Create debug and test APK  
+          flutter build apk --debug
+      - name: Create debug and test APK
         script: |
           set -ex
           cd android
           ./gradlew app:assembleAndroidTest
-          ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart" 
+          ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart"
       - name: Run Firebase Test Lab tests
         script: |
           set -ex
@@ -40,9 +40,9 @@ workflows:
           echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json
 
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
-      
+
           gcloud --quiet config set project $FIREBASE_PROJECT
-      
+
           gcloud firebase test android run \
             --type instrumentation \
             --app build/app/outputs/apk/debug/app-debug.apk \
@@ -60,12 +60,12 @@ workflows:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true     # To not receive a notification when a build succeeds
-          failure: false    # To not receive a notification when a build fails
-      slack: 
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: '#channel-name'
-        notify_on_build_start: true   # To receive a notification when a build starts
+        channel: "#channel-name"
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true               # To not receive a notification when a build succeeds
-          failure: false              # To not receive a notification when a build fails
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
