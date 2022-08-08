@@ -1,0 +1,75 @@
+workflows:
+  android-workflow:
+    name: Android Workflow
+    max_build_duration: 120
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
+          # CM_KEYSTORE <-- Put your keystore file here
+          # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
+          # CM_KEY_PASSWORD <-- Put your keystore alias password here
+          # CM_KEY_ALIAS <-- Put your keystore alias username here
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
+        - other
+      vars:
+        CM_KEYSTORE_PATH: /tmp/keystore.keystore
+        PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up key properties
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH
+          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+          # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
+          # storePassword=$CM_KEYSTORE_PASSWORD
+          # keyPassword=$CM_KEY_PASSWORD
+          # keyAlias=$CM_KEY_ALIAS
+          # storeFile=$CM_KEYSTORE_PATH
+          # EOF
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter unit tests
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Build AAB with Flutter
+        script: |
+          flutter build appbundle --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
+      - name: Upload app to Perfecto
+        script: |
+          curl "https://web.app.perfectomobile.com/repository/api/v1/artifacts" -H "Perfecto-Authorization: $PERFECTO_TOKEN" -H "Content-Type: multipart/form-data" -F "requestPart={\"artifactLocator\":\"PRIVATE:app.aab\",\"artifactType\":\"ANDROID\",\"override\":true}" -F "inputStream=@/path/to/app.aab"
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: "#builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
+        in_app_update_priority: 0
