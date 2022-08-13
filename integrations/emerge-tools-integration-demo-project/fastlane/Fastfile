@@ -1,0 +1,53 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+fastlane_require 'git'
+
+default_platform(:ios)
+
+git = Git.open('..')
+
+platform :ios do
+  lane :emerge_app_upload do
+    BRANCH = ENV["CM_BRANCH"]
+    IS_PULL_REQUEST = ENV["CM_PULL_REQUEST"]
+    PR_NUMBER = ENV["CM_PULL_REQUEST_NUMBER"]
+    REPO_NAME = ENV["CM_REPO_SLUG"]
+    CURRENT_BUILD_ID = ENV["CM_COMMIT"]
+
+    FILE_PATH = "/build/ios/xcarchive/swiftly.xcarchive"
+
+    BASE_BUILD_ID = git.log[0].parent.sha
+    PARENT_BUILD_ID = git.log[0].sha
+    
+    if IS_PULL_REQUEST == "true"
+      emerge(
+        file_path: FILE_PATH,
+        build_type: "pull_request",
+        repo_name: REPO_NAME,
+        pr_number: PR_NUMBER,
+        sha: CURRENT_BUILD_ID,
+        base_sha: BASE_BUILD_ID
+      )
+    elsif BRANCH.eql? "main"
+      emerge(
+        file_path: FILE_PATH, 
+        build_type: "main",
+        repo_name: REPO_NAME,
+        sha: PARENT_BUILD_ID
+      )
+    end
+  end
+end
