@@ -48,11 +48,6 @@ workflows:
           xcode-project use-profiles
       - name: Increment build number
         script: |
-          #!/bin/sh
-          set -e
-          set -x
-          cd $FCI_BUILD_DIR
-          # agvtool new-version -all $(($BUILD_NUMBER + 1))
           agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
       - name: Build ipa for distribution
         script: |
