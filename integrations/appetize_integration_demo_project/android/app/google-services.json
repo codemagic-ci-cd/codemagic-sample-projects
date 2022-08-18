@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "293322884220",
+    "project_id": "codemagic-demo-f7f52",
+    "storage_bucket": "codemagic-demo-f7f52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293322884220:android:6229b4fe25681dd318b5f9",
+        "android_client_info": {
+          "package_name": "com.mohammed.codemagic_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "293322884220-cnl81e4jgvamr68mfoq8cvh5h79bqipq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsH_0l61FPJYP5BDhSYPxMIQSGuiZ1JdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293322884220-cnl81e4jgvamr68mfoq8cvh5h79bqipq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "293322884220-gb57thad8apfnf1nn01rk2k5h53ch0cv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mohammed.codemagic-demo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
