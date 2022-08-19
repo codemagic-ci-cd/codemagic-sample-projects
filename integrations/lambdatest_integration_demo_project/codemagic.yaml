@@ -52,7 +52,7 @@ workflows:
                 cd android && ./gradlew assembleRelease
             - name: Submitting app to LambdaTest
               script: |
-                 curl --location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' --header 'Authorization: Basic $LAMBDATEST' --form 'name="lambda1"' --form 'appFile=@""/path/to/file"'
+                 curl --location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' --header 'Authorization: Basic $LAMBDATEST' --form 'name="lambda1"' --form 'appFile=@/path/to/file'
         artifacts:
             - android/app/build/outputs/**/*.apk
         publishing:
