@@ -42,7 +42,7 @@ workflows:
         - name: Upload to appetize
           script: |
             artifactPath="$CM_BUILD_OUTPUT_DIR/app-release.apk"
-            echo $(curl --location --request POST 'https://'$API_TOKEN'@api.appetize.io/v1/apps/'$APP_PUBLIC_KEY'' --form 'file=@"'$artifactPath'"')
+            echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$artifactPath")
   appetize-ios-workflow:
     name: iOS Workflow
     instance_type: mac_pro
@@ -93,4 +93,4 @@ workflows:
         - name: Publish App to Appetize
           script: |
             zipPath="ios/output/Build/Products/Debug-iphonesimulator/ios_app.zip"
-            echo $(curl --location --request POST 'https://'$API_TOKEN'@api.appetize.io/v1/apps/'$APP_PUBLIC_KEY'' --form 'file=@'"$zipPath"'')
+            echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$zipPath")
