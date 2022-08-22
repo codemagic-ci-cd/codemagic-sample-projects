@@ -10,7 +10,7 @@ workflows:
       groups:
         - appetize # <-- Includes (API_TOKEN)
       vars:
-        PACKAGE_NAME: "com.mohammed.codemagic_demo" # <-- Put your package name here
+        PACKAGE_NAME: "io.codemagic.appetize" # <-- Put your package name here
         APP_PUBLIC_KEY: "**************************" # <-- Put your App public key here
       android_signing:
         - codemagic_demo
