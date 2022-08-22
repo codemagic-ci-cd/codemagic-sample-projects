@@ -1,0 +1,96 @@
+workflows:
+  appetize-android-workflow:
+    name: Appetize Android Workflow
+    instance_type: linux_x2
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $CM_BUILD_DIR/build
+    environment:
+      groups:
+        - appetize # <-- Includes (API_TOKEN)
+      vars:
+        PACKAGE_NAME: "io.codemagic.appetize" # <-- Put your package name here
+        APP_PUBLIC_KEY: "**************************" # <-- Put your App public key here
+      android_signing:
+        - codemagic_demo
+      flutter: stable
+    scripts:
+      - name: Set up key properties
+        script: |
+          # echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH # Not required if using team code signing identities
+          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
+          cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Build apk with Flutter
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/**/outputs/apk/**/*.apk
+    publishing:
+      scripts:
+        - name: Upload to appetize
+          script: |
+            artifactPath="$CM_BUILD_OUTPUT_DIR/app-release.apk"
+            echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$artifactPath")
+  appetize-ios-workflow:
+    name: iOS Workflow
+    instance_type: mac_pro
+    max_build_duration: 120
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+    environment:
+      groups:
+        - appetize # Includes (API_TOKEN)
+        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.mohammed.codemagicDemo" # <-- Put your bundle id here
+        APP_STORE_ID: 1623367177 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
+        APP_PUBLIC_KEY: "**************************" # <-- Put your App public key here
+    scripts:
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: keychain initialize
+      - name: Fetch signing files
+        script: app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+      - name: Use system default keychain
+        script: keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Get Flutter packages & Build
+        script: |
+          flutter packages pub get
+          flutter build ios
+        ignore_failure: true
+      - name: Build unsigned .app
+        script: |
+          xcodebuild -workspace "ios/$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -configuration "Debug" -sdk iphonesimulator -derivedDataPath ios/output
+          # xcodebuild -project "ios/Runner.xcodeproj" -scheme "$XCODE_SCHEME" -configuration "Debug" -sdk iphonesimulator -derivedDataPath ios/output
+      - name: Zip generated .app
+        script: |
+          cd ios/output/Build/Products/Debug-iphonesimulator
+          zip -r ios_app.zip $XCODE_SCHEME.app
+    artifacts:
+      - ios/output/Build/Products/Debug-iphonesimulator/*.zip
+    publishing:
+      scripts:
+        - name: Publish App to Appetize
+          script: |
+            zipPath="ios/output/Build/Products/Debug-iphonesimulator/ios_app.zip"
+            echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$zipPath")
