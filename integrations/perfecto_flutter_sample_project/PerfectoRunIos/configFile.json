@@ -1,0 +1,33 @@
+{
+    "cloudURL": "beta.perfectomobile.com",
+    "securityToken":"xxxxxxxxxxxx",
+   
+	
+	"appPath":"repository:PATH_TO_IPA",
+	"hostedTestModuleName":"RunnerTests",
+	"isHostedTestModule":true,
+	
+	
+	"devices": [
+			{"deviceName":"00008020-000D2CC42ED8002E"},
+			{"deviceName":"00008101-000B05283081401E"}
+	],
+	"shard": false,
+	"jobName": "Flutter_iOS_Job",
+  	"jobNumber": 1,
+  	"branch": "Flutter_Branch",
+  	"projectName": "My_Flutter_iOS_Project",
+  	"projectVersion": "v1.0",
+  	"tags": [
+    "XCUI", "plugin"  ],
+	"takeScreenshotOnTestFailure": false,
+	"takeScreenshotOnTestEnd": false,
+	"takeScreenshotOnTestStep": false,
+	"runUITests":true,
+	"runUnitTests":false,
+	"installationDetails": {
+		"resign": true
+	  },
+	  
+  	"numOfDevices": 2
+  }
