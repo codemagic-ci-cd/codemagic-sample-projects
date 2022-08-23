@@ -52,7 +52,7 @@ workflows:
                 cd android && ./gradlew assembleRelease
             - name: Submitting app to LambdaTest
               script: |
-                 curl --location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' --header 'Authorization: Basic $LAMBDATEST' --form 'name="lambda1"' --form 'appFile=@/path/to/file'
+                 curl --location --request POST "https://manual-api.lambdatest.com/app/upload/realDevice" --header "Authorization: Basic $LAMBDATEST" --form "name='lambda1'" --form "appFile=@/path/to/file"
         artifacts:
             - android/app/build/outputs/**/*.apk
         publishing:
@@ -142,7 +142,7 @@ workflows:
                 xcode-project build-ipa --workspace "$FCI_BUILD_DIR/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" 
             - name: Submitting app to LambdaTest
               script: |
-                 curl --location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' --header "Authorization: Basic $LAMBDATEST" --form 'name="lambda1"' --form 'appFile=@/path/to/file'
+                 curl --location --request POST "https://manual-api.lambdatest.com/app/upload/realDevice" --header "Authorization: Basic $LAMBDATEST" --form "name='lambda1'" --form "appFile=@/path/to/file"
         artifacts:
             - build/ios/ipa/*.ipa
             - /tmp/xcodebuild_logs/*.log
