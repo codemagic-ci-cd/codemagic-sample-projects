@@ -1,0 +1,7 @@
+{
+  "name": "capgo_integration_demo_project",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
