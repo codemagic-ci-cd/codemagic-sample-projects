@@ -1,4 +1,4 @@
-# Perfecto Flutter Sample Project
+# Integrating Codemagic with Perfecto for Flutter apps
 
 ## Getting Started
 
