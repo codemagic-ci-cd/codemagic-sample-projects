@@ -2,4 +2,4 @@
 
 ## Getting Started
 
-Refer to the documentation here for a thorough explanation on how to integrate Codemagic with Perfecto.
+Refer to the documentation [here](https://docs.codemagic.io/integrations/perfecto-integration/) for a thorough explanation on how to integrate Codemagic with Perfecto.
