@@ -1,0 +1,33 @@
+{
+    "cloudURL": "web-fra.perfectomobile.com",
+    "securityToken": "xxxxxxxxxxxx",
+    "devices": [
+     
+          {
+            "platformName" : "Android",
+            "platformVersion": "^12.*",
+            "description":"free"
+          },
+          {
+            "platformName_" : "Android",
+            "platformVersion_": "^11.*",
+            "description":"free"
+          }
+    ],
+    "jobName": "some_job",
+    "jobNumber": 1,
+    "branch": "some_branch",
+    "projectName": "My_Flutter_project",
+    "projectVersion": "v1.0",
+    "tags": [
+      "espresso", "plugin"  ],
+    "apkPath": "YOUR_APK_PATH",
+    "testApkPath": "YOUR_TEST_APK_PATH",
+    "installationDetails" : {"preCleanUp" : "true"},
+    "postExecution" : {"uninstall" : "false" },
+    "debug": false,
+    "failBuildOnFailure": false,
+    "takeScreenshotOnTestFailure": true,
+    "shard": false,
+    "testTimeout" : 60000
+  }

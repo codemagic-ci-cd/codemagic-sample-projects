@@ -1,0 +1,13 @@
+buildscript {
+    repositories {
+            maven {
+                url "https://repo1.perfectomobile.com/public/repositories/maven"        
+            }
+    }
+    dependencies {
+        classpath "com.perfectomobile.instrumentedtest.gradleplugin:plugin:+"    
+    }
+}
+apply plugin: 'com.perfectomobile.instrumentedtest.gradleplugin'
+perfectoGradleSettings {
+    configFileLocation "configFile.json"}
