@@ -155,7 +155,7 @@ workflows:
               then 
                 curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/attachments -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -F "file=@release_notes.txt"  | jq "."
               else
-                "No release_notes.txt available to upload to JIRA"
+                echo "No release_notes.txt available to upload to JIRA"
               fi  
         email:
             recipients: # <-- Add as many required email recipients as you need
