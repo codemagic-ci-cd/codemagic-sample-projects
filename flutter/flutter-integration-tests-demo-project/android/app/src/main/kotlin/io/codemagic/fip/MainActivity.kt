@@ -1,4 +1,4 @@
-package io.codemagic.integration;
+package io.codemagic.fip
 
 import io.flutter.embedding.android.FlutterActivity
 

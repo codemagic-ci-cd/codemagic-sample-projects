@@ -1,13 +1,11 @@
 workflows:
   android-workflow:
     name: Android Workflow
-    instance_type: mac_mini
+    instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
       groups:
         - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
-          # GCLOUD_KEY_FILE <-- Put your Google Cloud Key file here
-          # GOOGLE_CREDENTIALS <-- Put your google-services.json here if publishing to Google Play
       vars:
         FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_NAME" # <-- Put your Firebase Project Name here
       flutter: stable
@@ -69,3 +67,52 @@ workflows:
         notify:
           success: true # To not receive a notification when a build succeeds
           failure: false # To not receive a notification when a build fails
+  ios-workflow:
+      name: iOS Workflow
+      instance_type: mac_mini_m1
+      environment:
+        xcode: 13.4.1
+        groups:
+          - ios_credentials
+          - gcloud_credentials
+        vars:
+          FIREBASE_PROJECT: "flutter-integration-tests"
+          BUNDLE_ID: "io.codemagic.ftlflutter"
+          TEST_BUNDLE_ID: "io.codemagic.ftlflutter.uitests.xctrunner"
+      scripts:
+        - name: Configure Firebase access
+          script: |
+            set -e
+            echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS > ./gcloud_key_file.json          
+            gcloud auth activate-service-account --key-file=gcloud_key_file.json
+            gcloud --quiet config set project $FIREBASE_PROJECT
+
+        - keychain initialize
+        - app-store-connect fetch-signing-files ${BUNDLE_ID} --create
+        - app-store-connect fetch-signing-files ${TEST_BUNDLE_ID} --create
+        - keychain add-certificates
+        - xcode-project use-profiles --code-signing-setup-verbose-logging
+
+        - name: Build app for testing
+          script: |
+            set -ex
+
+            flutter build ios integration_test/app_test.dart --release
+
+            cd ios
+            xcodebuild \
+              -workspace Runner.xcworkspace \
+              -scheme Runner \
+              -config Flutter/Release.xcconfig \
+              -derivedDataPath "../build/ios_integ" \
+              -sdk iphoneos \
+              build-for-testing
+        - name: Package tests bundle
+          script: |
+            set -ex
+            cd ./build/ios_integ/Build/Products
+            zip -r "ios_tests.zip" *-iphoneos *.xctestrun
+        - name: Run tests in Firebase Test Lab
+          script: gcloud firebase test ios run --test "build/ios_integ/Build/Products/ios_tests.zip"     
+      artifacts:
+        - "**/ios_tests.zip"
