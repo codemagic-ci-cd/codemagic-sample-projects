@@ -150,12 +150,14 @@ In codemagic.yaml file the script called `Create debug and test APK` will create
 
 The script called `Run Firebase Test Lab tests` will use the `gcloud` CLI tools to authenticate with Firebase and then run the test passing in the debug apk, the test .apk, and specifying a build timeout. 
 
+## iOS configuration
+
+Follow the instructions [here](https://github.com/flutter/flutter/tree/main/packages/integration_test#ios-device-testing) to configure your iOS project.
+
 ## Getting help and support
 
-Click the URL below to join the Codemagic Slack Community:
-
-https://slack.codemagic.io/
+You can also get help in our GitHub Discussions community [here](https://github.com/codemagic-ci-cd/codemagic-docs/discussions)
 
 Customers who have enabled billing can use the in-app chat widget to get support. 
 
-Need a business plan with 3 Mac Pro concurrencies, unlimited build minutes, unlimited team seats and business priorty support? Click [here](https://codemagic.io/pricing/) for details.
+
