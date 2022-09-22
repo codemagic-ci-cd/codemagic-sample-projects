@@ -154,6 +154,8 @@ The script called `Run Firebase Test Lab tests` will use the `gcloud` CLI tools 
 
 Follow the instructions [here](https://github.com/flutter/flutter/tree/main/packages/integration_test#ios-device-testing) to configure your iOS project.
 
+In addtion to setting the value of `BUNDLE_ID` to your app's bundle id, you should also provide a bundle identifier value in codemagic.yaml for `TEST_BUNDLE_ID` that ends with `xctrunner` that is asscociated with the test runner.
+
 ## Getting help and support
 
 You can also get help in our GitHub Discussions community [here](https://github.com/codemagic-ci-cd/codemagic-docs/discussions)
