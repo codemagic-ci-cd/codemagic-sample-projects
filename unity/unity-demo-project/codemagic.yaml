@@ -179,3 +179,63 @@ workflows:
         # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: alpha # Any default or custom track.
+  unity-macos-workflow:
+    name: Unity Mac Workflow
+    environment:
+      groups:
+        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY)
+        - unity # <-- (Includes UNITY_SERIAL, UNITY_USERNAME, UNITY_PASSWORD)
+      vars:
+        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildMac
+        UNITY_MAC_DIR: mac
+        BUNDLE_ID: "com.domain.yourappname" # <-- Put your Bundle Id here.
+    scripts:
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: keychain initialize
+      - name: Fetch signing files
+        script: app-store-connect fetch-signing-files "$BUNDLE_ID" --type MAC_APP_STORE --platform MAC_OS --create
+      - name: Fetch Mac Installer Distribution certificates
+        script: |
+          app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save || \
+          app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save
+      - name: Add certs to keychain
+        script: keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Activate License
+        script: $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+      - name: Build
+        script: $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+      - name: Package macOS application
+        script: |
+          set -x
+          # Command to find the path to your generated app
+          APP_NAME=$(find $(pwd) -name "*.app")
+          cd $(dirname "$APP_NAME")
+          PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
+          # Create an unsigned package
+          xcrun productbuild --component "$APP_NAME" /Applications/ unsigned.pkg
+          # Find the installer certificate commmon name in keychain
+          INSTALLER_CERT_NAME=$(keychain list-certificates \
+            | jq '.[]
+              | select(.common_name
+              | contains("Mac Developer Installer"))
+              | .common_name' \
+            | xargs)
+          # Sign the package
+          xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg "$PACKAGE_NAME"
+          rm -f unsigned.pkg # Optionally remove the not needed unsigned package
+    artifacts:
+      - $UNITY_MAC_DIR/*.app
+      - $UNITY_MAC_DIR/*.pkg
+    publishing:
+      scripts:
+        - name: Deactivate License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false
