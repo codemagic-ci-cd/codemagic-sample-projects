@@ -36,7 +36,7 @@ workflows:
             PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
             mkdir -p "$PROFILES_HOME"
             PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
-            echo ${CM_PROVISIONING_PROFILE} | base64 --decode > $PROFILE_PATH
+            echo ${CM_PROVISIONING_PROFILE} | base64 --decode > "$PROFILE_PATH"
             echo "Saved provisioning profile $PROFILE_PATH"
         - name: Add signing certificate to keychain
           script: |
