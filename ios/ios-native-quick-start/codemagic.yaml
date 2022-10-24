@@ -1,0 +1,60 @@
+workflows:
+  ios-native-quic-start:
+    name: iOS Native
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.sample.iosnative
+      vars:
+        BUNDLE_ID: "io.codemagic.sample.iosnative"
+        XCODE_WORKSPACE: "CodemagicSample.xcworkspace"
+        XCODE_SCHEME: "CodemagicSample"
+        APP_ID: 1555555551
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install CocoaPods dependencies
+        script: | 
+          pod install
+      - name: Set up provisioning profiles settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Increment build number
+        script: | 
+          cd $CM_BUILD_DIR
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+      - name: Build ipa for distribution
+        script: | 
+          xcode-project build-ipa \
+            --workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      app_store_connect:
+        auth: integration
+
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
