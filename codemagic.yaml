@@ -593,3 +593,44 @@ workflows:
       scripts:
         - name: Deactivate License
           script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+
+  native-android:
+    name: Native Android
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    working_directory: android/android-native-quick-start
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "io.codemagic.androidquicksample"
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Build Android release
+        script: |
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name '$PACKAGE_NAME')
+          if [ -z LATEST_BUILD_NUMBER ]; then
+              # fallback in case no build number was found from google play. Alternatively, you can `exit 1` to fail the build
+              UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+              UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          ./gradlew bundleRelease -PversionCode=$UPDATED_BUILD_NUMBER -PversionName=1.0.$UPDATED_BUILD_NUMBER
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
