@@ -1,7 +1,47 @@
 # Codemagic Sample Projects
 
+## Flutter
+* [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project)
+
+
+## Android native
+* [Android sample project](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-native-quick-start)
+
+
+## iOS
+* [iOS sample project](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-native-quick-start)
+
+## React Native
+
+## Unity
+
+## Integrations
+### Crash reporting
+    │   ├── firebase_crashlytics_demo_project
+    │   └── sentry
+
+### Code quality
+    │   ├── codecov_integration_demo_project
+    │   └── sonarqube_integration_demo_project
+### Fastlane
+    │   ├── fastlane-android-integration-demo-project
+    │   └── fastlane-integration-demo-project
+
+### Messaging
+    │   └── discord_integration_demo_project
+    
+### Project management
+    │   └── jira_integration_demo_project
+### Real device testing
+        ├── appetize_integration_demo_project
+        ├── browserstack_app_live_demo_project
+        └── sofy_integration_demo_project
+
+---
+
+## OLD STUFF to be rearranged as we go along:
 ## Flutter Samples
-* [Flutter YAML sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/latest_build)
+ [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/latest_build)
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
 * [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
