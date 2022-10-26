@@ -179,56 +179,6 @@ To apply the profiles to your project during the build, add the following script
     # ... your build commands
 ```
 
-## Setting up the Android package name and iOS bundle identifier
-
-Configure Android package name and iOS bundle identifier by adding the corresponding variables in the `codemagic.yaml` and editing the `app.json` files.
-
-Example of minimal `app.json` file. Add the `android` and/or `ios` keys:
-``` json
-{
-  "expo": {
-    "name": "codemagicSample",
-    "slug": "codemagicSample",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "bundleIdentifier": "io.codemagic.sample.reactnative"
-    },
-    "android": {
-      "package": "io.codemagic.sample.reactnative"
-    }
-  }
-}
-```
-
-### Android
-
-``` yaml
-workflows:
-  react-native-android:
-    # ....
-    environment:
-      groups:
-        # ...
-      vars:
-        PACKAGE_NAME: "io.codemagic.sample.reactnative"
-```
-
-### iOS
-``` yaml
-workflows:
-  react-native-ios:
-    # ....
-    environment:
-      groups:
-        # ...
-      vars:
-        BUNDLE_ID: "io.codemagic.sample.reactnative"
-```
-
-
 ## Configure scripts to build the app
 Add the following scripts to your `codemagic.yaml` file in order to prepare the build environment and start the actual build process.
 In this step you can also define the build artifacts you are interested in. These files will be available for download when the build finishes. For more information about artifacts, see [here](https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/).
