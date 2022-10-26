@@ -12,7 +12,7 @@
 * [iOS sample project](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-native-quick-start)
 
 ## React Native
-
+* [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
 ## Unity
 
 ## Integrations
