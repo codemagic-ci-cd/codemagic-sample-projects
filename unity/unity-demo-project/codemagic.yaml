@@ -1,125 +1,166 @@
 workflows:
   unity-ios-workflow:
     name: Unity iOS Workflow
+    instance_type: mac_mini_m1
     max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.unitysample
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
-        - ios_credentials # <-- (Includes  APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+        - unity_credentials
       vars:
         UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildIos
         UNITY_IOS_DIR: ios
         XCODE_PROJECT: "Unity-iPhone.xcodeproj"
         XCODE_SCHEME: "Unity-iPhone"
-        BUNDLE_ID: "com.domain.yourappname" # <-- Put your Bundle Id here.
-        APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-        cocoapods: default
+        APP_STORE_APP_ID: 1555555551
+      cocoapods: default
     scripts:
-      - name: Set up macOS keychain using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_EMAIL?} -password ${UNITY_PASSWORD?}
-      - name: Build the Xcode project
+          $UNITY_BIN -batchmode -quit -logFile \
+            -serial ${UNITY_SERIAL?} \
+            -username ${UNITY_EMAIL?} \
+            -password ${UNITY_PASSWORD?}
+      - name: Generate the Xcode project from Unity
         script: |
-          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
+          $UNITY_BIN -batchmode \
+            -quit \
+            -logFile \
+            -projectPath . \
+            -executeMethod BuildScript.$BUILD_SCRIPT \
+            -nographics
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
       - name: Increment build number
         script: |
-          cd ios && agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+          BUILD_NUMBER=($(app-store-connect get-latest-app-store-build-number "$APP_ID") + 1)
+          cd $UNITY_IOS_DIR
+          agvtool new-version -all $BUILD_NUMBER
       - name: Build ipa for distribution
         script: |
-          xcode-project build-ipa --project "$UNITY_IOS_DIR/$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+          xcode-project build-ipa \
+            --project "$UNITY_IOS_DIR/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
       scripts:
         - name: Deactivate Unity License
-          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+          script: | 
+            /Applications/Unity\ Hub.app/Contents/Frameworks/UnityLicensingClient_V1.app/Contents/MacOS/Unity.Licensing.Client \
+            --return-ulf \
+            --username ${UNITY_EMAIL?} \
+            --password ${UNITY_PASSWORD?}
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        auth: integration
+        #
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true 
+        #
+        # Specify the names of beta tester groups that will get access 
+        # to the build once it has passed beta review.
+        beta_groups:
+          - group name 1
+          - group name 2
+        #
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: true
+
+
   unity-android-workflow:
     name: Unity Android Workflow
     max_build_duration: 120
     environment:
+      android_signing:
+        - keystore_reference
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
-        # - keystore_credentials # Uncomment this if you're not using code-signing-identities <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+        - unity_credentials
+        - google_play
       vars:
         UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildAndroid
-        PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
-      android_signing:
-        - unity_codemagic
-    triggering:
-      events:
-        - push
-        - tag
-        - pull_request
-      branch_patterns:
-        - pattern: develop
-          include: true
-          source: true
+        PACKAGE_NAME: "io.codemagic.unitysample"
+        GOOGLE_PLAY_TRACK: alpha
     scripts:
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_EMAIL?} -password ${UNITY_PASSWORD?}
-      - name: Set up keystore
+          $UNITY_BIN -batchmode -quit -logFile \
+            -serial ${UNITY_SERIAL?} \
+            -username ${UNITY_EMAIL?} \
+            -password ${UNITY_PASSWORD?}
+      - name: Set build number
         script: |
-          # echo $CM_KEYSTORE | base64 --decode > $CM_BUILD_DIR/keystore.keystore # <-- Uncomment this line if you're not using the code-signing-identities and you want to manually decode the CM_KEYSTORE to CM_KEYSTORE_PATH
-      - name: Set build number and export Unity
+          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number \
+            --package-name "$PACKAGE_NAME" \
+            --tracks="$GOOGLE_PLAY_TRACK") + 1))
+      - name: Build the project
         script: |
-          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+          $UNITY_BIN -batchmode \
+          -quit \
+          -logFile \
+          -projectPath . \
+          -executeMethod BuildScript.$BUILD_SCRIPT \
+          -nographics
     artifacts:
       - android/*.aab
     publishing:
       scripts:
         - name: Deactivate Unity License
-          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+          script: | 
+            /Applications/Unity\ Hub.app/Contents/Frameworks/UnityLicensingClient_V1.app/Contents/MacOS/Unity.Licensing.Client \
+            --return-ulf \
+            --username ${UNITY_EMAIL?} \
+            --password ${UNITY_PASSWORD?}
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
       google_play:
-        # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: alpha # Any default or custom track.
+        track: GOOGLE_PLAY_TRACK
+        submit_as_draft: true
+
+
+
   unity-windows-workflow:
     name: Unity Windows Workflow
     max_build_duration: 120
     instance_type: windows_x2
     environment:
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
+        - unity_credentials
       vars:
         BUILD_SCRIPT: BuildWindows
-    triggering:
-      events:
-        - push
-        - tag
-        - pull_request
-      branch_patterns:
-        - pattern: develop
-          include: true
-          source: true
     scripts:
       - name: Activate & Build Unity Using a Command Prompt
         script: |
-          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_EMAIL -password $env:UNITY_PASSWORD
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" ^
+            -batchmode -quit -logFile ^
+            -projectPath . ^
+            -executeMethod BuildScript.$env:BUILD_SCRIPT ^
+            -nographics ^
+            -serial $env:UNITY_SERIAL ^
+            -username $env:UNITY_EMAIL ^
+            -password $env:UNITY_PASSWORD
       - name: Export Unity
         script: |
           cd windows
@@ -131,38 +172,45 @@ workflows:
         - name: Deactivate Unity License using a Command Prompt
           script: |
             cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -returnlicense -nographics
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
       slack:
         channel: "#your-channel-name"
         notify_on_build_start: true
+
+
   unity-android-workflow-win-machine:
-    name: Unity Android Workflow
+    name: Unity Android on Windows Workflow
     max_build_duration: 120
     instance_type: windows_x2
     environment:
+      android_signing:
+        - keystore_reference
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_EMAIL and UNITY_PASSWORD)
-        # - keystore_credentials # Uncomment this if you're not using code-signing-identities <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+        - unity_credentials
+        - google_play
       vars:
         BUILD_SCRIPT: BuildAndroid
-        PACKAGE_NAME: "io.codemagic.unity" # <-- Put your package name here e.g. com.domain.myapp
-      android_signing:
-        - unity_codemagic
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: master
-          include: false
+        PACKAGE_NAME: "io.codemagic.unitysample"
     scripts:
-      - name: Set up keystore
-        script: |
-          # [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("$env:CM_KEYSTORE")) | Out-File -FilePath $env:CM_KEYSTORE_PATH # <-- Uncomment this line if you're not using the code-signing-identities and you want to manually decode the CM_KEYSTORE to CM_KEYSTORE_PATH
       - name: Set build number and export Unity
         script: |
           export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -logFile "$env:CM_BUILD_DIR\\android\\log-android.txt" -projectPath . -executeMethod BuildScript.$env:BUILD_SCRIPT -nographics -serial $env:UNITY_SERIAL -username $env:UNITY_EMAIL -password $env:UNITY_PASSWORD
+      - name: Build the project
+        script: |
+          cmd.exe /c "$env:UNITY_HOME\\Unity.exe" ^
+            -batchmode -quit -logFile "$env:CM_BUILD_DIR\\android\\log-android.txt" ^
+            -projectPath . ^
+            -executeMethod BuildScript.$env:BUILD_SCRIPT ^
+            -nographics ^
+            -serial $env:UNITY_SERIAL ^
+            -username $env:UNITY_EMAIL ^
+            -password $env:UNITY_PASSWORD
     artifacts:
       - android/*.aab
       - android/*.apk
@@ -171,43 +219,67 @@ workflows:
       scripts:
         - name: Deactivate Unity License
           script: |
-            cmd.exe /c "$env:UNITY_HOME\\Unity.exe" -batchmode -quit -returnlicense -nographics
-      slack:
-        channel: "#your-channel-name"
-        notify_on_build_start: true
+            cmd.exe /c "$env:UNITY_HOME\\Unity.exe" ^
+              -batchmode ^
+              -quit ^
+              -returnlicense ^
+              -nographics
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
       google_play:
-        # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: alpha # Any default or custom track.
+        track: GOOGLE_PLAY_TRACK
+        submit_as_draft: true
+  
+  
   unity-macos-workflow:
     name: Unity Mac Workflow
     environment:
       groups:
-        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY)
-        - unity # <-- (Includes UNITY_SERIAL, UNITY_USERNAME, UNITY_PASSWORD)
+        - unity_credentials
+        - appstore_credentials
       vars:
         UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildMac
         UNITY_MAC_DIR: mac
-        BUNDLE_ID: "com.domain.yourappname" # <-- Put your Bundle Id here.
+        BUNDLE_ID: "io.codemagic.unitysample"
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+      - name: Activate Unity license
+        script: | 
+          $UNITY_BIN -batchmode -quit -logFile \
+            -serial ${UNITY_SERIAL?} \
+            -username ${UNITY_EMAIL?} \
+            -password ${UNITY_PASSWORD?}
+      - name: Set up keychain to be used for codesigning
         script: keychain initialize
       - name: Fetch signing files
-        script: app-store-connect fetch-signing-files "$BUNDLE_ID" --type MAC_APP_STORE --platform MAC_OS --create
+        script: | 
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --platform MAC_OS \
+            --type MAC_APP_STORE \
+            --create
       - name: Fetch Mac Installer Distribution certificates
         script: |
-          app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save || \
-          app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save
+          app-store-connect list-certificates --type MAC_APP_DISTRIBUTION --save || \
+          app-store-connect create-certificate --type MAC_APP_DISTRIBUTION --save
       - name: Add certs to keychain
         script: keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
-      - name: Activate License
-        script: $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
-      - name: Build
-        script: $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+      - name: Build the project
+        script: |
+          $UNITY_BIN \
+            -batchmode \
+            -quit \
+            -logFile \
+            -projectPath . \
+            -executeMethod BuildScript.$BUILD_SCRIPT \
+            -nographics
       - name: Package macOS application
         script: |
           set -x
@@ -215,27 +287,46 @@ workflows:
           APP_NAME=$(find $(pwd) -name "*.app")
           cd $(dirname "$APP_NAME")
           PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
+          
           # Create an unsigned package
-          xcrun productbuild --component "$APP_NAME" /Applications/ unsigned.pkg
+          xcrun productbuild \
+            --component "$APP_NAME" \
+            /Applications/ unsigned.pkg
+          
           # Find the installer certificate commmon name in keychain
           INSTALLER_CERT_NAME=$(keychain list-certificates \
             | jq '.[]
-              | select(.common_name
-              | contains("Mac Developer Installer"))
-              | .common_name' \
+            | select(.common_name
+            | contains("Mac Developer Installer"))
+            | .common_name' \
             | xargs)
+          
           # Sign the package
           xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg "$PACKAGE_NAME"
-          rm -f unsigned.pkg # Optionally remove the not needed unsigned package
+          
+          # Optionally remove the not needed unsigned package
+          rm -f unsigned.pkg 
     artifacts:
       - $UNITY_MAC_DIR/*.app
       - $UNITY_MAC_DIR/*.pkg
     publishing:
       scripts:
-        - name: Deactivate License
-          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+        - name: Deactivate Unity License
+          script: | 
+            /Applications/Unity\ Hub.app/Contents/Frameworks/UnityLicensingClient_V1.app/Contents/MacOS/Unity.Licensing.Client \
+            --return-ulf \
+            --username ${UNITY_EMAIL?} \
+            --password ${UNITY_PASSWORD?}
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
       app_store_connect:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false
+        submit_to_testflight: false 
+        submit_to_app_store: true

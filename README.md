@@ -14,6 +14,7 @@
 ## React Native
 * [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
 ## Unity
+* [Unity Android, iOS, Windows and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
 
 ## Integrations
 ### Crash reporting
@@ -40,8 +41,23 @@
 ---
 
 ## OLD STUFF to be rearranged as we go along:
+
+## Unsorted folders
+* /Firebase-App-Distribution
+* /Firebase-App-Distribution/codemagic_firebase_app_distribution_yaml-master
+* /benchmarks
+* /ionic/ionic-cordova-demo-project/ (there is another project in cordova/ folder)
+* /ios/ios-fastlane-screenshots-demo-project
+* /ios/ios-sonarcloud-demo-project/
+* /ios/ios-xcremotecache-demo-project/
+* /macos/macos-uitesting/
+* /react-native/expo-react-native-not-ejected
+* /react-native/expo_react_native_codemagic-master/
+* /react-native/react-native-ios-simulator-build
+* /white-label-api-scripts
+* /yaml/yaml_anchors_aliases_sample/
 ## Flutter Samples
- [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-flutter-yaml/latest_build)
+
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
 * [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
@@ -54,11 +70,10 @@
 * [iOS Magic Actions sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-magic-actions-demo-project)[![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/latest_build)
 
 ## Android (Native) Samples
-* [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
+* [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project) --> INTEGRATIONS > TESTING
 
 ## React Native Samples
-* [React Native sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/react-native-ios/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/react-native-ios/latest_build)
-* [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project)
+* [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project)  --> INTEGRATIONS > TESTING
 
 ## Ionic Samples
 * [Ionic capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
@@ -78,7 +93,7 @@
 * [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)
 
 ## Unity Samples
-* [Unity sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
+
 * [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
 
 
