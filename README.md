@@ -2,7 +2,7 @@
 
 ## Flutter
 * [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project)
-
+* [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
 
 ## Android native
 * [Android sample project](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-native-quick-start)
@@ -60,7 +60,7 @@
 
 * [Flutter integration tests](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-integration-tests-demo-project)
 * [Flutter flavors sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-flavors-demo-project)
-* [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
+
 * [Flutter Windows sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-windows-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/status_badge.svg)](https://codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/latest_build)
 
 ## iOS (Native) Samples

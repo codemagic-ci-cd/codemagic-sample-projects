@@ -1,20 +1,14 @@
 workflows:
-  macOS-publishing-yaml:
-    name: macOS Publishing
-    instance_type: mac_mini
+  macOS-workflow:
+    name: macOS Workflow
+    instance_type: mac_mini_m1
     max_build_duration: 60
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
       groups:
-      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-          # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
-        - other # <-- (Includes BUNDLE_ID - "your.bundle.id")
+        - appstore_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
     scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
@@ -28,8 +22,8 @@ workflows:
             --create
       - name: Fetch Mac Installer Distribution certificates
         script: |
-          app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save || \
-          app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save      
+          app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save || \
+          app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save
       - name: Set up signing certificate
         script: |
           keychain add-certificates
@@ -48,7 +42,9 @@ workflows:
       - name: Build Flutter macOS
         script: |
           flutter config --enable-macos-desktop && \
-          flutter build macos --release --build-name=1.0.$PROJECT_BUILD_NUMBER --build-number=$PROJECT_BUILD_NUMBER
+          flutter build macos --release \
+            --build-name=1.0.$PROJECT_BUILD_NUMBER \
+            --build-number=$PROJECT_BUILD_NUMBER
       - name: Package macOS application
         script: |
           set -x
@@ -64,9 +60,9 @@ workflows:
           # Find the installer certificate commmon name in keychain
           INSTALLER_CERT_NAME=$(keychain list-certificates \
             | jq '.[]
-              | select(.common_name
-              | contains("Mac Developer Installer"))
-              | .common_name' \
+            | select(.common_name
+            | contains("Mac Developer Installer"))
+            | .common_name' \
             | xargs)
 
           # Sign the package
@@ -74,14 +70,25 @@ workflows:
     artifacts:
       - build/macos/**/*.pkg
     publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
-        #      - group name 1
-        #      - group name 2  
       email:
         recipients:
-          - email@example.com
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
