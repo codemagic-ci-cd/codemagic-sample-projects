@@ -13,6 +13,7 @@
 
 ## React Native
 * [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
+* [React Native using Expo without ejecting](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/expo-react-native-not-ejected)
 ## Unity
 * [Unity Android, iOS, Windows and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
 * [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
@@ -51,7 +52,6 @@
 * /ios/ios-sonarcloud-demo-project/
 * /ios/ios-xcremotecache-demo-project/
 * /macos/macos-uitesting/
-* /react-native/expo-react-native-not-ejected
 * /react-native/expo_react_native_codemagic-master/
 * /react-native/react-native-ios-simulator-build
 * /white-label-api-scripts
