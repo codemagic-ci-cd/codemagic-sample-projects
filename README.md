@@ -15,7 +15,7 @@
 * [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
 ## Unity
 * [Unity Android, iOS, Windows and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
-
+* [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
 ## Integrations
 ### Crash reporting
     │   ├── firebase_crashlytics_demo_project
@@ -91,10 +91,6 @@
 
 ## Cordova Samples
 * [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)
-
-## Unity Samples
-
-* [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
 
 
 ## Getting help and support
