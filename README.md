@@ -25,7 +25,9 @@
 
 ## Integrations
 ### Crash reporting
-    │   ├── firebase_crashlytics_demo_project
+* [Firebase Crashlytics](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/firebase_crashlytics_demo_project)
+
+
     │   └── sentry
 
 ### Code quality
