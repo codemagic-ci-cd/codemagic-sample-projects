@@ -23,6 +23,7 @@
 
 ## Ionic Samples
 * [Ionic + Capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
+* [Ionic + Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-cordova-demo-project)
 
 ## Kotlin Multiplatform Mobile Samples
 * [KMM sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/kotlin-multiplatform-mobile)
