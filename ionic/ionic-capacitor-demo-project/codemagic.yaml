@@ -1,163 +1,145 @@
 workflows:
-    ionic-capacitor-ios-workflow:
-        name: Ionic Capacitor iOS Workflow
-        max_build_duration: 120
-        instance_type: mac_pro
-        environment:
-            groups:
-            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-              # - manual_code_signing # <-- (Includes CM_CERTIFICATE, CM_CERTIFICATE_PASSWORD, CM_PROVISIONING_PROFILE)
-                - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-                  # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-                  # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-                  # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-                  # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
-                  # https://appstoreconnect.apple.com/access/api
-                - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
-                - other
-            vars:
-                # Ionic Xcode worskspace and scheme
-                XCODE_WORKSPACE: "ios/App/App.xcworkspace"
-                XCODE_SCHEME: "App"
-                APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-            node: v16.11.1
-            xcode: latest
-            cocoapods: default
-        triggering:
-            events:
-                - push
-            branch_patterns:
-                - pattern: develop
-                  include: true
-                  source: true
-        scripts:
-            - name: Install npm dependencies for Ionic project
-              script: |
-                npm install
-            - name: Cocoapods installation
-              script: |
-                cd ios/App && pod install
-            - name: Update dependencies and copy web assets to native project
-              script: |
-                # npx cap copy # <- use this is you don't need to update native dependencies
-                npx cap sync # <- update native dependencies and copy web assets to native project
-            - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-              script: |
-                keychain initialize
-            # - name: Set up Provisioning profiles from environment variables (Use with manual code signing)
-            #   script: |
-            #     PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
-            #     mkdir -p "$PROFILES_HOME"
-            #     PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
-            #     echo ${CM_PROVISIONING_PROFILE} | base64 --decode > "$PROFILE_PATH"
-            #     echo "Saved provisioning profile $PROFILE_PATH"
-            - name: Fetch signing files
-              script: |
-                # app-store-connect fetch-signing-files "com.nevercode.ncionicapp" --type IOS_APP_STORE --create
-                app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) --type IOS_APP_STORE --create
-            # - name: Set up signing certificate (Use with manual code signing)
-            #   script: |
-            #     echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
-            #     keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password $CM_CERTIFICATE_PASSWORD
-           
-            - name: Add certificates to keychain
-              script: |
-                keychain add-certificates
-            - name: Increment build number
-              script: |
-                #!/bin/sh
-                set -e
-                set -x
-                cd $FCI_BUILD_DIR/ios/App
-                # agvtool new-version -all $(($BUILD_NUMBER +1))
-                agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+  ionic-capacitor-ios-workflow:
+    name: Ionic Capacitor iOS Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.ionicsample
+      vars:
+        # Ionic Xcode worskspace and scheme
+        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+        APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+      node: v16.11.1
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Cocoapods installation
+        script: |
+          cd ios/App && pod install
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          #!/bin/sh
+          set -e
+          set -x
+          cd $CM_BUILD_DIR/ios/App
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+      - name: Build ipa for distribution
+        script: |
+          cd $CM_BUILD_DIR/ios/App
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user_one@example.com
+          - user_two@example.com
+        notify:
+          success: false     # To not receive a notification when a build succeeds
+          failure: false     # To not receive a notification when a build fails
+      app_store_connect:
+        auth: integration
 
-            - name: Set up code signing settings on Xcode project
-              script: |
-                xcode-project use-profiles
-            - name: Build ipa for distribution
-              script: |
-                xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
-        artifacts:
-            - build/ios/ipa/*.ipa
-            - /tmp/xcodebuild_logs/*.log
-            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-        publishing:
-          app_store_connect:
-              api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-              key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-              issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-              submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-              # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
-              #   - group name 1
-              #   - group name 2
-          email:
-            recipients:
-                - user_one@example.com
-                - user_two@example.com
-            notify:
-                success: false     # To not receive a notification when a build succeeds
-                failure: false     # To not receive a notification when a build fails
-    ionic-capacitor-android-workflow:
-        name: Ionic Capacitor Android Workflow
-        max_build_duration: 120
-        instance_type: mac_pro
-        environment:
-            groups:
-            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-                - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
-                  # CM_KEYSTORE <-- Put your keystore file here
-                  # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
-                  # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
-                  # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
-                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
-                - other
-            node: latest
-        triggering:
-            events:
-                - push
-                - tag
-                - pull_request
-            branch_patterns:
-                - pattern: develop
-                  include: true
-                  source: true
-        scripts:
-            - name: Install npm dependencies for Ionic project
-              script: |
-                npm install
-            - name: Set Android SDK location
-              script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
-            - name: Set up keystore
-              script: |
-                echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
-                # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-                # cat >> "$FCI_BUILD_DIR/android/key.properties" <<EOF
-                # storePassword=$CM_KEYSTORE_PASSWORD
-                # keyPassword=$CM_KEY_ALIAS_PASSWORD
-                # keyAlias=$CM_KEY_ALIAS_USERNAME
-                # storeFile=/tmp/keystore.keystore
-                # EOF
-            - name: Update dependencies and copy web assets to native project
-              script: |
-                # npx cap copy # <- use this is you don't need to update native dependencies
-                npx cap sync # <- update native dependencies and copy web assets to native project
-            - name: Build Android release
-              script: |
-                cd android
-                ./gradlew assembleRelease
-        artifacts:
-            - android/app/build/outputs/**/*.apk
-        publishing:
-            google_play:
-                credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-                track: internal # Any default or custom track that is not in ‘draft’ status
-            email:
-                recipients:
-                    - user_one@example.com
-                    - user_two@example.com
-                notify:
-                  success: true     # To not receive a notification when a build succeeds
-                  failure: false     # To not receive a notification when a build fails
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
+
+
+  ionic-capacitor-android-workflow:
+    name: Ionic Capacitor Android Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+      vars:
+        PACKAGE_NAME: "io.codemagic.ionicsample"
+        GOOGLE_PLAY_TRACK: alpha
+      node: latest
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Build Android release
+        script: |
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
+            # fallback in case no build number was found from Google Play.
+            # Alternatively, you can `exit 1` to fail the build
+            # BUILD_NUMBER is a Codemagic built-in variable tracking the number
+            # of times this workflow has been built
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          cd cd $CM_BUILD_DIR/android
+          ./gradlew bundleRelease \
+            -PversionCode=$UPDATED_BUILD_NUMBER \
+            -PversionName=1.0.$UPDATED_BUILD_NUMBER
+    artifacts:
+      - android/app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true

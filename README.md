@@ -15,10 +15,14 @@
 ## React Native
 * [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project)
 * [React Native using Expo without ejecting](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/expo-react-native-not-ejected)
+
 ## Unity
 * [Unity Android, iOS, Windows and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
 * [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
 
+
+## Ionic Samples
+* [Ionic + Capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
 
 ## Kotlin Multiplatform Mobile Samples
 * [KMM sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/kotlin-multiplatform-mobile)
@@ -83,8 +87,7 @@
 ## React Native Samples
 * [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project)  --> INTEGRATIONS > TESTING
 
-## Ionic Samples
-* [Ionic capacitor sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ionic/ionic-capacitor-demo-project)
+
 
 
 

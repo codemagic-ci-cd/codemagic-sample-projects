@@ -246,7 +246,7 @@ scripts:
   # ....
   - name: Build Android release
     script: | 
-      LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+      LATEST_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
       if [ -z LATEST_BUILD_NUMBER ]; then
         # fallback in case no build number was found from Google Play.
         # Alternatively, you can `exit 1` to fail the build
@@ -254,7 +254,7 @@ scripts:
         # of times this workflow has been built
           UPDATED_BUILD_NUMBER=$BUILD_NUMBER
       else
-          UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          UPDATED_BUILD_NUMBER=$(($LATEST_BUILD_NUMBER + 1))
       fi
       cd android
       ./gradlew bundleRelease \
