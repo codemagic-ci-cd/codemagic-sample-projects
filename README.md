@@ -35,12 +35,15 @@
 
 </details>
 
+
+-----
+
 ## Integrations
+
 ### Crash reporting
 * [Firebase Crashlytics](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/firebase_crashlytics_demo_project)
+* [Sentry](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sentry_integration_demo_project)
 
-
-    │   └── sentry
 
 ### Code quality
     │   ├── codecov_integration_demo_project
