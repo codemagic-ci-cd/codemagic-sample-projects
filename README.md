@@ -21,8 +21,8 @@
 * [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
 
 
-
-<details><summary> Other platforms </summary>
+## Other platforms
+<details><summary> Click to expand... </summary>
 
 
 
