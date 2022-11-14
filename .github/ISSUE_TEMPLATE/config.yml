@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Codemagic Community Support
+    url: https://github.com/codemagic-ci-cd/codemagic-docs/discussions
+    about: Please ask and answer questions here.
