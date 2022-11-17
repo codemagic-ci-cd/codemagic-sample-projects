@@ -1,6 +1,6 @@
 This sample project illustrates all of the necessary steps to successfully build and publish a Flutter Android and iOS apps with Codemagic. It covers the basic steps such as build versioning, code signing and publishing.
 
-You can find a more detailed instruction as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/).
+You can find more detailed instructions as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/).
 
 ## Adding the app to Codemagic
 The apps you have available on Codemagic are listed on the Applications page. Click **Add application** to add a new app.
@@ -8,10 +8,10 @@ The apps you have available on Codemagic are listed on the Applications page. Cl
 1. If you have more than one team configured in Codemagic, select the team you wish to add the app to.
 2. Connect the repository where the source code is hosted. Detailed instructions that cover some advanced options are available [here](https://docs.codemagic.io/getting-started/adding-apps/).
 3. Select the repository from the list of available repositories. Select the appropriate project type.
-4. Click **Finish: Add apllication**
+4. Click **Finish: Add application**
 
 ## Creating codemagic.yaml
-Codemagic uses a yaml configuration file to configure the CI/CD workflow. The name of the file must be `codemagic.yaml` and it must be located in the root directory of the repository. This sample projects includes a `codemagic.yaml` file covering all of the steps outlined below. You can update the file with your own information and reuse it to build your own projects.
+Codemagic uses a YAML configuration file to configure the CI/CD workflow. The name of the file must be `codemagic.yaml` and it must be located in the root directory of the repository. This sample project includes a `codemagic.yaml` file covering all of the steps outlined below. You can update the file with your own information and reuse it to build your own projects.
 
 ## Code signing - Android
 All applications have to be digitally signed before they are made available to the public to confirm their author and guarantee that the code has not been altered or corrupted since it was signed.
@@ -182,7 +182,7 @@ To apply the profiles to your project during the build, add the following script
 
 ## Configure scripts to build the app
 Add the following scripts to your `codemagic.yaml` file in order to prepare the build environment and start the actual build process.
-In this step you can also define the build artifacts you are interested in. These files will be available for download when the build finishes. For more information about artifacts, see [here](https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/).
+In this step, you can also define the build artifacts you are interested in. These files will be available for download when the build finishes. For more information about artifacts, see [here](https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/).
 
 ### Android
 ``` yaml
@@ -232,7 +232,7 @@ In this step you can also define the build artifacts you are interested in. Thes
 If you are going to publish your app to Google Play or App Store, each uploaded artifact must have a new version. Codemagic allows you to easily automate this process and increment the version numbers for each build. For more information and details, see [here](https://docs.codemagic.io/knowledge-codemagic/build-versioning/).
 
 ### Android
-The prerequisite is a valid **Google Cloud Service Account**. Plese follow these steps:
+The prerequisite is a valid **Google Cloud Service Account**. Please follow these steps:
 1. Go to [this guide](https://docs.codemagic.io/knowledge-base/google-services-authentication) and complete the steps in the **Google Play** section.
 2. Skip to the **Creating a service account** section in the same guide and complete those steps also.
 3. You now have a `JSON` file with the credentials.
@@ -378,7 +378,7 @@ publishing:
 ```
 
 ## Conclusion
-Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version and publish your project using Codemagic CI/CD.
+Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version, and publish your project using Codemagic CI/CD.
 Save your work, commit the changes to the repository, open the app in the Codemagic UI and start the build to see it in action.
 
 

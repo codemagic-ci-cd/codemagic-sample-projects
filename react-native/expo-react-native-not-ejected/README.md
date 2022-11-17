@@ -2,7 +2,7 @@
 
 This sample project illustrates all of the necessary steps to successfully build and publish a React Native Android and iOS apps with Codemagic when using Expo and without having to eject the app beforehand. It covers the basic steps such as build versioning, code signing and publishing.
 
-You can find a more detailed instruction as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-react-native-app/).
+You can find more detailed instructions as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-react-native-app/).
 
 > **Note**: This project is nearly identical to the [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project) project. The only differences are a couple of extra steps specific to building Expo projects without ejecting.
 

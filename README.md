@@ -43,41 +43,7 @@
 ### Crash reporting
 * [Firebase Crashlytics](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/firebase_crashlytics_demo_project)
 * [Sentry](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sentry_integration_demo_project)
-<!-- 
 
-### Code quality
-    │   ├── codecov_integration_demo_project
-    │   └── sonarqube_integration_demo_project
-### Fastlane
-    │   ├── fastlane-android-integration-demo-project
-    │   └── fastlane-integration-demo-project
-
-### Messaging
-    │   └── discord_integration_demo_project
-    
-### Project management
-    │   └── jira_integration_demo_project
-### Real device testing
-        ├── appetize_integration_demo_project
-        ├── browserstack_app_live_demo_project
-        └── sofy_integration_demo_project
-
----
-
-## OLD STUFF to be rearranged as we go along:
-
-## Unsorted folders
-* /Firebase-App-Distribution
-* /Firebase-App-Distribution/codemagic_firebase_app_distribution_yaml-master
-* /benchmarks
-* /ios/ios-fastlane-screenshots-demo-project
-* /ios/ios-sonarcloud-demo-project/
-* /ios/ios-xcremotecache-demo-project/
-* /macos/macos-uitesting/
-* /react-native/expo_react_native_codemagic-master/
-* /react-native/react-native-ios-simulator-build
-* /white-label-api-scripts
-* /yaml/yaml_anchors_aliases_sample/ -->
 
 ## Older sample projects
 ### Flutter Samples

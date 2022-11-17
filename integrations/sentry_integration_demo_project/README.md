@@ -2,7 +2,7 @@
 
 [**Sentry**](https://sentry.io/from/crashlytics/) is a crash reporting platform that provides you with real-time insight into production deployments with info to reproduce and fix crashes.
 
-This sample project shows hot to upload your **dSYM** files to Sentry directly from your workflow.
+This sample project shows how to upload your **dSYM** files to Sentry directly from your workflow.
 
 ## Configure access to Sentry
 

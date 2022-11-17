@@ -1,6 +1,6 @@
 This sample project illustrates all of the necessary steps to successfully build and publish a native iOS app with Codemagic. It covers the basic steps such as build versioning, code signing and publishing.
 
-You can find a more detailed instruction as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-native-ios-app/).
+You can find more detailed instructions as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-native-ios-app/).
 
 
 ## Adding the app to Codemagic
@@ -9,10 +9,10 @@ The apps you have available on Codemagic are listed on the Applications page. Cl
 1. If you have more than one team configured in Codemagic, select the team you wish to add the app to.
 2. Connect the repository where the source code is hosted. Detailed instructions that cover some advanced options are available [here](https://docs.codemagic.io/getting-started/adding-apps/).
 3. Select the repository from the list of available repositories. Select the appropriate project type.
-4. Click **Finish: Add apllication**
+4. Click **Finish: Add application**
 
 ## Creating codemagic.yaml
-Codemagic uses a yaml configuration file to configure the CI/CD workflow. The name of the file must be `codemagic.yaml` and it must be located in the root directory of the repository. This sample projects includes a `codemagic.yaml` file covering all of the steps outlined below. You can update the file with your own information and reuse it to build your own projects.
+Codemagic uses a yaml configuration file to configure the CI/CD workflow. The name of the file must be `codemagic.yaml` and it must be located in the root directory of the repository. This sample project includes a `codemagic.yaml` file covering all of the steps outlined below. You can update the file with your own information and reuse it to build your own projects.
 
 
 ## Code signing
@@ -41,7 +41,7 @@ It is recommended to create a dedicated App Store Connect API key for Codemagic 
 
 Codemagic lets you upload code signing certificates as PKCS#12 archives containing both the certificate and the private key which is needed to use it. When uploading, Codemagic will ask you to provide the certificate password (if the certificate is password-protected) along with a unique **Reference name**, which can then be used in the `codemagic.yaml` configuration to fetch the specific file.
 
-1. Open your Codemagic Team settings, go to  **codemagic.yaml settings** > **Code signing identities**.
+1. Open your Codemagic Team settings, and go to  **codemagic.yaml settings** > **Code signing identities**.
 2. Open **iOS certificates** tab.
 3. Upload the certificate file by clicking on **Choose a .p12 or .pem file** or by dragging it into the indicated frame.
 4. Enter the **Certificate password** and choose a **Reference name**.
@@ -59,7 +59,7 @@ The profile's type, team, bundle id, and expiration date are displayed for each 
 
 You can upload provisioning profiles with the `.mobileprovision` extension, providing a unique **Reference name** is required for each uploaded profile.
 
-1. Open your Codemagic Team settings, go to  **codemagic.yaml settings** > **Code signing identities**.
+1. Open your Codemagic Team settings, and go to  **codemagic.yaml settings** > **Code signing identities**.
 2. Open **iOS provisioning profiles** tab.
 3. Upload the provisioning profile file by clicking on **Choose a .mobileprovision file** or by dragging it into the indicated frame.
 4. Enter the **Reference name** for the profile.
@@ -240,7 +240,7 @@ publishing:
 
 
 ## Conclusion
-Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version and publish your project using Codemagic CI/CD.
+Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version, and publish your project using Codemagic CI/CD.
 Save your work, commit the changes to the repository, open the app in the Codemagic UI and start the build to see it in action.
 
 
