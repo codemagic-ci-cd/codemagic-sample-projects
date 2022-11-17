@@ -1,8 +1,8 @@
 # Uploading dSYM artifacts to Firebase Crashlytics
 
-**dSYM** files store the debug symbols for your app. They contain mapping information to decode a stack-trace into a readable format. The purpose of **dSYM** is to replace symbols in the crash logs with the specific methods so it will be readable and helpful for debugging the crash. 
+**dSYM** files store the debug symbols for your app. They contain mapping information to decode a stack trace into a readable format. The purpose of **dSYM** is to replace symbols in the crash logs with the specific methods so it will be readable and helpful for debugging the crash. 
 
-This sample project shows how to upload your **dSYM** files to Firebase Crashlytics using Codemagic. This particular project is built using Flutter but the same steps can be applied to other types of applications with minimal changes. To get a more detailed guide of basic project steps such as building, build versioning, code signing and publishing in general, please see the [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project) project or the corresponding sample project for your platform from [our repository](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/firebase_crashlytics_demo_project).
+This sample project shows how to upload your **dSYM** files to Firebase Crashlytics using Codemagic. This particular project is built using Flutter but the same steps can be applied to other types of applications with minimal changes. To get a more detailed guide of basic project steps such as building, build versioning, code signing, and publishing in general, please see the [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project) project or the corresponding sample project for your platform from [our repository](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/firebase_crashlytics_demo_project).
 ## Getting Started
 
 In order to generate debug symbols, Firebase Crashlytics must be installed using the following script in your `codemagic.yaml`:
@@ -70,7 +70,7 @@ If necessary, you can use remote access to the build machine to find the correct
 
 ## iOS apps using SwiftPackageManager (SPM)
 
-For Native iOS apps, in the case of using SwiftPackageManager (SPM) instead of CocoaPods, the following script needs to be added in a post-publishing script:
+For native iOS apps, in the case of using SwiftPackageManager (SPM) instead of CocoaPods, the following script needs to be added in a post-publishing script:
 
 ```yaml
   scripts:

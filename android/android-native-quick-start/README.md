@@ -226,7 +226,7 @@ react-native-android:
 ```
 
 ## Conclusion
-Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version and publish your project using Codemagic CI/CD.
+Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version, and publish your project using Codemagic CI/CD.
 Save your work, commit the changes to the repository, open the app in the Codemagic UI and start the build to see it in action.
 
 
