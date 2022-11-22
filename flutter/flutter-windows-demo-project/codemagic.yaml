@@ -26,13 +26,15 @@ workflows:
       email:
         recipients:
           - email@example.com
-  # This workflow is for a MSIX package build that can be published to Microsoft Store using Partner Center
+  
+  
+  # This workflow is for a MSIX package build that can be published to
+  # Microsoft Store using Partner Center
   windows-release-workflow:
     name: Windows release workflow
     instance_type: windows_x2
     max_build_duration: 60
     environment:
-      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
       groups:
         - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
       flutter: master
@@ -64,10 +66,14 @@ workflows:
       - build/windows/**/*.msix
     publishing:
       partner_center:
-        store_id: <STORE_ID> # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
-        tenant_id: <TENANT_ID> # <-- You will get `tenant_id` from the Azure AD Overview page.
-        client_id: <CLIENT_ID> # <-- You will also get `client_id` from the Azure AD Overview page.
+        store_id: $STORE_ID # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
+        tenant_id: $TENANT_ID # <-- You will get `tenant_id` from the Azure AD Overview page.
+        client_id: $CLIENT_ID # <-- You will also get `client_id` from the Azure AD Overview page.
         client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
       email:
         recipients:
-          - email@example.com
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false

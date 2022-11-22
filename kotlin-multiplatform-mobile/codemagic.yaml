@@ -2,16 +2,14 @@ workflows:
   android-kmm-workflow:
     name: Android KMM Workflow
     max_build_duration: 120
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     environment:
+      android_signing:
+        - keystore_reference
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - codemagic_kmm # <-- Includes - CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
-      # android_signing:
-      #   - codemagic_kmm
       vars:
-        PACKAGE_NAME: "com.codemagickmm.android" # <-- Use your package name
+        PACKAGE_NAME: "io.codemagic.kmmsample" # <-- Use your package name
     triggering:
       events:
         - push
@@ -20,37 +18,44 @@ workflows:
           include: true
       cancel_previous_builds: false
     scripts:
-      - name: Set up key.properties file for code signing
+      - name: Build Android release
         script: |
-          # You need to comment the following line if you're using the Code Signing Identities to sign your android app
-          echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH
-          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-          # cat >> "$CM_BUILD_DIR/key.properties" <<EOF
-          # storePassword=$CM_KEYSTORE_PASSWORD
-          # keyPassword=$CM_KEY_PASSWORD
-          # keyAlias=$CM_KEY_ALIAS
-          # storeFile=$CM_KEYSTORE_PATH
-          # EOF
-      - name: Build aab Android app
-        script: |
-          chmod +x gradlew
-          export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=internal) + 5))
-          ./gradlew bundleRelease # To generate an .apk use--> ./gradlew assembleRelease
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
+            # fallback in case no build number was found from Google Play.
+            # Alternatively, you can `exit 1` to fail the build
+            # BUILD_NUMBER is a Codemagic built-in variable tracking the number
+            # of times this workflow has been built
+            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          cd $CM_BUILD_DIR/androidApp
+          ./gradlew bundleRelease \
+            -PversionCode=$UPDATED_BUILD_NUMBER \
+            -PversionName=1.0.$UPDATED_BUILD_NUMBER
     artifacts:
       - androidApp/build/outputs/**/**/*.aab
       - androidApp/build/outputs/**/**/*.apk
     publishing:
-      google_play: # For Android app
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS # Contents of the JSON key file for Google Play service account saved as a secure environment variable
-        track: internal # Name of the track internal, alpha, beta, production, internal app sharing, or your custom track name
-        # in_app_update_priority: 3 # Optional Priority of the release (only set if in-app updates are supported): integer in range [0, 5]
-        # rollout_fraction: 0.25 # Optional. Rollout fraction (set only if releasing to a fraction of users): value between (0, 1)
-        changes_not_sent_for_review: false # Optional boolean To be used ONLY if your app cannot be sent for review automatically *
-        submit_as_draft: true # Optional boolean. Publish artifacts under a draft release. Can not be used together with rollout_fraction. Defaults to false
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+  
   ios-kmm-workflow:
     name: iOS Workflow
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
     triggering:
       events:
         - push
@@ -58,26 +63,19 @@ workflows:
         - pattern: "*"
           include: false
     environment:
-      groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.kmmsample
       vars:
         XCODE_PROJECT: "iosApp.xcodeproj" # <-- Put your xcode project name here
         XCODE_SCHEME: "iosApp" # <-- Put your bundle xcode scheme here
-        BUNDLE_ID: "com.codemagickmm.iosapp" # <-- Put your bundle id here
-        APP_STORE_ID: 1630136022 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
+        APP_ID: 1630136022 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
       xcode: latest
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
+      - name: Cocoapods installation
+        script: | 
+          cd $CM_BUILD_DIR/iosApp
+          pod install
       - name: Set up code signing settings on Xcode project
         script: |
           cd $CM_BUILD_DIR/iosApp
@@ -88,16 +86,34 @@ workflows:
           set -e
           set -x
           cd $CM_BUILD_DIR/iosApp
-          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1))
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
       - name: Build ipa for distribution
         script: |
           cd $CM_BUILD_DIR/iosApp
-          xcode-project build-ipa --project $XCODE_PROJECT --scheme $XCODE_SCHEME
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
     artifacts:
       - iosApp/build/ios/ipa/*.ipa
     publishing:
-      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      app_store_connect:
+        auth: integration
+
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false

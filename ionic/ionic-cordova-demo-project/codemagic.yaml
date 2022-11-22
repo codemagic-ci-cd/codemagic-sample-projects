@@ -1,30 +1,24 @@
 workflows:
   ios-workflow:
     name: iOS workflow
+    integrations:
+      app_store_connect: codemagic
     environment:
-      groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
-            # https://appstoreconnect.apple.com/access/api
-          - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
-          - other
-      vars:      
-        BUNDLE_ID: "io.codemagic.ioniccordova" # <-- Put your Bundle Id here 
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.ionicsample
       xcode: latest
       node: v16.11.1
       npm: 6
     cache:
       cache_paths:
-        - $FCI_BUILD_DIR/node_modules
+        - $CM_BUILD_DIR/node_modules
     scripts:
       - name: Install dependencies
         script: |
           npm install
-          npm ci
+          npm ci # equivalent of npm install for CI systems.
+            # Requires package-lock.json or npm-shrinkwrap.json to be present
           cvm install 9.0.0
           cvm use 9.0.0
           npm install -g ionic
@@ -32,16 +26,11 @@ workflows:
       - name: Setup iOS
         script: |
           ionic cordova platform remove ios --nosave
-          ionic cordova platform add ios --confirm --no-interactive --noresources --save  
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-      - name: Add certificates to keychain
-        script: |
-          keychain add-certificates         
+          ionic cordova platform add ios \
+            --confirm \
+            --no-interactive \
+            --noresources \
+            --save        
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
@@ -85,27 +74,28 @@ workflows:
         notify:
           success: true               # To not receive a notification when a build succeeds
           failure: false              # To not receive a notification when a build fails
-      app_store_connect:                 
-         api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-         issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-         submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-         #  beta_groups:                                 # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
-         #     - group name 1
-         #     - group name 2     
+      app_store_connect:
+        auth: integration
+
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
+
+
   android-workflow:
     name: Android workflow
     environment:
+      android_signing:
+        - keystore_reference
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - keystore_credentials # <-- (Includes KEYSTORE, KEYSTORE_PASSWORD, KEY_ALIAS_PASSWORD, KEY_ALIAS, KEYSTORE_PATH)
-          # KEYSTORE <-- Put your keystore file here
-          # KEYSTORE_PASSWORD <-- Put your keystore password here
-          # KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
-          # KEY_ALIAS <-- Put your keystore alias username here
-          # KEYSTORE_PATH: '/tmp/keystore.keystore'
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - Put your google-services.json here)
-        - other
       xcode: 12.4
       node: 12
       npm: 6        
@@ -116,7 +106,8 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm ci
+          npm ci ci # equivalent of npm install for CI systems.
+            # Requires package-lock.json or npm-shrinkwrap.json to be present
           cvm install 9.0.0
           cvm use 9.0.0
           npm install -g ionic
@@ -125,16 +116,22 @@ workflows:
         script: |
           set -x
           ionic cordova platform remove android --nosave
-          ionic cordova platform add android --confirm --no-interactive --noresources
+          ionic cordova platform add android \
+            --confirm \
+            --no-interactive \
+            --noresources 
       - name: Build Android
         script: |    
           set -x
           set -e
-          ionic cordova build android --release --no-interactive --prod --device
-          echo $KEYSTORE | base64 --decode > $KEYSTORE_PATH
-          UNSIGNED_APK_PATH=$(find platforms/android/app/build/outputs -name "*.apk" | head -1)
-          jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore "${KEYSTORE_PATH}" -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_ALIAS_PASSWORD}" "${UNSIGNED_APK_PATH}" "${KEY_ALIAS}"
-          mv $UNSIGNED_APK_PATH $(echo $UNSIGNED_APK_PATH | sed 's/-unsigned//')
+          APK_PATH=$(find platforms/android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          jarsigner \
+            -sigalg SHA1withRSA \
+            -digestalg SHA1 \
+            -keystore $CM_KEYSTORE_PATH \
+            -storepass $CM_KEYSTORE_PASSWORD \
+            -keypass $CM_KEY_PASSWORD \
+            $APK_PATH $CM_KEY_ALIAS 
     artifacts:
       - platforms/android/app/build/outputs/**/*.apk
       - platforms/android/app/build/outputs/**/mapping.txt
