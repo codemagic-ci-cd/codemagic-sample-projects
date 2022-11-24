@@ -595,14 +595,6 @@ For more details about complying with encryption export regulations, please see 
 
 A Unity post-processing script can be used to set values in the `Info.plist` of the Xcode project. You can find the script in `/Assets/Editor/PostProcessing.cs`.
 
-## Caching
-You can speed up your build by caching the Library folder, read more about caching [here](https://docs.codemagic.io/yaml/yaml-getting-started/#cache).
-``` yaml
-    cache:
-      cache_paths:
-        - $CM_BUILD_DIR/Library
-```
-
 ## Conclusion
 Having followed all of the above steps, you now have a working `codemagic.yaml` file that allows you to build, code sign, automatically version, and publish your project using Codemagic CI/CD.
 Save your work, commit the changes to the repository, open the app in the Codemagic UI and start the build to see it in action.
