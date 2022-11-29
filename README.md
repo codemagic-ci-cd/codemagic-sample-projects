@@ -78,8 +78,7 @@
 * [YAML anchors and aliases sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/yaml/yaml_anchors_aliases_sample)
 
 ### Cordova Samples
-* [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)  <--- This is without Ionic. Do we keep this?
-
+* [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)
 
 ## Getting help and support
 
