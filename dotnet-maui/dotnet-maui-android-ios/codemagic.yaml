@@ -1,0 +1,108 @@
+workflows:
+  maui-ios:
+    name: Dotnet MAUI iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: api-access-codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.maui.weather
+      vars:
+        DOTNET_PATH: $CM_BUILD_DIR/dotnet
+        DOTNET_BIN:  $CM_BUILD_DIR/dotnet/dotnet
+        APP_ID: 6444530615
+        BUNDLE_ID: "io.codemagic.maui.weather"
+    scripts:
+      - name: Install dotnet sdk
+        script: |
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --install-dir $DOTNET_PATH
+      - name: Install MAUI
+        script: |
+          $DOTNET_BIN nuget locals all --clear 
+          $DOTNET_BIN workload install ios maui --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
+      - name: Set Info.plist values
+        script: | 
+          PLIST=$CM_BUILD_DIR/src/WeatherTwentyOne/Platforms/iOS/Info.plist
+          PLIST_BUDDY=/usr/libexec/PlistBuddy
+          $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+      - name: Set build version and build the app
+        script: |
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
+          if [ -z $LATEST_BUILD_NUMBER ]; then
+             UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+             UPDATED_BUILD_NUMBER=$(($LATEST_BUILD_NUMBER + 1))
+          fi
+          
+          CERT_NAME=$(keychain list-certificates | jq -r '.[] | .common_name')
+          PROFILE_NAME=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -execdir sh -c '/usr/libexec/PlistBuddy -c "print :Name" /dev/stdin <<< $(security cms -D -i {})' \;)
+          
+          cd src
+          $DOTNET_BIN publish -f net6.0-ios \
+            -c Release \
+            -p:BuildIpa=True \
+            -p:ApplicationDisplayVersion="1.0.0" \
+            -p:ApplicationVersion=$UPDATED_BUILD_NUMBER \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:CodesignKey="$CERT_NAME" \
+            -p:CodesignProvision="$PROFILE_NAME" \
+            -o ../artifacts
+    artifacts:
+        - ./artifacts/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+    
+    
+  maui-android:
+    name: Dotnet MAUI Android
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play
+      vars:
+        DOTNET_PATH: $CM_BUILD_DIR/dotnet
+        DOTNET_BIN: $CM_BUILD_DIR/dotnet/dotnet
+        PACKAGE_NAME: "io.codemagic.maui.weather"
+    scripts:
+      - name: Install dotnet sdk
+        script: |
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --install-dir $DOTNET_PATH
+      - name: Install MAUI
+        script: |
+          $DOTNET_BIN nuget locals all --clear 
+          # $DOTNET_BIN workload install maui --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json
+          $DOTNET_BIN workload install android maui wasm-tools --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
+      - name: Build
+        script: |
+          LATEST_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+          if [ -z $LATEST_BUILD_NUMBER ]; then
+              UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+              UPDATED_BUILD_NUMBER=$(($LATEST_BUILD_NUMBER + 1))
+          fi
+          cd src
+          $DOTNET_BIN publish -f net6.0-android \
+            -c Release \
+            -p:AndroidKeyStore=True \
+            -p:AndroidSigningKeyStore=$CM_KEYSTORE_PATH \
+            -p:AndroidSigningKeyAlias=$CM_KEY_ALIAS \
+            -p:AndroidSigningKeyPass=$CM_KEY_PASSWORD \
+            -p:AndroidSigningStorePass=$CM_KEYSTORE_PASSWORD \
+            -p:ApplicationVersion=$UPDATED_BUILD_NUMBER \
+            -p:ApplicationDisplayVersion="1.0.0" \
+            -o ../artifacts
+    artifacts:
+        - /Users/builder/clone/artifacts/*Signed.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
