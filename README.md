@@ -63,12 +63,10 @@
 * [iOS Magic Actions sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-magic-actions-demo-project)[![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/latest_build)
 
 ### Android (Native) Samples
-* [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project) --> INTEGRATIONS > TESTING
+* [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
 
 ### React Native Samples
-* [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project)  --> INTEGRATIONS > TESTING
-
-
+* [React Native detox sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-detox-demo-project) 
 
 
 
@@ -81,8 +79,7 @@
 * [YAML anchors and aliases sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/yaml/yaml_anchors_aliases_sample)
 
 ### Cordova Samples
-* [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)  <--- This is without Ionic. Do we keep this?
-
+* [Cordova sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/cordova/cordova-demo-project)
 
 ## Getting help and support
 
