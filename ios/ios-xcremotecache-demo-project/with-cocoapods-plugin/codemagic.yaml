@@ -15,7 +15,7 @@ workflows:
           include: true
           source: true
     scripts:
-      - name: Install coccoapods plusgin
+      - name: Install coccoapods plugins
         script: |
           gem install cocoapods-xcremotecache
           pod install
