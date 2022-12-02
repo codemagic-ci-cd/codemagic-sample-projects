@@ -33,6 +33,9 @@
 ## Kotlin Multiplatform Mobile Samples
 * [KMM sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/kotlin-multiplatform-mobile)
 
+
+## .NET MAUI Samples
+* [.NET MAUI Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/dotnet-maui/dotnet-maui-android-ios/)
 </details>
 
 
