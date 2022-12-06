@@ -48,6 +48,11 @@
 * [Sentry](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sentry_integration_demo_project)
 
 
+### Code quality
+
+* [Codecov](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/codecov_integration_demo_project)
+
+
 ## Older sample projects
 ### Flutter Samples
 
