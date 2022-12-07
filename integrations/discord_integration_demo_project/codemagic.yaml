@@ -1,13 +1,14 @@
 workflows:
   default-workflow:
     name: Default Workflow
-    instance_type: mac_mini
+    instance_type: mac_mini_m1
     max_build_duration: 60
     environment:
+      android_signing:
+        - keystore_reference
       groups:
-        - discord 
+        - discord_credentials 
       flutter: stable
-      xcode: 12.5
       cocoapods: default
     triggering:
       events:
@@ -17,23 +18,11 @@ workflows:
           include: true 
           source: true
     scripts:        
-      - name: set up debug keystore
-        script: |
-          rm -f ~/.android/debug.keystore
-          keytool -genkeypair \
-            -alias androiddebugkey \
-            -keypass android \
-            -keystore ~/.android/debug.keystore \
-            -storepass android \
-            -dname 'CN=Android Debug,O=Android,C=US' \
-            -keyalg 'RSA' \
-            -keysize 2048 \
-            -validity 10000
       - name: set up local properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get packages and build debug apk
-        script: |          
+        script: |
           flutter packages pub get && flutter build apk --debug
       - name: Create a changelog
         script: |
