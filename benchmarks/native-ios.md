@@ -9,7 +9,7 @@ Each project contains the links to the workflow configuration, and Codemagic bui
 The first project is the famous `XcodeBenchmark` used to provide an idea about the performance of M1 Mac mini and Mac Pro. It is a framework that includes **42 popular CocoaPods** libraries and **70+ dependencies** in total.
 
 **Test name** | **M1 Mac mini** | **Mac Pro**
---- | --- | --- | ---
+--- | --- | ---
 Running Benchmark Tests | **173s** | 497s
 
 
@@ -24,7 +24,7 @@ Running Benchmark Tests | **173s** | 497s
 **Signal** is a popular free, open-source messaging app for simple private communication with friends. It contains numerous dependencies and hundreds of tests.
 
 **Test name** | **M1 Mac mini** | **Mac Pro**
---- | --- | --- | ---
+--- | --- | ---
 Building and Running Tests with fastlane | **359s** | 737s
 
 - [`codemagic.yaml`](https://github.com/nevercode-rudrank/Signal-iOS/blob/master/codemagic.yaml)
@@ -38,7 +38,7 @@ Building and Running Tests with fastlane | **359s** | 737s
 The official Wikipedia iOS app is open-sourced. It also contains multiple dependencies and hundreds of tests.
 
 **Test name** | **M1 Mac mini** | **Mac Pro**
---- | --- | --- | ---
+--- | --- | ---
 Building Project | **132s** | 198s
 Running Tests | **275s** | 409s
 
