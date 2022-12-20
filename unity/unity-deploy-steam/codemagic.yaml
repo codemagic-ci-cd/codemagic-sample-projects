@@ -8,7 +8,6 @@ workflows:
         - unity_credentials # <-- (Includes UNITY_SERIAL, UNITY_EMAIL, UNITY_PASSWORD)
         - steam # <-- (Includes STEAM_USERNAME, STEAM_PASSWORD, CONFIG_FILE, SSFN_FILE, SSFN_FILE_NAME)
       vars:
-        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildWin64
     triggering:
       events:
@@ -20,7 +19,7 @@ workflows:
     scripts:
       - name: Activate License
         script: |
-          $UNITY_BIN -batchmode \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode \
             -quit \
             -logFile \
             -serial ${UNITY_SERIAL?} \
@@ -28,7 +27,7 @@ workflows:
             -password ${UNITY_PASSWORD?}
       - name: Build
         script: |
-          $UNITY_BIN -batchmode \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode \
             -quit \
             -logFile \
             -projectPath ./HelloWorldProject \
