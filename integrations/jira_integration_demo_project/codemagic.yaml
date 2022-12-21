@@ -1,15 +1,13 @@
 workflows:
     ios-workflow:
       name: iOS Workflow
-      instance_type: mac_mini
+      max_build_duration: 120
+      instance_type: mac_mini_m1
+      integrations: 
+        app_store_connect: codemagic
       environment:
         groups:
-      # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
           - jira_credentials # <-- (JIRA_AUTH, JIRA_BASE_URL, JIRA_ISSUE, JIRA_TRANSITION_ID)
             # JIRA_AUTH <-- Base64 encoded Basic auth e.g user@domain.com:API_TOKEN encoded: echo -n 'email:token' | openssl base64
             # JIRA_BASE_URL <--  "YOUR_SUBDOMAIN.atlassian.net" - Put your Atlassian domain
@@ -33,44 +31,29 @@ workflows:
             include: true
             source: true
       scripts:
-        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-          script: |
-            keychain initialize
-        - name: Fetch signing files
-          script: |
-            # For information about Codemagic CLI commands visit: https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/README.md
-            # For details about the --type paramater below - https://github.com/codemagic-ci-cd/cli-tools/blob/master/docs/app-store-connect/fetch-signing-files.md#--typeios_app_adhoc--ios_app_development--ios_app_inhouse--ios_app_store--mac_app_development--mac_app_direct--mac_app_store--mac_catalyst_app_development--mac_catalyst_app_direct--mac_catalyst_app_store--tvos_app_adhoc--tvos_app_development--tvos_app_inhouse--tvos_app_store
-            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_ADHOC --create
-        - name: Use system default keychain
-          script: |
-            keychain add-certificates
-        - name: Set up code signing settings on Xcode project
-          script: |
-            xcode-project use-profiles
+        - name: Install CocoaPods dependencies
+          script: | 
+            pod install
+        - name: Set up provisioning profiles settings on Xcode project
+          script: xcode-project use-profiles
         - name: Increment build number
           script: |
-            #!/bin/sh
-            set -e
-            set -x
-            cd $FCI_BUILD_DIR
+            cd $CM_BUILD_DIR
             agvtool new-version -all $(($BUILD_NUMBER + 1))
         - name: iOS test
           script: |
-            #!/bin/sh
-            set -e
-            set -x
             xcode-project run-tests \
               --workspace "$XCODE_WORKSPACE" \
               --scheme "$XCODE_SCHEME" \
               --device "iPhone 12"
           test_report: build/ios/test/*.xml
-        - name: Create changelog to publish to slack
+        - name: Create changelog to publish to Slack
           script: |
-            if [[ -z ${FCI_PREVIOUS_COMMIT} ]]
+            if [[ -z ${CM_PREVIOUS_COMMIT} ]]
             then
               echo "No finished builds found to generate changelog" | tee release_notes.txt
             else
-              echo "$(git-changelog generate --previous-commit $FCI_PREVIOUS_COMMIT)" | tee release_notes.txt
+              echo "$(git-changelog generate --previous-commit $CM_PREVIOUS_COMMIT)" | tee release_notes.txt
             fi
         - name: Build ipa for distribution
           script: |
@@ -83,17 +66,16 @@ workflows:
           - name: Post to JIRA
             script: |
               #!/bin/sh
-              set -e
-              set -x
+              set -ex
 
               ARTIFACT_TYPE=".ipa" 
               
-              # Get URL, Name, Bundle Id and Version name from $FCI_ARTIFACT_LINKS
-              ARTIFACT_URL=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
-              ARTIFACT_NAME=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
-              TYPE=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
-              BUNDLE=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
-              VERSION_NAME=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
+              # Get URL, Name, Bundle Id and Version name from $CM_ARTIFACT_LINKS
+              ARTIFACT_URL=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
+              ARTIFACT_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
+              TYPE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
+              BUNDLE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
+              VERSION_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
               
               BUILD_VERSION=$(( ${BUILD_NUMBER} + 1 ))
               
@@ -104,7 +86,7 @@ workflows:
               TEST_URL=$(echo "${IPA_URL}" | sed 's#/#\\/#g')
               
               # Get first 7 digits of commit number
-              COMMIT=$(echo "${FCI_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+              COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
               
               # Get the name of the test .xml file so we can attach it to a Jira issue
               if [ $ARTIFACT_TYPE == ".ipa" ]
@@ -115,7 +97,7 @@ workflows:
               fi  
 
               # Get the Git commit message for this build
-              GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $FCI_COMMIT)
+              GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
               
               # Populate the values in the .json template which will be used as the JSON payload that will be set as a comment in Jira. 
               # See https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ for details on how to structure comments using Atlassion Document Format.
@@ -123,7 +105,7 @@ workflows:
               sed -i.bak "s/\$BUILD_DATE/$BUILD_DATE/" .templates/jira.json
               sed -i.bak "s/\$ARTIFACT_NAME/$ARTIFACT_NAME/" .templates/jira.json
               sed -i.bak "s/\$ARTIFACT_URL/$TEST_URL/" .templates/jira.json
-              sed -i.bak "s/\$FCI_COMMIT/$COMMIT/" .templates/jira.json
+              sed -i.bak "s/\$CM_COMMIT/$COMMIT/" .templates/jira.json
               sed -i.bak "s/\$GIT_COMMIT_MESSAGE/$GIT_COMMIT_MESSAGE/" .templates/jira.json
               sed -i.bak "s/\$VERSION_NAME/$VERSION_NAME/" .templates/jira.json
               sed -i.bak "s/\$BUILD_VERSION/$BUILD_VERSION/" .templates/jira.json
@@ -161,14 +143,18 @@ workflows:
             recipients: # <-- Add as many required email recipients as you need
             - user_1@example.com
             - user_2@example.com
-            - user_3@example.com
         slack:
           channel: "#builds"
         app_store_connect:                 
-          api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-          key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-          issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-          submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-          # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
-          #      - group name 1
-          #      - group name 2  
+          auth: integration
+
+          # Configuration related to TestFlight (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_testflight: true
+          beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+            - group name 1
+            - group name 2
+
+          # Configuration related to App Store (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_app_store: false
