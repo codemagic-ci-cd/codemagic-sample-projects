@@ -57,8 +57,12 @@
 
 ### Messaging
 
-*[Discord](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
+* [Discord](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
 
+
+### Project management
+
+* * [Jira](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
 
 ## Older sample projects
 ### Flutter Samples
@@ -83,7 +87,7 @@
 
 
 ### Integrations 
-* [Jira integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
+
 * [Discord integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
 * [Fastlane integration sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/fastlane-integration-demo-project)
 
