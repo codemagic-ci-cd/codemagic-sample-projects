@@ -1,36 +1,33 @@
-# app_live_browserstack_integration
+# BrowserStack App Live sample project
 
+[BrowserStack](https://www.browserstack.com/) is a cloud-based mobile testing platform that provides the ability to test your applications on real mobile devices. BrowserStack can be used as a part of your Codemagic CI/CD pipeline to test your applications.
 
+## Configuring BrowserStack in Codemagic
+Signing up with BrowserStack is required in order to be able to get the **username** and **access token**.
 
-## Getting Started
+1. Open your Codemagic app settings, and go to the **Environment variables** tab.
+2. Enter the desired **_Variable name_**, e.g. `BROWSERSTACK_USERNAME`.
+3. Enter the required value as **_Variable value_**.
+4. Enter the variable group name, e.g. **_browserstack_credentials_**. Click the button to create the group.
+5. Make sure the **Secure** option is selected.
+6. Click the **Add** button to add the variable.
+7. Repeat the process to add the token as `BROWSERSTACK_ACCESS_TOKEN`
 
-[BrowserStack](https://www.browserstack.com/) is a cloud web and mobile testing platform that provides developers with the ability to test their websites and mobile applications across on-demand browsers, operating systems and real mobile devices. 
-
-
-Now it is possible test your applications via **Codemagic** using the real devices offered by **BrowserStack**. 
-
-
-
-
-The process is quite straightforward and it is easily configured in **comdemagic.yaml** 
-
-
-
-
-Add the following curl command in the yaml file after building **.ipa** or **.apk**:
-
-
-
-
-```
-curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" -X POST "https://api-cloud.browserstack.com/app-live/upload" -F "file=@build/ios/ipa/your_app_release.ipa"
+8. Add the variable group to your `codemagic.yaml` file
+``` yaml
+  environment:
+    groups:
+      - browserstack_credentials
 ```
 
+## Submit to App Live
+To use **App Live** and test your **.ipa** and **.apk** artifacts directly on real devices rather than simulators, add the following script to your `codemagic.yaml file:
 
+``` yaml
+  scripts:
+    - name: Submitting app to Browserstack:
+      script: | 
+        curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" -X POST "https://api-cloud.browserstack.com/app-live/upload" -F "file=@build/ios/ipa/your_app_release.ipa"
+```
 
-
-
-**$BROWSERSTACK_USERNAME** and **$BROWSERSTACK_ACCESS_TOKEN** are generated to you automatically after signing up with **BrowserStack** and setting up the enviorment variables in the Codemagic UI will allow them to be used during a build.
-
-
-In order to successfully upload your app to BrowserStack environment, you will also need to provide the generated .ipa and .apk inside the curl command above and their paths are sent to where you configure your artifacts.
+**Note:** Make sure that you add this cURL request after building the **.ipa** and **.apk**, otherwise you cannot attach their paths to the cURL request.

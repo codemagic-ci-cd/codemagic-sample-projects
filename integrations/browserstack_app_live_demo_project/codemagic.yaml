@@ -1,28 +1,24 @@
 workflows:
   ios-workflow:
     name: iOS Workflow
-    # instance_type: mac_mini
+    instance_type: mac_mini_m1
     max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.sample.browserstack
       groups:
-        - ios_credentials
+        - browserstack_credentials
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        BUNDLE_ID: "com.example.integrationBrowserstack" # <-- Put your bundle id here dhfkdsf
+        APP_STORE_ID: 1111111111 # <-- Put your App Store APP ID here
       flutter: stable
       xcode: 13.0
       cocoapods: default
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_ADHOC --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
@@ -41,7 +37,9 @@ workflows:
           --export-options-plist=/Users/builder/export_options.plist
       - name: Uploading to BrowserStack App Live environment
         script: |
-          curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" -X POST "https://api-cloud.browserstack.com/app-live/upload" -F "file=@build/ios/ipa/your_app_release.ipa"
+          curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" \
+            -X POST "https://api-cloud.browserstack.com/app-live/upload" \
+            -F "file=@build/ios/ipa/your_app_release.ipa"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
