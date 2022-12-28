@@ -8,24 +8,13 @@ workflows:
         - $CM_BUILD_DIR/build
     environment:
       groups:
-        - appetize # <-- Includes (API_TOKEN)
+        - appetize_credentials # <-- Includes (API_TOKEN, APP_PUBLIC_KEY)
       vars:
         PACKAGE_NAME: "io.codemagic.appetize" # <-- Put your package name here
-        APP_PUBLIC_KEY: "**************************" # <-- Put your App public key here
       android_signing:
         - codemagic_demo
       flutter: stable
     scripts:
-      - name: Set up key properties
-        script: |
-          # echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH # Not required if using team code signing identities
-          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-          cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
-          storePassword=$CM_KEYSTORE_PASSWORD
-          keyPassword=$CM_KEY_PASSWORD
-          keyAlias=$CM_KEY_ALIAS
-          storeFile=$CM_KEYSTORE_PATH
-          EOF
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
@@ -43,10 +32,14 @@ workflows:
           script: |
             artifactPath="$CM_BUILD_OUTPUT_DIR/app-release.apk"
             echo $(curl --location --request POST "https://$API_TOKEN@api.appetize.io/v1/apps/$APP_PUBLIC_KEY" --form "file=@$artifactPath")
+
+
   appetize-ios-workflow:
-    name: iOS Workflow
-    instance_type: mac_pro
+    name: Appetize iOS Workflow
+    instance_type: mac_mini_m1
     max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
     triggering:
       events:
         - push
@@ -54,23 +47,15 @@ workflows:
         - pattern: "*"
           include: true
     environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.sample.appetize
       groups:
-        - appetize # Includes (API_TOKEN)
-        - app_store_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-        - certificate_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
+        - appetize # Includes (API_TOKEN, APP_PUBLIC_KEY)
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        BUNDLE_ID: "com.mohammed.codemagicDemo" # <-- Put your bundle id here
-        APP_STORE_ID: 1623367177 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
-        APP_PUBLIC_KEY: "**************************" # <-- Put your App public key here
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: keychain initialize
-      - name: Fetch signing files
-        script: app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Get Flutter packages & Build
@@ -80,9 +65,19 @@ workflows:
         ignore_failure: true
       - name: Build unsigned .app
         script: |
-          xcodebuild -workspace "ios/$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -configuration "Debug" -sdk iphonesimulator -derivedDataPath ios/output
-          # xcodebuild -project "ios/Runner.xcodeproj" -scheme "$XCODE_SCHEME" -configuration "Debug" -sdk iphonesimulator -derivedDataPath ios/output
-      - name: Zip generated .app
+          xcodebuild -workspace "ios/$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration "Debug" \
+            -sdk iphonesimulator \
+            -derivedDataPath ios/output
+
+          # If you are building a project instead of a workspace:  
+          # xcodebuild -project "ios/Runner.xcodeproj" \
+          #   -scheme "$XCODE_SCHEME" \
+          #   -configuration "Debug" \
+          #   -sdk iphonesimulator \
+          #   -derivedDataPath ios/output
+      - name: Create a .zip archive
         script: |
           cd ios/output/Build/Products/Debug-iphonesimulator
           zip -r ios_app.zip $XCODE_SCHEME.app

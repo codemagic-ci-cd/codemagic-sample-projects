@@ -62,7 +62,10 @@
 
 ### Project management
 
-* * [Jira](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
+* [Jira](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
+
+### Real-device testing
+* [Appetize](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/appetize_integration_demo_project)
 
 ## Older sample projects
 ### Flutter Samples
