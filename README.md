@@ -68,6 +68,9 @@
 * [Appetize](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/appetize_integration_demo_project)
 * [BrowserStack (App Live)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/browserstack_app_live_demo_project)
 * [BrowserStack (App Automate)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/browserstack_app_automate_demo_project)
+* [Sofy](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sofy_integration_demo_project)
+
+
 
 ## Older sample projects
 ### Flutter Samples
