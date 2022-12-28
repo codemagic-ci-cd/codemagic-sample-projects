@@ -1,45 +1,67 @@
-# app_automate_browserstack_integration
+# BrowserStack App Automate sample project
 
+[BrowserStack](https://www.browserstack.com/) is a cloud-based mobile testing platform that provides the ability to test your applications on real mobile devices. BrowserStack can be used as a part of your Codemagic CI/CD pipeline to test your applications.
 
+## Configuring BrowserStack in Codemagic
+Signing up with BrowserStack is required in order to be able to get the **username** and **access token**.
 
-## Getting Started
+1. Open your Codemagic app settings, and go to the **Environment variables** tab.
+2. Enter the desired **_Variable name_**, e.g. `BROWSERSTACK_USERNAME`.
+3. Enter the required value as **_Variable value_**.
+4. Enter the variable group name, e.g. **_browserstack_credentials_**. Click the button to create the group.
+5. Make sure the **Secure** option is selected.
+6. Click the **Add** button to add the variable.
+7. Repeat the process to add the token as `BROWSERSTACK_ACCESS_TOKEN`
 
-[BrowserStack](https://www.browserstack.com/) is a cloud web and mobile testing platform that provides developers with the ability to test their websites and mobile applications across on-demand browsers, operating systems and real mobile devices. 
+8. Add the variable group to your `codemagic.yaml` file
+``` yaml
+  environment:
+    groups:
+      - browserstack_credentials
+```
 
+## App Automate
 
-Now it is possible test your applications via **Codemagic** using the real devices offered by **BrowserStack**. For that purpose, you need to go through three steps using REST API endpoints:
-
-
+In order to use BrowserStack **App Automate** service through Codemagic, you need to add scripts to your `codemagic.yaml` file to perform these three steps using REST API endpoints:
 1. Upload your app
-2. Upload Test Suite
+2. Upload test suite
 3. Start testing
 
+In order to upload test suites for android apps, you need to run `./gradlew assembleAndroidTest` in your build script. Make sure that your **app/build.gradle** file includes **Instrumentation Runner**:
 
-In order to achive the above-mentioned steps, you need use the curl commands below after generating the respective artifacts:
-
-```
- - name: BrowserStack upload
-   script: |      
-    APP_URL=$(curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@android/app/build/outputs/apk/release/app-release.apk" | jq -r '.app_url') 
-    TEST_URL=$(curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" -X POST "https://api-cloud.browserstack.com/app-automate/espresso/test-suite" -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" | jq -r '.test_url')
-    curl -X POST "https://api-cloud.browserstack.com/app-automate/espresso/build" -d '{"devices": ["Google Pixel 3-9.0"], "app": "'"$APP_URL"'", "deviceLogs" : true, "testSuite": "'"$TEST_URL"'"}' -H "Content-Type: application/json" -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" 
-```
-
-
-**$BROWSERSTACK_USERNAME** and **$BROWSERSTACK_ACCESS_TOKEN** are generated to you automatically after signing up with **BrowserStack** and setting up the enviorment variables in the Codemagic UI will allow them to be used during a build.
-
-
-
-In order to upload test suite for android apps, you need to run **./gradlew assembleAndroidTest** and also make sure that **app/build.gradle** file includes Instrumentation runner:
-
-```
+``` Groovy
   defaultConfig {
      testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 }
 ```
 
-If you are building your app in release mode, then do not forget to generate a test .apk in release mode by adding the following in  **app/build.gradle**:
 
-```
+If you are building your app in **release mode**, then you also need to build your test suite .apk in release mode by adding the following in app/build.gradle:
+
+``` Groovy
     testBuildType "release"
+```
+
+Your `codemagic.yaml` file will look similar to this:
+``` yaml
+  scripts:
+    - name: Build Android Test release
+      script: | 
+        cd android # change folder if necessary 
+        ./gradlew assembleAndroidTest
+    - name: BrowserStack upload
+      script: | 
+        APP_URL=$(curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+          -F "file=@android/app/build/outputs/apk/release/app-release.apk" \ 
+          | jq -r '.app_url') 
+    
+        TEST_URL=$(curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/espresso/test-suite" \
+          -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" \
+           | jq -r '.test_url')
+     
+        curl -X POST "https://api-cloud.browserstack.com/app-automate/espresso/build" \
+          -d '{"devices": ["Google Pixel 3-9.0"], "app": "'"$APP_URL"'", "deviceLogs" : true, "testSuite": "'"$TEST_URL"'"}' \
+           -H "Content-Type: application/json" -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_TOKEN" 
 ```
