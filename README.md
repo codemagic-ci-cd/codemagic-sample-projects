@@ -71,6 +71,9 @@
 * [Sofy](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sofy_integration_demo_project)
 
 
+### Other
+* [Capgo](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/capgo_integration_demo_project)
+
 
 ## Older sample projects
 ### Flutter Samples
