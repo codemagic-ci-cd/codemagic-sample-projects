@@ -53,6 +53,7 @@
 * [Codecov](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/codecov_integration_demo_project)
 * [SonarQube / SonarCloud (iOS)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sonarqube_integration_demo_project/Sonar)
 * [SonarQube / SonarCloud (Android)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/sonarqube_integration_demo_project/Android)
+* [Emerge Tools](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/emerge-tools-integration-demo-project)
 
 
 ### Messaging
