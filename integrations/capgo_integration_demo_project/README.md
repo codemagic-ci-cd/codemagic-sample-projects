@@ -1,4 +1,5 @@
 # Capgo Integration with Codemagic
+[Capgo](https://capgo.app/) allows you to deploy live updates for Capacitor apps after they have been published to the App Store or Google Play.
 
 ## Configure environment variables
 
