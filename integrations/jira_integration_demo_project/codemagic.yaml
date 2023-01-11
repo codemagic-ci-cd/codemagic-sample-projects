@@ -14,7 +14,6 @@ workflows:
         XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
         XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
         BUNDLE_ID: "io.codemagic.sample.jira" # <-- Put the name of your Bundle Id here
-        APP_ID: 1555555551 # <-- Put your App ID here
       node: latest 
       xcode: latest
       cocoapods: default
@@ -28,14 +27,15 @@ workflows:
           include: true
           source: true
     scripts:
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
+      - name: Install CocoaPods dependencies
+        script: | 
+          pod install
+      - name: Set up provisioning profiles settings on Xcode project
+        script: xcode-project use-profiles
       - name: Increment build number
         script: |
           cd $CM_BUILD_DIR
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
-          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+          agvtool new-version -all $(($BUILD_NUMBER + 1))
       - name: iOS test
         script: |
           xcode-project run-tests \
@@ -43,7 +43,7 @@ workflows:
             --scheme "$XCODE_SCHEME" \
             --device "iPhone 12"
         test_report: build/ios/test/*.xml
-      - name: Create changelog to publish to slack
+      - name: Create changelog to publish to Slack
         script: |
           if [[ -z ${CM_PREVIOUS_COMMIT} ]]
           then
@@ -61,14 +61,16 @@ workflows:
       scripts:
         - name: Post to JIRA
           script: |
-            ARTIFACT_TYPE=".ipa" 
+            #!/bin/sh
+              set -ex
+            ARTIFACT_TYPE=".ipa"
             
-            # Get URL, Name, Bundle Id and Version name from $FCI_ARTIFACT_LINKS
-            ARTIFACT_URL=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
-            ARTIFACT_NAME=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
-            TYPE=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
-            BUNDLE=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
-            VERSION_NAME=$(echo $FCI_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
+            # Get URL, Name, Bundle Id and Version name from $CM_ARTIFACT_LINKS
+            ARTIFACT_URL=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
+            ARTIFACT_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
+            TYPE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
+            BUNDLE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
+            VERSION_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
             
             BUILD_VERSION=$(( ${BUILD_NUMBER} + 1 ))
             
@@ -79,7 +81,7 @@ workflows:
             TEST_URL=$(echo "${IPA_URL}" | sed 's#/#\\/#g')
             
             # Get first 7 digits of commit number
-            COMMIT=$(echo "${FCI_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+            COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
             
             # Get the name of the test .xml file so we can attach it to a Jira issue
             if [ $ARTIFACT_TYPE == ".ipa" ]
@@ -90,7 +92,7 @@ workflows:
             fi  
 
             # Get the Git commit message for this build
-            GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $FCI_COMMIT)
+            GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
             
             # Populate the values in the .json template which will be used as the JSON payload that will be set as a comment in Jira. 
             # See https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ for details on how to structure comments using Atlassion Document Format.
@@ -98,7 +100,7 @@ workflows:
             sed -i.bak "s/\$BUILD_DATE/$BUILD_DATE/" .templates/jira.json
             sed -i.bak "s/\$ARTIFACT_NAME/$ARTIFACT_NAME/" .templates/jira.json
             sed -i.bak "s/\$ARTIFACT_URL/$TEST_URL/" .templates/jira.json
-            sed -i.bak "s/\$FCI_COMMIT/$COMMIT/" .templates/jira.json
+            sed -i.bak "s/\$CM_COMMIT/$COMMIT/" .templates/jira.json
             sed -i.bak "s/\$GIT_COMMIT_MESSAGE/$GIT_COMMIT_MESSAGE/" .templates/jira.json
             sed -i.bak "s/\$VERSION_NAME/$VERSION_NAME/" .templates/jira.json
             sed -i.bak "s/\$BUILD_VERSION/$BUILD_VERSION/" .templates/jira.json
@@ -136,7 +138,6 @@ workflows:
           recipients: # <-- Add as many required email recipients as you need
           - user_1@example.com
           - user_2@example.com
-          - user_3@example.com
       slack:
         channel: "#builds"
       app_store_connect:
@@ -144,8 +145,8 @@ workflows:
 
         # Configuration related to TestFlight (optional)
         # Note: This action is performed during post-processing.
-        submit_to_testflight: true  # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-        beta_groups:               
+        submit_to_testflight: true 
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
           - group name 1
           - group name 2  
 
