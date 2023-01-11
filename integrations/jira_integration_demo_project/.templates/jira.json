@@ -59,7 +59,7 @@
                             },
                             {
                                 "type": "text",
-                                "text": "$FCI_COMMIT"
+                                "text": "$CM_COMMIT"
                             },
                             {
                                 "type": "text",

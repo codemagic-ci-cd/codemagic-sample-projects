@@ -12,7 +12,6 @@ workflows:
       groups:
         - unity_credentials
       vars:
-        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildIos
         UNITY_IOS_DIR: ios
         XCODE_PROJECT: "Unity-iPhone.xcodeproj"
@@ -22,13 +21,13 @@ workflows:
     scripts:
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode -quit -logFile \
             -serial ${UNITY_SERIAL?} \
             -username ${UNITY_EMAIL?} \
             -password ${UNITY_PASSWORD?}
       - name: Generate the Xcode project from Unity
         script: |
-          $UNITY_BIN -batchmode \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode \
             -quit \
             -logFile \
             -projectPath . \
@@ -93,14 +92,13 @@ workflows:
         - unity_credentials
         - google_play
       vars:
-        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildAndroid
         PACKAGE_NAME: "io.codemagic.unitysample"
         GOOGLE_PLAY_TRACK: alpha
     scripts:
       - name: Activate Unity License
         script: |
-          $UNITY_BIN -batchmode -quit -logFile \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode -quit -logFile \
             -serial ${UNITY_SERIAL?} \
             -username ${UNITY_EMAIL?} \
             -password ${UNITY_PASSWORD?}
@@ -111,7 +109,7 @@ workflows:
             --tracks="$GOOGLE_PLAY_TRACK") + 1))
       - name: Build the project
         script: |
-          $UNITY_BIN -batchmode \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode \
           -quit \
           -logFile \
           -projectPath . \
@@ -244,14 +242,13 @@ workflows:
         - unity_credentials
         - appstore_credentials
       vars:
-        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
         BUILD_SCRIPT: BuildMac
         UNITY_MAC_DIR: mac
         BUNDLE_ID: "io.codemagic.unitysample"
     scripts:
       - name: Activate Unity license
         script: | 
-          $UNITY_BIN -batchmode -quit -logFile \
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode -quit -logFile \
             -serial ${UNITY_SERIAL?} \
             -username ${UNITY_EMAIL?} \
             -password ${UNITY_PASSWORD?}
@@ -273,7 +270,7 @@ workflows:
         script: xcode-project use-profiles
       - name: Build the project
         script: |
-          $UNITY_BIN \
+          $UNITY_HOME/Contents/MacOS/Unity \
             -batchmode \
             -quit \
             -logFile \
