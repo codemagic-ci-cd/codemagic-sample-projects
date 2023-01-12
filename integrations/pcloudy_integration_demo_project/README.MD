@@ -1,22 +1,58 @@
 # pCloudy integration with Codemagic
 
-[pCloudy](https://www.pcloudy.com/) is a mobile application testing platform on cloud for "next-gen" app testing. 
+[pCloudy](https://www.pcloudy.com/) is a cloud-based mobile testing platform that provides the ability to test your apps on a wide-ranging list of real iOS and Android mobile devices and tablets.
 
-It is possible to test your apps on actual devices provided by **pCloudy** via **Codemagic**. In order to achieve it, you need to go through the following steps:
+## Configure pCloudy access
 
-1. Sign up with pCloudy
-2. Get your API Token from your pCloudy settings
-3. Start building your artifacts with Codemagic and upload them to the pCloudy environment
+Signing up with pCloudy is required in order to be able to get the **username** and **access token**. You can sign up for free [here](https://www.pcloudy.com/).
 
-In order to achive the above-mentioned steps, you need use the curl commands below after generating the respective artifacts:
+1. Open your Codemagic app settings, and go to the **Environment variables** tab.
+2. Enter the desired **_Variable name_**, e.g. `PCLOUDY_USERNAME`.
+3. Enter the desired variable value as **_Variable value_**.
+4. Enter the variable group name, e.g. **_pcloudy_credentials_**. Click the button to create the group.
+5. Make sure the **Secure** option is selected.
+6. Click the **Add** button to add the variable.
+7. Repeat the steps to add the `PCLOUDY_API_TOKEN`.
 
+8. Add the variable group to your `codemagic.yaml` file
+```yaml
+  environment:
+    groups:
+      - pcloudy_credentials
 ```
- - name: pCloudy upload
-   script: |      
-    APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token')             
-    curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
+
+## Uploading artefacts to pCloudy
+
+To upload your **.ipa**, **.apk** or **.aab** to pCloudy, add the following script after the build step in your `codemagic.yaml`:
+
+```yaml
+  scripts:
+    - name: pCloudy upload
+      script: | 
+        APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" \
+          https://device.pcloudy.com/api/access | jq -r '.[].token')             
+        curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
+          -F "source_type=raw" \
+          -F "token=$APP_TOKEN" \
+          -F "filter=all" https://device.pcloudy.com/api/upload_file
 ```
 
-After that, you can find a success message in the Codemagic logs and uploaded artefacts in the pCloudy dashboard. 
+To also upload test suites for android apps, add the `./gradlew assembleAndroidTest` command to build tests and add another cURL command to upload:
 
-**$PCLOUDY_USERNAME** and **$PCLOUDY_API_TOKEN** are generated to you automatically after signing up with **PCLOUDY** and setting up the environment variables in the Codemagic UI will allow them to be used during a build.
+```yaml
+  scripts:
+    - name: pCloudy upload
+      script: | 
+        APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" \
+          https://device.pcloudy.com/api/access | jq -r '.[].token')             
+        curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
+          -F "source_type=raw" \
+          -F "token=$APP_TOKEN" \
+          -F "filter=all" https://device.pcloudy.com/api/upload_file
+
+        # Tests
+        curl -X POST -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" \ 
+          -F "source_type=raw" \
+          -F "token=$APP_TOKEN" \
+          -F "filter=all" https://device.pcloudy.com/api/upload_file
+```

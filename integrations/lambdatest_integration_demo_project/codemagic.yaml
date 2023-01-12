@@ -2,7 +2,7 @@ workflows:
   react-native-android:
     name: Integrations LambdaTest React Native Android
     max_build_duration: 120
-    instance_type: mac_mini
+    instance_type: mac_mini_m1
     environment:
       android_signing:
         - keystore_reference
@@ -65,7 +65,7 @@ workflows:
   react-native-ios:
       name: Integrations LambdaTest React Native iOS
       max_build_duration: 120
-      instance_type: mac_mini
+      instance_type: mac_mini_m1
       environment:
         ios_signing:
           distribution_type: app_store
