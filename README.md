@@ -60,14 +60,17 @@
 
 * [Discord](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/discord_integration_demo_project)
 
-
 ### Project management
 
 * [Jira](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/jira_integration_demo_project)
 
 ### Testing
+
 * [emulator.wtf](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/emulatorwtf-android-demo-project)
+* [Katalon](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/katalon_integration_demo_project)
+
 ### Real-device testing
+
 * [Appetize](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/appetize_integration_demo_project)
 * [BrowserStack (App Live)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/browserstack_app_live_demo_project)
 * [BrowserStack (App Automate)](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/browserstack_app_automate_demo_project)
@@ -75,6 +78,7 @@
 
 
 ### Other
+
 * [Capgo](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/capgo_integration_demo_project)
 
 
