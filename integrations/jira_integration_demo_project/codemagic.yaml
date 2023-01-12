@@ -1,160 +1,155 @@
 workflows:
-    ios-workflow:
-      name: iOS Workflow
-      max_build_duration: 120
-      instance_type: mac_mini_m1
-      integrations: 
-        app_store_connect: codemagic
-      environment:
-        groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - jira_credentials # <-- (JIRA_AUTH, JIRA_BASE_URL, JIRA_ISSUE, JIRA_TRANSITION_ID)
-            # JIRA_AUTH <-- Base64 encoded Basic auth e.g user@domain.com:API_TOKEN encoded: echo -n 'email:token' | openssl base64
-            # JIRA_BASE_URL <--  "YOUR_SUBDOMAIN.atlassian.net" - Put your Atlassian domain
-            # JIRA_ISSUE <-- Put your issue key 
-            # JIRA_TRANSITION_ID <-- Integer value of Jira transition obtained using API - https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-get
-          - other
-        vars:
-          XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
-          XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
-          BUNDLE_ID: "YOUR_BUNDLE_ID" # <-- Put the name of your Bundle Id here          
-        node: latest 
-        xcode: latest
-        cocoapods: default
-      triggering: # For details about triggering builds see - https://docs.codemagic.io/getting-started/yaml/#triggering
-        events:
-          - push
-          - tag
-          - pull_request
-        branch_patterns:
-          - pattern: develop
-            include: true
-            source: true
+  ios-workflow:
+    name: iOS Workflow Jira integration
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.sample.jira
+      groups:
+        - jira_credentials # <-- (JIRA_AUTH, JIRA_BASE_URL, JIRA_ISSUE, JIRA_TRANSITION_ID)
+      vars:
+        XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
+        XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
+        BUNDLE_ID: "io.codemagic.sample.jira" # <-- Put the name of your Bundle Id here
+      node: latest 
+      xcode: latest
+      cocoapods: default
+    triggering: # For details about triggering builds see - https://docs.codemagic.io/getting-started/yaml/#triggering
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Install CocoaPods dependencies
+        script: | 
+          pod install
+      - name: Set up provisioning profiles settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          cd $CM_BUILD_DIR
+          agvtool new-version -all $(($BUILD_NUMBER + 1))
+      - name: iOS test
+        script: |
+          xcode-project run-tests \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME" \
+            --device "iPhone 12"
+        test_report: build/ios/test/*.xml
+      - name: Create changelog to publish to Slack
+        script: |
+          if [[ -z ${CM_PREVIOUS_COMMIT} ]]
+          then
+            echo "No finished builds found to generate changelog" | tee release_notes.txt
+          else
+            echo "$(git-changelog generate --previous-commit $CM_PREVIOUS_COMMIT)" | tee release_notes.txt
+          fi
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
       scripts:
-        - name: Install CocoaPods dependencies
-          script: | 
-            pod install
-        - name: Set up provisioning profiles settings on Xcode project
-          script: xcode-project use-profiles
-        - name: Increment build number
+        - name: Post to JIRA
           script: |
-            cd $CM_BUILD_DIR
-            agvtool new-version -all $(($BUILD_NUMBER + 1))
-        - name: iOS test
-          script: |
-            xcode-project run-tests \
-              --workspace "$XCODE_WORKSPACE" \
-              --scheme "$XCODE_SCHEME" \
-              --device "iPhone 12"
-          test_report: build/ios/test/*.xml
-        - name: Create changelog to publish to Slack
-          script: |
-            if [[ -z ${CM_PREVIOUS_COMMIT} ]]
-            then
-              echo "No finished builds found to generate changelog" | tee release_notes.txt
-            else
-              echo "$(git-changelog generate --previous-commit $CM_PREVIOUS_COMMIT)" | tee release_notes.txt
-            fi
-        - name: Build ipa for distribution
-          script: |
-            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
-      artifacts:
-        - build/ios/ipa/*.ipa
-        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-      publishing:
-        scripts:
-          - name: Post to JIRA
-            script: |
-              #!/bin/sh
+            #!/bin/sh
               set -ex
+            ARTIFACT_TYPE=".ipa"
+            
+            # Get URL, Name, Bundle Id and Version name from $CM_ARTIFACT_LINKS
+            ARTIFACT_URL=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
+            ARTIFACT_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
+            TYPE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
+            BUNDLE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
+            VERSION_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
+            
+            BUILD_VERSION=$(( ${BUILD_NUMBER} + 1 ))
+            
+            # Set the build date
+            BUILD_DATE=$(date +"%Y-%m-%d")
+            
+            # Escape forward slash characters in URL to prevent errors when using sed to replace the template value
+            TEST_URL=$(echo "${IPA_URL}" | sed 's#/#\\/#g')
+            
+            # Get first 7 digits of commit number
+            COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+            
+            # Get the name of the test .xml file so we can attach it to a Jira issue
+            if [ $ARTIFACT_TYPE == ".ipa" ]
+            then
+              XML_TEST_RESULTS=$(find -f build/ios/test/*.xml)
+            else
+              XML_TEST_RESULTS=$(find -f app/build/test-results/**/*.xml)
+            fi  
 
-              ARTIFACT_TYPE=".ipa" 
-              
-              # Get URL, Name, Bundle Id and Version name from $CM_ARTIFACT_LINKS
-              ARTIFACT_URL=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .url')
-              ARTIFACT_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .name')
-              TYPE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .type')
-              BUNDLE=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .bundleId')
-              VERSION_NAME=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name | endswith("'"$ARTIFACT_TYPE"'")) | .versionName')
-              
-              BUILD_VERSION=$(( ${BUILD_NUMBER} + 1 ))
-              
-              # Set the build date
-              BUILD_DATE=$(date +"%Y-%m-%d")
-              
-              # Escape forward slash characters in URL to prevent errors when using sed to replace the template value
-              TEST_URL=$(echo "${IPA_URL}" | sed 's#/#\\/#g')
-              
-              # Get first 7 digits of commit number
-              COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
-              
-              # Get the name of the test .xml file so we can attach it to a Jira issue
-              if [ $ARTIFACT_TYPE == ".ipa" ]
-              then
-                XML_TEST_RESULTS=$(find -f build/ios/test/*.xml)
-              else
-                XML_TEST_RESULTS=$(find -f app/build/test-results/**/*.xml)
-              fi  
+            # Get the Git commit message for this build
+            GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
+            
+            # Populate the values in the .json template which will be used as the JSON payload that will be set as a comment in Jira. 
+            # See https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ for details on how to structure comments using Atlassion Document Format.
+            
+            sed -i.bak "s/\$BUILD_DATE/$BUILD_DATE/" .templates/jira.json
+            sed -i.bak "s/\$ARTIFACT_NAME/$ARTIFACT_NAME/" .templates/jira.json
+            sed -i.bak "s/\$ARTIFACT_URL/$TEST_URL/" .templates/jira.json
+            sed -i.bak "s/\$CM_COMMIT/$COMMIT/" .templates/jira.json
+            sed -i.bak "s/\$GIT_COMMIT_MESSAGE/$GIT_COMMIT_MESSAGE/" .templates/jira.json
+            sed -i.bak "s/\$VERSION_NAME/$VERSION_NAME/" .templates/jira.json
+            sed -i.bak "s/\$BUILD_VERSION/$BUILD_VERSION/" .templates/jira.json
+            sed -i.bak "s/\$BUNDLE/$BUNDLE/" .templates/jira.json
+            sed -i.bak "s/\$TYPE/$TYPE/" .templates/jira.json
 
-              # Get the Git commit message for this build
-              GIT_COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
-              
-              # Populate the values in the .json template which will be used as the JSON payload that will be set as a comment in Jira. 
-              # See https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ for details on how to structure comments using Atlassion Document Format.
-              
-              sed -i.bak "s/\$BUILD_DATE/$BUILD_DATE/" .templates/jira.json
-              sed -i.bak "s/\$ARTIFACT_NAME/$ARTIFACT_NAME/" .templates/jira.json
-              sed -i.bak "s/\$ARTIFACT_URL/$TEST_URL/" .templates/jira.json
-              sed -i.bak "s/\$CM_COMMIT/$COMMIT/" .templates/jira.json
-              sed -i.bak "s/\$GIT_COMMIT_MESSAGE/$GIT_COMMIT_MESSAGE/" .templates/jira.json
-              sed -i.bak "s/\$VERSION_NAME/$VERSION_NAME/" .templates/jira.json
-              sed -i.bak "s/\$BUILD_VERSION/$BUILD_VERSION/" .templates/jira.json
-              sed -i.bak "s/\$BUNDLE/$BUNDLE/" .templates/jira.json
-              sed -i.bak "s/\$TYPE/$TYPE/" .templates/jira.json
+            # Add a comment to Jira 
+            # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-comments/#api-rest-api-3-comment-list-post for details
+            curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/comment -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -H "Content-Type: application/json" --data @.templates/jira.json | jq "."
+            
+            # Transition Jira issue to another status 
+            # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-post for details
+            curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/transitions -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -H "Content-Type: application/json" --data '{"transition":{"id":"'"$JIRA_TRANSITION_ID"'"}}' | jq "."
+            
+            # Attach XML test results to the Jira issue 
+            # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/#api-rest-api-3-issue-issueidorkey-attachments-post for details
+            
+            if [[ -z ${XML_TEST_RESULTS} ]]
+            then
+              echo "No test results available to upload to JIRA"
+            else  
+              curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/attachments -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -F "file=@$XML_TEST_RESULTS"  | jq "."
+            fi
 
-              # Add a comment to Jira 
-              # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-comments/#api-rest-api-3-comment-list-post for details
-              curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/comment -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -H "Content-Type: application/json" --data @.templates/jira.json | jq "."
-              
-              # Transition Jira issue to another status 
-              # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-transitions-post for details
-              curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/transitions -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -H "Content-Type: application/json" --data '{"transition":{"id":"'"$JIRA_TRANSITION_ID"'"}}' | jq "."
-              
-              # Attach XML test results to the Jira issue 
-              # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/#api-rest-api-3-issue-issueidorkey-attachments-post for details
-              
-              if [[ -z ${XML_TEST_RESULTS} ]]
-              then
-                echo "No test results available to upload to JIRA"
-              else  
-                curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/attachments -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -F "file=@$XML_TEST_RESULTS"  | jq "."
-              fi
+            # Attach Release Notes to the Jira issue 
+            # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/#api-rest-api-3-issue-issueidorkey-attachments-post for details
+            
+            if [[ -e release_notes.txt ]]
+            then 
+              curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/attachments -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -F "file=@release_notes.txt"  | jq "."
+            else
+              echo "No release_notes.txt available to upload to JIRA"
+            fi  
+      email:
+          recipients: # <-- Add as many required email recipients as you need
+          - user_1@example.com
+          - user_2@example.com
+      slack:
+        channel: "#builds"
+      app_store_connect:
+        auth: integration
 
-              # Attach Release Notes to the Jira issue 
-              # See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/#api-rest-api-3-issue-issueidorkey-attachments-post for details
-              
-              if [[ -e release_notes.txt ]]
-              then 
-                curl -X POST https://$JIRA_BASE_URL/rest/api/3/issue/$JIRA_ISSUE/attachments -H "Authorization: Basic $JIRA_AUTH" -H "X-Atlassian-Token: nocheck" -F "file=@release_notes.txt"  | jq "."
-              else
-                echo "No release_notes.txt available to upload to JIRA"
-              fi  
-        email:
-            recipients: # <-- Add as many required email recipients as you need
-            - user_1@example.com
-            - user_2@example.com
-        slack:
-          channel: "#builds"
-        app_store_connect:                 
-          auth: integration
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_testflight: true 
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+          - group name 1
+          - group name 2  
 
-          # Configuration related to TestFlight (optional)
-          # Note: This action is performed during post-processing.
-          submit_to_testflight: true
-          beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-            - group name 1
-            - group name 2
-
-          # Configuration related to App Store (optional)
-          # Note: This action is performed during post-processing.
-          submit_to_app_store: false
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false

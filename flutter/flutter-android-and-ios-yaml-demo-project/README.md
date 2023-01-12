@@ -1,3 +1,5 @@
+# Flutter sample project to build Android and iOS app
+
 This sample project illustrates all of the necessary steps to successfully build and publish a Flutter Android and iOS apps with Codemagic. It covers the basic steps such as build versioning, code signing and publishing.
 
 You can find more detailed instructions as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/).
