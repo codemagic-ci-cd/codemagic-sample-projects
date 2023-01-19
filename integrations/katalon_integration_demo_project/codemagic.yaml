@@ -1,7 +1,7 @@
 workflows:
   native-android:
     name: Integrations Katalon Android
-    instance_type: mac_mini_m1
+    instance_type: mac_pro
     environment:
       android_signing:
         - keystore_reference
