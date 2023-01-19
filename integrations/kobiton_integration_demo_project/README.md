@@ -1,6 +1,6 @@
 # Kobiton integration with Codemagic
 
-[**Kobiton**](https://kobiton.com/) is a mobile testing platform that accelerates delivery and testing of mobile apps by offering manual and automated testing on real devices, in cloud & on-premises.
+[**Kobiton**](https://kobiton.com/) is a mobile testing platform that accelerates delivery and testing of mobile apps by offering manual and automated testing on real devices, in the cloud & on-premises.
 
 ## Configure Kobiton access
 
