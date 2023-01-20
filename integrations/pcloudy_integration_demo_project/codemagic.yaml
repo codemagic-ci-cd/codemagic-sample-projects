@@ -1,83 +1,74 @@
 workflows:
-    react-native-android:
-        name: React Native Android
-        max_build_duration: 120
-        instance_type: mac_mini
-        environment:
-            groups:
-            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-                - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS_PASSWORD, CM_KEY_ALIAS_USERNAME)
-                  # CM_KEYSTORE <-- Put your keystore file here
-                  # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
-                  # CM_KEY_ALIAS_PASSWORD <-- Put your keystore alias password here
-                  # CM_KEY_ALIAS_USERNAME <-- Put your keystore alias username here
-                - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-                - pcloudy_credentials # <-- ($PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN envrionment variables)
-                - other
-            vars:
-                PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp
-            node: v16.11.1
-        triggering:
-            events:
-                - push
-                - tag
-                - pull_request
-            branch_patterns:
-                - pattern: develop
-                  include: true
-                  source: true
-        scripts:
-            - name: Install npm dependencies
-              script: |
-                npm install
-            - name: Set Android SDK location
-              script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
-            - name: Set up keystore
-              script: |
-                    echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
-                    # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-                    # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
-                    # storePassword=$CM_KEYSTORE_PASSWORD
-                    # keyPassword=$CM_KEY_ALIAS_PASSWORD
-                    # keyAlias=$CM_KEY_ALIAS_USERNAME
-                    # storeFile=/tmp/keystore.keystore
-                    # EOF               
-            - name: Build Android release
-              script: |
-                # Set environment variable so it can be used to increment build number in android/app/build.gradle
-                # Note that tracks can be specified when retrieving latest build number from Google Play, for example:
-                # export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks=alpha) + 1))
-                export LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
-                cd android && ./gradlew assembleRelease
-            - name: Build Android Test
-              script: |
-                cd android && ./gradlew assembleAndroidTest
-            - name: pCloudy Upload
-              script: | 
-                 APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token') 
-       
-                 curl -X POST -F "file=@android/app/build/outputs/apk/release/app-release.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
-                 curl -X POST -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" -F "source_type=raw" -F "token=$APP_TOKEN" -F "filter=all" https://device.pcloudy.com/api/upload_file
-        artifacts:
-            - android/app/build/outputs/**/*.apk
-        publishing:
-            # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
-            email:
-                recipients:
-                    - user_1@example.com
-                    - user_2@example.com
-                notify:
-                  success: true     # To not receive a notification when a build succeeds
-                  failure: false    # To not receive a notification when a build fails
-            slack: 
-              # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-              channel: '#channel-name'
-              notify_on_build_start: true   # To receive a notification when a build starts
-              notify:
-                success: true               # To not receive a notification when a build succeeds
-                failure: false              # To not receive a notification when a build fails
-            google_play:
-              # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
-              credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-              track: alpha   # Any default or custom track that is not in ‘draft’ status
+  react-native-android:
+    name: Integrations pCloudy React Native Android
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+        - pcloudy_credentials # <-- ($PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN envrionment variables)
+      vars:
+        PACKAGE_NAME: "YOUR_PACKAGE_NAME" # <-- Put your package name here e.g. com.domain.myapp
+      node: v16.11.1
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm install
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"        
+      - name: Build Android release
+        script: |
+          export LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+          cd android && ./gradlew assembleRelease
+      - name: Build Android Test
+        script: |
+          cd android && ./gradlew assembleAndroidTest
+      - name: pCloudy Upload
+        script: | 
+          APP_TOKEN=$(curl -u "$PCLOUDY_USERNAME:$PCLOUDY_API_TOKEN" https://device.pcloudy.com/api/access | jq -r '.[].token') 
+  
+          curl -X POST \
+            -F "file=@android/app/build/outputs/apk/release/app-release.apk" \
+            -F "source_type=raw" \
+            -F "token=$APP_TOKEN" \
+            -F "filter=all" https://device.pcloudy.com/api/upload_file
+
+          curl -X POST \
+          -F "file=@android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" \
+          -F "source_type=raw" \
+          -F "token=$APP_TOKEN" \
+          -F "filter=all" https://device.pcloudy.com/api/upload_file
+    artifacts:
+      - android/app/build/outputs/**/*.apk
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true     # To not receive a notification when a build succeeds
+          failure: false    # To not receive a notification when a build fails
+      slack: 
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: '#channel-name'
+        notify_on_build_start: true   # To receive a notification when a build starts
+        notify:
+          success: true               # To not receive a notification when a build succeeds
+          failure: false              # To not receive a notification when a build fails
+      google_play:
+        # See the following link for information regarding publishing to Google Play - https://docs.codemagic.io/publishing-yaml/distribution/#google-play
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha   # Any default or custom track that is not in ‘draft’ status
