@@ -1,0 +1,48 @@
+workflows:
+  unity-android-workflow:
+    name: Unity Android Workflow
+    instance_type: mac_pro
+    max_build_duration: 120
+    environment:
+      unity: 2021.3.15f1 # Remove it if your Unity can be built using the default Unity editor version, read more: https://docs.codemagic.io/knowledge-others/install-unity-version/
+      android_signing:
+        - codemagic_test
+      groups:
+        - unity # Includes (UNITY_SERIAL, UNITY_USERNAME, UNITY_PASSWORD)
+      vars:
+        RELEASE_BUILD: DoBuildAndroidLibraryRelease # The name of the method that we're using in Build.cs file
+        GAME_FOLDER: madbirds # Change to your game folder name
+    scripts:
+      - name: Activate Unity License
+        script: | 
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode -quit -logFile \
+            -serial ${UNITY_SERIAL} \
+            -username ${UNITY_USERNAME} \
+            -password ${UNITY_PASSWORD}
+      - name: Build the Unity project
+        script: | 
+          $UNITY_HOME/Contents/MacOS/Unity -batchmode \
+            -quit \
+            -logFile \
+            -projectPath /unity/$GAME_FOLDER \
+            -executeMethod Build.$RELEASE_BUILD \
+            -nographics \
+            -buildTarget Android
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" >> "$CM_BUILD_DIR/android/local.properties"
+          echo "ndk.dir=${UNITY_HOME%"Unity.app"}/PlaybackEngines/AndroidPlayer/NDK" >> "$CM_BUILD_DIR/android/local.properties"
+      - name: Flutter get packages
+        script: flutter pub get
+      - name: Flutter build apk
+        script: flutter build apk --release
+    artifacts:
+      - build/**/outputs/apk/**/*.apk
+    publishing:
+      scripts:
+        - name: Deactivate Unity License
+          script: |
+             /Applications/Unity\ Hub.app/Contents/Frameworks/UnityLicensingClient_V1.app/Contents/MacOS/Unity.Licensing.Client \
+              --return-ulf \
+              --username ${UNITY_USERNAME} \
+              --password ${UNITY_PASSWORD}

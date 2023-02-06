@@ -1,0 +1,59 @@
+workflows:
+  android-workflow:
+    name: Building Android (apk)
+    max_build_duration: 120
+    instance_type: mac_pro
+    environment:
+      groups:
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+      vars:
+        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildApk
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+    scripts:
+      - name: Activate Unity License
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+      - name: Build Unity Android
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics -buildTarget Android
+    artifacts:
+      - apk/*.apk
+    publishing:
+      scripts:
+        - name: Deactivate Unity License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+  windows-workflow:
+    name: Building Windows
+    max_build_duration: 120
+    instance_type: mac_pro
+    environment:
+      groups:
+        - unity # <-- (Includes UNITY_HOME, UNITY_SERIAL, UNITY_USERNAME and UNITY_PASSWORD)
+      vars:
+        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildWindows
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+    scripts:
+      - name: Activate Unity License
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_USERNAME?} -password ${UNITY_PASSWORD?}
+      - name: Build Unity windows
+        script: |
+          $UNITY_BIN -batchmode -quit -logFile -projectPath . -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+    artifacts:
+      - windows/*.exe
+    publishing:
+      scripts:
+        - name: Deactivate Unity License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
