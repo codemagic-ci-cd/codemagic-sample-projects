@@ -6,7 +6,7 @@ This sample project illustrates the way to export an android package of your Uni
 
 Building Unity apps in a cloud CI/CD environment requires a Unity **Plus** or a **Pro** license. Your license is used to activate Unity on the Codemagic build server so the iOS and Android projects can be exported.  The license is returned during the publishing step of the workflow which is always run **except if the build is cancelled**.
 
-Create a new environment variable group and name it `unity`, in this group add these variables (`UNITY_SERIAL`, `UNITY_USERNAME`, `UNITY_PASSWORD`).
+Create a new environment variable group and name it `unity`, in this group add these variables (`UNITY_SERIAL`, `UNITY_EMAIL`, `UNITY_PASSWORD`).
 
 
 ## Placing Unity code
@@ -41,4 +41,4 @@ return Scaffold(
 ```
 
 ## Blog post
-You can find more detailed instructions in the [blog psot]().
+You can find more detailed instructions in the [blog psot](https://blog.codemagic.io/).
