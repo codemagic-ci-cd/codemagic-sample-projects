@@ -1,0 +1,68 @@
+workflows:
+  android-workflow:
+    name: Android Workflow
+    instance_type: mac_pro
+    max_build_duration: 120
+    environment:
+      groups:
+        - maestro # --> Includes (MDEV_API_KEY)
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Build apk with Flutter
+        script: flutter build apk 
+      - name: Download Maestro
+        script: curl -Ls "https://get.maestro.mobile.dev" | bash
+    artifacts:
+      - build/**/outputs/apk/**/*.apk
+    publishing:
+      scripts:
+        - name: Run tests on Maestro cloud
+          script: |
+            export PATH="$PATH":"$HOME/.maestro/bin"
+            maestro cloud \
+            --apiKey $MDEV_API_KEY \
+            build/app/outputs/apk/release/app-release.apk \
+            .maestro/
+  ios-workflow:
+    name: iOS Workflow
+    instance_type: mac_pro
+    max_build_duration: 120
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.sample.maestro   
+      groups:
+        - maestro # --> Includes (MDEV_API_KEY)
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"        
+        BUNDLE_ID: "io.codemagic.sample.maestro" # <-- Put your bundle id here
+    scripts:
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles    
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Build ios with Flutter
+        script: flutter build ios 
+      - name: Build unsigned .app
+        script: |
+          xcodebuild \
+          -workspace "ios/$XCODE_WORKSPACE" \
+          -scheme "$XCODE_SCHEME" \
+          -configuration "Debug" \
+          -sdk iphonesimulator \
+          -derivedDataPath ios/output
+      - name: Download Maestro
+        script: curl -Ls "https://get.maestro.mobile.dev" | bash
+    publishing:
+      scripts:
+        - name: Run tests on Maestro cloud
+          script: |
+            export PATH="$PATH":"$HOME/.maestro/bin"
+            maestro cloud \
+            --apiKey $MDEV_API_KEY \
+            ios/output/Build/Products/Debug-iphonesimulator/Runner.app \
+            .maestro/
