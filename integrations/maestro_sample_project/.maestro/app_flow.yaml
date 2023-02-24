@@ -1,0 +1,18 @@
+appId: com.example.counter_sample_project
+---
+- clearState
+- launchApp
+- assertVisible: "0"
+- repeat:
+    times: 5
+    commands:
+      - tapOn: "IncrementButton"
+- assertVisible: "5"
+- repeat:
+    times: 5
+    commands:
+      - tapOn: "DecrementButton"
+- assertVisible: "0"
+- tapOn: "DecrementButton"
+- assertVisible: "-1"
+- stopApp
