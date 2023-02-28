@@ -3,7 +3,7 @@
 This sample project show you a simple test flow that increment the counter multiple times and decrement it.
 
 
-[**Maestro UI testing framework**](https://mobile.dev/) from `Mobile.dev` enables you to test your iOS and Android mobile apps using simply created tests flows steps.
+[**Maestro UI testing framework**](https://mobile.dev/) from `Mobile.dev` lets you test your iOS and Android mobile apps using simple to-create test flows.
 
 Read the full documentation page [here](https://docs.codemagic.io/integrations/maestro-integration/).
 
@@ -63,7 +63,7 @@ scripts:
 ```
 
 
-> **Note:** Don't forget to add the environment variables that holds your XCode workspace name under `$XCODE_WORKSPACE` and the Scheme name under `$XCODE_SCHEME`, see the complete sample project from [here](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/maestro_integration_demo_project/codemagic.yaml).
+> **Note:** Don't forget to add the environment variables that holds your XCode workspace name under `$XCODE_WORKSPACE` and the Scheme name under `$XCODE_SCHEME`. See the complete sample project [here](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/integrations/maestro_integration_demo_project/codemagic.yaml).
 
 
-That's it, now if your Codemagic's build has failed at the maestro cloud step, then your tests has failed, or which means everything went well, and you can check out the build page for more details.
+If your Codemagic's build has failed at the Maestro cloud step, then your tests have failed. Otherwise, everything went well and you can check out the build page for more details.
