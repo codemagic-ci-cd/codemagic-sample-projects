@@ -1,7 +1,7 @@
 workflows:
   android-workflow:
     name: Android Workflow
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
       groups:
@@ -26,7 +26,7 @@ workflows:
             .maestro/
   ios-workflow:
     name: iOS Workflow
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     max_build_duration: 120
     integrations:
       app_store_connect: codemagic
