@@ -1,6 +1,6 @@
 # Maestro and Codemagic integration demo project
 
-This sample project show you a simple test flow that increment the counter multiple times and decrement it.
+This sample project shows you a simple test flow that increments the counter multiple times and decrements it.
 
 
 [**Maestro UI testing framework**](https://mobile.dev/) from `Mobile.dev` lets you test your iOS and Android mobile apps using simple to-create test flows.
@@ -8,10 +8,10 @@ This sample project show you a simple test flow that increment the counter multi
 Read the full documentation page [here](https://docs.codemagic.io/integrations/maestro-integration/).
 
 ## Managing Maestro flows
-After you have created your YAML tests flows inside the `.maestro` directory, you need to check the directory into your project repository.
+After you have created your YAML test flows inside the `.maestro` directory, you need to check the directory into your project repository.
 
 ## Installing Maestro CLI
-Before you use maestro commands, you need first to simply install the CLI on the building machine using this command in your `codemagic.yaml` file.
+Before you use Maestro commands, you need first to simply install the CLI on the building machine using this command in your `codemagic.yaml` file.
 
 ```
 scripts:
