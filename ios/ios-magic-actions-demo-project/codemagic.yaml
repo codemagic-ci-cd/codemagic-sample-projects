@@ -1,7 +1,7 @@
 workflows:
     ios-swiftly:
       name: ios_swiftly
-      instance_type: mac_mini
+      instance_type: mac_mini_m1
       environment:
         groups:
         # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
@@ -14,12 +14,15 @@ workflows:
           - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
           - other
         vars:
-          XCODE_PROJECT: "swiftly.xcodeproj"
+          XCODE_WORKSPACE: "swiftly.xcworkspace"
           XCODE_SCHEME: "swiftly"
           BUNDLE_ID: "io.codemagic.cmswiftly"
-          APP_STORE_APP_ID: Encrypted(...) # <-- Put your encrypted Apple App Id here. This can be found in App Store Connect > Your App > General > App Information > Apple Id. 
-        xcode: 12.5
+          APP_STORE_APP_ID: 12345678 # <-- Put your Apple App ID here. This can be found in App Store Connect > Your App > General > App Information > Apple ID. 
+        xcode: 14.2
         cocoapods: default
+        ios_signing:
+          distribution_type: app_store
+          bundle_identifier: io.codemagic.cmswiftly
       triggering:
         events:
           - push
@@ -31,20 +34,17 @@ workflows:
             source: true
       scripts:
         - name: Codemagic CLI Tools build
-          script: |
-            #!/bin/sh
-            set -ex
-            pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
-            keychain initialize
-            pod init && pod install
-            app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-            keychain add-certificates
-            xcode-project use-profiles
-            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
-            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
-            
-            # Use Codemagic to publish to take advantage of asynchronous Magic Actions otherwise use app-store-connect publish command and pass whats_new.json for release notes.
-            # app-store-connect publish --beta-build-localizations=@file:whats_new.json 
+          script: pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
+        - name: Initialize Pods 
+          script: pod init && pod install
+        - name: Set up provisioning profiles settings on Xcode project
+          script: xcode-project use-profiles
+        - name: Increment build number
+          script: agvtool new-version -all $(($(app-store-connect get-latest-build-number "$APP_STORE_APP_ID") + 1))
+        - name: Create archive
+          script: xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" --archive-xcargs "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=" --archive-flags "-destination 'generic/platform=iOS' CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=NO"
+        - name: Publish on App Store
+          script: app-store-connect publish --beta-build-localizations=@file:whats_new.json
       artifacts:
         - build/ios/ipa/*.ipa
         - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
@@ -60,4 +60,4 @@ workflows:
            #      - group name 2                      
          email:
            recipients:
-            - kevin@nevercode.io
+            - user_1@example.com
