@@ -3,16 +3,6 @@ workflows:
       name: ios_swiftly
       instance_type: mac_mini_m1
       environment:
-        groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-          - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-            # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here 
-            # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here 
-            # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-            # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
-            # https://appstoreconnect.apple.com/access/api
-          - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
-          - other
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace"
           XCODE_SCHEME: "swiftly"
@@ -51,9 +41,8 @@ workflows:
         - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
       publishing:
          app_store_connect:
-           api_key: $APP_STORE_CONNECT_PRIVATE_KEY         # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-           key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER       # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-           issuer_id: $APP_STORE_CONNECT_ISSUER_ID         # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+           # Use referenced App Store Connect API key to authenticate binary upload
+           auth: integration
            submit_to_testflight: false                     # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
            # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review. 
            #      - group name 1
