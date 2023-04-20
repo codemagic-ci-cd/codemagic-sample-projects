@@ -1,6 +1,7 @@
 workflows:
   android-workflow:
     name: Android Workflow
+    instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
       android_signing:
@@ -49,6 +50,7 @@ workflows:
         submit_as_draft: true
   ios-workflow:
     name: iOS Workflow
+    instance_type: mac_mini_m1
     max_build_duration: 120
     integrations:
       app_store_connect: codemagic
