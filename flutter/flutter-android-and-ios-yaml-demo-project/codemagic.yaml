@@ -117,3 +117,34 @@ workflows:
         # Configuration related to App Store (optional)
         # Note: This action is performed during post-processing.
         submit_to_app_store: false
+
+  web-workflow:
+    name: Web app workflow
+    max_build_duration: 10
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter unit tests
+        script: |
+          flutter test
+      - name: Flutter build webapp
+        script: |
+          flutter build web --release
+          cd build/web
+          7z a -r ../web.zip ./*
+    artifacts:
+      - build/web.zip
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+
+
+
