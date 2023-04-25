@@ -22,7 +22,7 @@ workflows:
       - name: Install MAUI
         script: |
           $DOTNET_BIN nuget locals all --clear 
-          $DOTNET_BIN workload install ios maui --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
+          $DOTNET_BIN workload install maui-ios --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
       - name: Set Info.plist values
         script: | 
           PLIST=$CM_BUILD_DIR/src/WeatherTwentyOne/Platforms/iOS/Info.plist
@@ -79,7 +79,7 @@ workflows:
         script: |
           $DOTNET_BIN nuget locals all --clear 
           # $DOTNET_BIN workload install maui --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json
-          $DOTNET_BIN workload install android maui wasm-tools --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
+          $DOTNET_BIN workload install maui-android wasm-tools --source https://aka.ms/dotnet6/nuget/index.json --source https://api.nuget.org/v3/index.json      
       - name: Build
         script: |
           LATEST_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
