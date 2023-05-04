@@ -21,13 +21,13 @@ android {
             keyPassword 'android'
         }
         release {
-                if (System.getenv()["CI"]) {
-                    storeFile file('/tmp/keystore.keystore')
+                if (System.getenv()["CI"]) {                    
+                    storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
                     storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
                     keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
                     keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
                 } else {
-                    storeFile file("../../keys/codemagic.keystore")
+                    storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
                     storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
                     keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
                     keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
