@@ -1,0 +1,88 @@
+workflows:
+    ios-workflow:
+      name: iOS Workflow
+      integrations:
+        app_store_connect: Codemagic # < -- Put API Key Name from Teams > Settings > Integrations > App Store Connect
+      environment:
+        ios_signing:
+          distribution_type: app_store
+          bundle_identifier: io.codemagic.swiftly
+        vars:
+          XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
+          XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+          BUNDLE_ID: "io.codemagic.swiftly" # <-- Put your Bundle Id here.
+          APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+        xcode: latest
+        cocoapods: default
+      triggering:
+        events:
+          - push
+          - tag
+          - pull_request
+        branch_patterns:
+          - pattern: 'develop'
+            include: true
+            source: true
+      scripts:
+        - name: Install CocoaPods dependencies
+          script: |
+            pod install
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Increment build number
+          script: |
+            #!/bin/sh
+            set -e
+            set -x
+            cd $FCI_BUILD_DIR
+            # agvtool new-version -all $(($BUILD_NUMBER + 1))
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+        - name: Build ipa for distribution
+          script: |
+            xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      publishing:
+        app_store_connect:
+          # Use referenced App Store Connect API key to authenticate binary upload
+          auth: integration 
+
+          # Configuration related to TestFlight (optional)
+
+          # Optional boolean, defaults to false. Whether or not to submit the uploaded
+          # build to TestFlight beta review. Required for distributing to beta groups.
+          # Note: This action is performed during post-processing.
+          submit_to_testflight: true 
+
+          # Optional boolean, defaults to false. Set to true to automatically expire 
+          # previous build in review or waiting for review in Testflight before
+          # submitting a new build to beta review. Expired builds will no longer be available for testers.
+          # Note: This action is performed during post-processing.
+          expire_build_submitted_for_review: true
+
+          # Specify the names of beta tester groups that will get access to the build 
+          # once it has passed beta review.
+          beta_groups: 
+            - group name 1
+            - group name 2
+          
+          # Configuration related to App Store (optional)
+
+          # Optional boolean, defaults to false. Whether or not to submit the uploaded
+          # build to App Store review. Note: This action is performed during post-processing.
+          submit_to_app_store: true
+        email:
+            recipients:
+              - user1@example.com
+              - user2@example.com
+            notify:
+              success: true
+              failure: true
+        slack:
+            channel: '#builds'
+            notify_on_build_start: true    # To receive a notification when a build starts
+            notify:
+              success: false               # To not receive a notification when a build succeeds
+              failure: false               # To not receive a notification when a build fails
