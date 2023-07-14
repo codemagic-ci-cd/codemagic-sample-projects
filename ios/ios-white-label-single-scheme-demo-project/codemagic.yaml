@@ -15,7 +15,7 @@ definitions:
           BUNDLE_VERSION: _
           BUNDLE_ID: _
           BUNDLE_DISPLAY_NAME: _
-          APP_STORE_APP_ID: _
+          APP_STORE_APPLE_ID: _
           ASSET_GIT_BRANCH: _
           ASSET_GIT_REPO: _
 workflows:
@@ -65,7 +65,7 @@ workflows:
             set -ex
             cd $FCI_BUILD_DIR
             # agvtool new-version -all $(($BUILD_NUMBER + 1))
-            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number $APP_STORE_APP_ID) + 1))
+            agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number $APP_STORE_APPLE_ID) + 1))
         - name: iOS test
           script: |
             #!/bin/sh

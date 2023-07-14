@@ -7,7 +7,7 @@ workflows:
           XCODE_WORKSPACE: "swiftly.xcworkspace"
           XCODE_SCHEME: "swiftly"
           BUNDLE_ID: "io.codemagic.cmswiftly"
-          APP_STORE_APP_ID: 12345678 # <-- Put your Apple App ID here. This can be found in App Store Connect > Your App > General > App Information > Apple ID. 
+          APP_STORE_APPLE_ID: 12345678 # <-- Put your Apple App ID here. This can be found in App Store Connect > Your App > General > App Information > Apple ID. 
         xcode: 14.2
         cocoapods: default
         ios_signing:
@@ -30,7 +30,7 @@ workflows:
         - name: Set up provisioning profiles settings on Xcode project
           script: xcode-project use-profiles
         - name: Increment build number
-          script: agvtool new-version -all $(($(app-store-connect get-latest-build-number "$APP_STORE_APP_ID") + 1))
+          script: agvtool new-version -all $(($(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID") + 1))
         - name: Create archive
           script: xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" --archive-xcargs "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=" --archive-flags "-destination 'generic/platform=iOS' CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=NO"
         - name: Publish on App Store
