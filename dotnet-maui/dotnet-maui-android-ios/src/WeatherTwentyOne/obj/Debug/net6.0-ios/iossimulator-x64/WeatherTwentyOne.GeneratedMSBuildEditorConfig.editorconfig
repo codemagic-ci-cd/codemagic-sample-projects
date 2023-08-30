@@ -1,0 +1,77 @@
+is_global = true
+build_property.TargetFramework = net6.0-ios
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = WeatherTwentyOne
+build_property.ProjectDir = /Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Pages/FavoritesPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Pages.FavoritesPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/FavoritesPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/FavoritesPage.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Pages/HomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Pages.HomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/HomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/HomePage.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Pages/MapPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Pages.MapPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/MapPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/MapPage.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Pages/SettingsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Pages.SettingsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages/SettingsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages/SettingsPage.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Resources/Styles/DefaultTheme.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Resources.Styles.DefaultTheme.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/DefaultTheme.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/DefaultTheme.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Views/CurrentWidget.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Views.CurrentWidget.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/CurrentWidget.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/CurrentWidget.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Views/Next24HrWidget.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Views.Next24HrWidget.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/Next24HrWidget.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/Next24HrWidget.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Views/Next7DWidget.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Views.Next7DWidget.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/Next7DWidget.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/Next7DWidget.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Views/WidgetsPanel.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Views.WidgetsPanel.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/WidgetsPanel.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/WidgetsPanel.xaml
+
+[/Users/david/Desktop/my-projects/codemagic-sample-projects/dotnet-maui/dotnet-maui-android-ios/src/WeatherTwentyOne/Views/WindLiveWidget.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = WeatherTwentyOne.Views.WindLiveWidget.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/WindLiveWidget.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/WindLiveWidget.xaml

@@ -1,0 +1,16 @@
+adaptive-icon;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon_round.xml
+adaptive-icon;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon.xml
+background;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon_round.xml
+background;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon.xml
+bitmap;obj/Debug/net6.0-android/resizetizer/sp/drawable-v31/maui_splash_image.xml
+bitmap;obj/Debug/net6.0-android/resizetizer/sp/drawable/maui_splash_image.xml
+color;obj/Debug/net6.0-android/res/values/colors.xml
+color;obj/Debug/net6.0-android/resizetizer/sp/values/maui_colors.xml
+foreground;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon_round.xml
+foreground;obj/Debug/net6.0-android/resizetizer/r/mipmap-anydpi-v26/appicon.xml
+item;obj/Debug/net6.0-android/resizetizer/sp/drawable-v31/maui_splash_image.xml
+item;obj/Debug/net6.0-android/resizetizer/sp/drawable/maui_splash_image.xml
+layer-list;obj/Debug/net6.0-android/resizetizer/sp/drawable-v31/maui_splash_image.xml
+layer-list;obj/Debug/net6.0-android/resizetizer/sp/drawable/maui_splash_image.xml
+resources;obj/Debug/net6.0-android/res/values/colors.xml
+resources;obj/Debug/net6.0-android/resizetizer/sp/values/maui_colors.xml
