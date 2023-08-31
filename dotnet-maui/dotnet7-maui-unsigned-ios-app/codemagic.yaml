@@ -1,0 +1,32 @@
+workflows:
+  maui-ios-simulator-build:
+    name: Dotnet MAUI iOS Simulator
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      xcode: latest
+      vars:
+        DOTNET_PATH: $CM_BUILD_DIR/dotnet
+        DOTNET: $CM_BUILD_DIR/dotnet/dotnet
+    scripts:
+      - name: Install .NET SDK
+        script: | 
+          wget https://dot.net/v1/dotnet-install.sh
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --channel 7.0 --install-dir $DOTNET_PATH
+      - name: Add nuget source
+        script: |
+          $DOTNET nuget add source https://www.myget.org/F/caliburn-micro-builds/api/v3/index.json --name CaliburnNuGet.org
+      - name: Install MAUI
+        script: |
+          $DOTNET_BIN nuget locals all --clear
+          $DOTNET workload restore
+          $DOTNET workload install maui-android maui-ios \
+          --source https://aka.ms/dotnet7/nuget/index.json \
+          --source https://api.nuget.org/v3/index.json
+      - name: Build the app for iOS Simulator
+        script: |
+          cd MauiNet7_2
+          $DOTNET dotnet build -f net7.0-ios -c Debug  -o ../artifacts
+    artifacts:
+    - ./artifacts/*.app
