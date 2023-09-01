@@ -286,9 +286,7 @@ workflows:
           PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
           
           # Create an unsigned package
-          xcrun productbuild \
-            --component "$APP_NAME" \
-            /Applications/ unsigned.pkg
+          xcrun productbuild --component "$APP_NAME" /Applications/ unsigned.pkg
           
           # Find the installer certificate commmon name in keychain
           INSTALLER_CERT_NAME=$(keychain list-certificates \
