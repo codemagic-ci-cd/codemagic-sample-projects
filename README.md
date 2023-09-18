@@ -3,7 +3,7 @@
 ## Flutter
 * [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
-* [Flutter Windows sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-windows-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/status_badge.svg)](https://codemagic.io/apps/617b6bd954ed648c139b595f/windows-workflow/latest_build)
+* [Flutter Windows sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-windows-demo-project)
 
 ## Android native
 * [Android sample project](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-native-quick-start)
@@ -17,8 +17,8 @@
 * [React Native using Expo without ejecting](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/expo-react-native-not-ejected)
 
 ## Unity
-* [Unity Android, iOS, Windows and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
-* [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/unity-steam-deploy/latest_build)
+* [Unity Android, iOS, Windows, and macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-demo-project)
+* [Steam Publishing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/unity/unity-deploy-steam)
 
 
 ## Other platforms
@@ -94,10 +94,10 @@
 
 
 ### iOS (Native) Samples
-* [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-automatic-code-signing/latest_build)
-* [iOS Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project) [![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-manual-code-signing/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-manual-code-signing/latest_build)
+* [iOS Automatic code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-automatic-code-signing-demo-project)
+* [iOS Manual code signing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-manual-code-signing-demo-project)
 * [iOS White label single scheme sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-white-label-single-scheme-demo-project)
-* [iOS Magic Actions sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-magic-actions-demo-project)[![Codemagic build status](https://api.codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/status_badge.svg)](https://codemagic.io/apps/60b8a0dd639c3e293b8bc002/ios-magic-actions/latest_build)
+* [iOS Magic Actions sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/ios/ios-magic-actions-demo-project)
 
 ### Android (Native) Samples
 * [Android with espresso testing sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/android/android-espresso-demo-project)
@@ -119,13 +119,13 @@
 
 ## Getting help and support
 
-If you have a technical question or need help with some particular issue, you can get help in our [GitHub discussions](https://github.com/codemagic-ci-cd/codemagic-docs/discussions) page.
+If you have a technical question or need help with some particular issue, you can get help on our [GitHub discussions](https://github.com/codemagic-ci-cd/codemagic-docs/discussions) page.
 
-Customers who have enabled billing can use the in-app chat widget to get support. You have to be logged in to see the chat icon at the bottom right corner (please note that some ad blockers might block the chat widget).
+Customers who have enabled billing can use the in-app chat widget to get support. You must be logged in to see the chat icon at the bottom right corner (please note that some adblockers might block the chat widget).
 
 ## Raising issues
 
-If there are any use cases are not covered in the sample projects you can create an issue to request them:
+If there are any use cases that are not covered in the sample projects you can create an issue to request them:
 
 [https://github.com/codemagic-ci-cd/codemagic-sample-projects/issues](https://github.com/codemagic-ci-cd/codemagic-sample-projects/issues)
 
