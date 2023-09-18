@@ -1,5 +1,7 @@
 # Codemagic Sample Projects
 
+![codemagic-banner](assets/media/logo_banner.svg)
+
 ## Flutter
 * [Flutter Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-android-and-ios-yaml-demo-project)
 * [Flutter macOS sample](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/flutter/flutter-macos-demo-project)
