@@ -136,7 +136,7 @@ workflows:
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   ios-code-signing-identities:
-    name: iOS code signing identifies
+    name: iOS code signing identities
     integrations:
       app_store_connect: NC_API_KEY
     instance_type: mac_mini_m1
