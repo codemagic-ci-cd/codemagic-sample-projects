@@ -137,8 +137,10 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   ios-code-signing-identities:
     name: iOS code signing identifies
+    integrations:
+      app_store_connect: NC_API_KEY
     instance_type: mac_mini_m1
-    working_directory: ios/ios-manual-code-signing-demo-project
+    working_directory: ios/ios-code-signing-demo-project
     environment:
       ios_signing:
         provisioning_profiles:
@@ -192,9 +194,8 @@ workflows:
           success: false # To not receive a notification when a build succeeds
           failure: false # To not receive a notification when a build fails
       app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        # Use referenced App Store Connect API key to authenticate binary upload
+        auth: integration 
   ios-magic-actions:
     name: ios-magic-actions
     instance_type: mac_mini_m1
