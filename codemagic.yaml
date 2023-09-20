@@ -1,7 +1,7 @@
 workflows:
   ios-automatic-code-signing:
     name: iOS automatic code signing
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: ios/ios-automatic-code-signing-demo-project
     environment:
       groups:
@@ -11,7 +11,7 @@ workflows:
         XCODE_SCHEME: "swiftly"
         BUNDLE_ID: "io.codemagic.cmswiftly"
         APP_STORE_APP_ID: 1570610860
-      xcode: 13.3.1
+      xcode: 14.3
       cocoapods: default
     triggering:
       events:
