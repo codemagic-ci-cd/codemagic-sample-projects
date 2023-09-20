@@ -140,7 +140,7 @@ workflows:
     integrations:
       app_store_connect: NC_API_KEY
     instance_type: mac_mini_m1
-    working_directory: ios/ios-code-signing-demo-project
+    working_directory: ios/ios-code-signing-identities-demo-project
     environment:
       ios_signing:
         provisioning_profiles:
