@@ -67,7 +67,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
   ios-manual-code-signing:
     name: iOS manual code signing
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: ios/ios-manual-code-signing-demo-project
     environment:
       groups:
@@ -137,7 +137,7 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   ios-manual-code-signing-identities:
     name: iOS manual code signing identifies
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: ios/ios-manual-code-signing-demo-project
     environment:
       ios_signing:
@@ -197,7 +197,7 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   ios-magic-actions:
     name: ios-magic-actions
-    instance_type: mac_mini
+    instance_type: mac_mini_m1
     working_directory: ios/ios-magic-actions-demo-project
     environment:
       groups:
@@ -249,7 +249,7 @@ workflows:
           - kevin@nevercode.io
   ios-fastlane:
     name: iOS Fastlane
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: integrations/fastlane-integration-demo-project
     environment:
       groups:
@@ -263,7 +263,7 @@ workflows:
       - bundle exec fastlane beta
   flutter-yaml-ios:
     name: Flutter yaml iOS
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: flutter/flutter-android-and-ios-yaml-demo-project
     max_build_duration: 120
     environment:
@@ -335,7 +335,7 @@ workflows:
         submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
   flutter-flavors-ios-dev:
     name: iOS Flutter Flavors Dev
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     max_build_duration: 120
     working_directory: flutter/flutter-flavors-demo-project
     environment:
@@ -406,7 +406,7 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   flutter-flavors-ios-prod:
     name: iOS Flutter Flavors Prod
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     max_build_duration: 120
     working_directory: flutter/flutter-flavors-demo-project
     environment:
@@ -478,7 +478,7 @@ workflows:
   react-native-ios:
     name: React Native iOS
     max_build_duration: 120
-    instance_type: mac_pro
+    instance_type: mac_mini_m1
     working_directory: react-native/react-native-demo-project
     environment:
       groups:
