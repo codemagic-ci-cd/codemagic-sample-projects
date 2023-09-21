@@ -152,7 +152,7 @@ workflows:
       vars:
         XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
         XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
-        APP_STORE_APP_ID: 1571469558
+        APP_STORE_APP_ID: 1570610860
       xcode: latest
       cocoapods: default
     triggering:
