@@ -247,13 +247,13 @@ workflows:
         submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
   ios-fastlane:
     name: iOS Fastlane
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: integrations/fastlane-integration-demo-project
     environment:
       groups:
         - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
         - fastlane_credentials # <-- (group contains variables: MATCH_SSH_KEY, MATCH_KEYCHAIN, MATCH_PASSWORD)
-      xcode: 13.3.1
+      xcode: 14.3
       cocoapods: default
     scripts:
       # - gem install bundler:2.2.27
