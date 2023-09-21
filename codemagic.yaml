@@ -261,7 +261,7 @@ workflows:
       - bundle exec fastlane beta
   flutter-yaml-ios:
     name: Flutter yaml iOS
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: flutter/flutter-android-and-ios-yaml-demo-project
     max_build_duration: 120
     environment:
@@ -272,8 +272,8 @@ workflows:
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "io.codemagic.cmflutteryaml"
         APP_STORE_APP_ID: 1571561263
-      flutter: 2.10.0
-      xcode: 13.3.1
+      flutter: stable
+      xcode: 14.3
       cocoapods: default
     scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
@@ -333,7 +333,7 @@ workflows:
         submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
   flutter-flavors-ios-dev:
     name: iOS Flutter Flavors Dev
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: flutter/flutter-flavors-demo-project
     environment:
@@ -348,8 +348,8 @@ workflows:
         XCODE_SCHEME: dev
         BUNDLE_ID: io.codemagic.flutterflavors.dev
         ENTRY_POINT: lib/main_dev.dart
-      flutter: 2.10.0
-      xcode: 13.3.1
+      flutter: stable
+      xcode: 14.3
       cocoapods: default
     triggering:
       events:
@@ -404,7 +404,7 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
   flutter-flavors-ios-prod:
     name: iOS Flutter Flavors Prod
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: flutter/flutter-flavors-demo-project
     environment:
@@ -419,8 +419,8 @@ workflows:
         XCODE_SCHEME: prod
         BUNDLE_ID: io.codemagic.flutterflavors.prod
         ENTRY_POINT: lib/main_prod.dart
-      flutter: 2.10.0
-      xcode: 13.3.1
+      flutter: stable
+      xcode: 14.3
       cocoapods: default
     triggering:
       events:
@@ -476,7 +476,7 @@ workflows:
   react-native-ios:
     name: React Native iOS
     max_build_duration: 120
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: react-native/react-native-demo-project
     environment:
       groups:
@@ -488,7 +488,7 @@ workflows:
         BUNDLE_ID: "io.codemagic.cmreactnative"
         APP_STORE_APP_ID: 1571903173
       node: 16.11.1
-      xcode: 13.3.1
+      xcode: 14.3
       cocoapods: default
     triggering:
       events:
@@ -595,7 +595,7 @@ workflows:
   native-android:
     name: Native Android
     max_build_duration: 120
-    instance_type: mac_mini_m1
+    instance_type: linux_x2
     working_directory: android/android-native-quick-start
     environment:
       android_signing:
