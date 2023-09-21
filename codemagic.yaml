@@ -198,7 +198,7 @@ workflows:
         auth: integration 
   ios-magic-actions:
     name: ios-magic-actions
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: ios/ios-magic-actions-demo-project
     environment:
       groups:
