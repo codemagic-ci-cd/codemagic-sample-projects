@@ -1,4 +1,4 @@
-package com.cmreactnative;
+package io.codemagic.cmreactnative;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

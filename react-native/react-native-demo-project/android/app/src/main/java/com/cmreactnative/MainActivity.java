@@ -1,4 +1,4 @@
-package com.cmreactnative;
+package io.codemagic.cmreactnative;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

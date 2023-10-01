@@ -73,9 +73,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.cmreactnative"
+    namespace "io.codemagic.cmreactnative"
     defaultConfig {
-        applicationId "com.cmreactnative"
+        applicationId "io.codemagic.cmreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
