@@ -70,7 +70,7 @@ workflows:
         XCODE_PROJECT: "iosApp.xcodeproj" # <-- Put your xcode project name here
         XCODE_SCHEME: "iosApp" # <-- Put your bundle xcode scheme here
         APP_ID: 1630136022 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
     scripts:
       - name: Cocoapods installation
         script: | 

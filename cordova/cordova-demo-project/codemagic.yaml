@@ -13,7 +13,7 @@ workflows:
         XCODE_WORKSPACE: "platforms/ios/HelloCordova.xcworkspace" # <-- Put the name of your workspace here.
         XCODE_SCHEME: "HelloCordova" # <-- Put the name of your scheme here.       
         BUNDLE_ID: "io.codemagic.cordova" # <-- Put your Bundle Id here.
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       node: v16.11.1
       npm: 6
     cache:

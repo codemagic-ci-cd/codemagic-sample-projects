@@ -17,7 +17,7 @@ workflows:
         PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
         GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.
       flutter: stable
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - name: Set up key properties

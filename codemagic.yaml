@@ -77,7 +77,7 @@ workflows:
         XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
         XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
         APP_STORE_APP_ID: 1571469558
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     triggering:
       events:
@@ -153,7 +153,7 @@ workflows:
         XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
         XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
         APP_STORE_APP_ID: 1570610860
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     triggering:
       events:

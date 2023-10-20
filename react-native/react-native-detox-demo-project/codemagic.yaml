@@ -17,7 +17,7 @@ workflows:
                 XCODE_WORKSPACE: "detoxer.xcworkspace" # <-- Put the name of your Xcode workspace here
                 XCODE_SCHEME: "detoxer" # <-- Put the name of your Xcode scheme here
             node: v16.11.1
-            xcode: latest
+            xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
             cocoapods: default
         triggering:
             events:
