@@ -2,7 +2,7 @@ workflows:
   ios-screenshots-fastlane:
     name: iOS Screenshots Fastlane
     environment:
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - bundle install

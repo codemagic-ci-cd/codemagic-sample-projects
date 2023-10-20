@@ -17,7 +17,7 @@ workflows:
         XCODE_WORKSPACE: "Sonar.xcodeproj"  # PUT YOUR WORKSPACE NAME HERE
         XCODE_SCHEME: "Sonar" # PUT THE NAME OF YOUR SCHEME HERE
         SONARQUBE_URL: "https://sonarcloud.io" # PUT YOUR SONARQUBE URL HERE
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     triggering:
       events:

@@ -2,7 +2,7 @@ workflows:
   ios-cache-workflow:
     name: iOS Cache Workflow
     environment:
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
       vars:
         XCODE_PROJECT: "XCRemoteCacheExample.xcodeproj"

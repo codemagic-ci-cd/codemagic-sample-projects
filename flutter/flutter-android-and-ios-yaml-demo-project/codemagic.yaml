@@ -61,7 +61,7 @@ workflows:
       vars:
         APP_ID: 1111111111 # <-- Put your APP ID here
       flutter: stable
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - name: Set up code signing settings on Xcode project

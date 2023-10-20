@@ -14,8 +14,8 @@ workflows:
         XCODE_WORKSPACE: "YOUR_WORKSPACE_NAME.xcworkspace" # <-- Put the name of your Xcode workspace here
         XCODE_SCHEME: "YOUR_SCHEME_NAME" # <-- Put the name of your Xcode scheme here
         BUNDLE_ID: "io.codemagic.sample.jira" # <-- Put the name of your Bundle Id here
-      node: latest 
-      xcode: latest
+      node: latest # <-- set to specific version to avoid unexpected updates.
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     triggering: # For details about triggering builds see - https://docs.codemagic.io/getting-started/yaml/#triggering
       events:

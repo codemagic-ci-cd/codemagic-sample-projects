@@ -19,7 +19,7 @@ workflows:
         BUNDLE_ID: _
         ENTRY_POINT: _
       flutter: 2.0.5
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     triggering:
       events:

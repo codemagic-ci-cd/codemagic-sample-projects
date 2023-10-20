@@ -32,7 +32,7 @@ workflows:
                 AWS_TEST_PACKAGE_TYPE: "INSTRUMENTATION_TEST_PACKAGE" # Type of the test package that is being uploaded. See more about `--type` flag at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/create-upload.html
                 AWS_TEST_TYPE: "INSTRUMENTATION" # See more about `--test` flag `type` option at https://docs.aws.amazon.com/cli/latest/reference/devicefarm/schedule-run.html  
             node: v16.11.1
-            xcode: latest
+            xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
         triggering:
             events:
                 - push

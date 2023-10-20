@@ -7,7 +7,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: io.codemagic.ionicsample
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       node: v16.11.1
       npm: 6
     cache:

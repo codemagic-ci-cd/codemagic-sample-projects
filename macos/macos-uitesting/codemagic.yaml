@@ -5,7 +5,7 @@ workflows:
       vars:
         XCODE_PROJECT: "macOS UITesting.xcodeproj"
         XCODE_SCHEME: "macOS UITesting"
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - name: Run UI and Unit tests

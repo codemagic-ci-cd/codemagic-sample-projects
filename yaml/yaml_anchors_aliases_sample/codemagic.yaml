@@ -4,7 +4,7 @@ definitions:
     max_build_duration: 120
   env_versions: &env_versions
     flutter: stable
-    xcode: latest
+    xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
     cocoapods: default
   environment:
     automatic_ios_signing: &automatic_ios_signing

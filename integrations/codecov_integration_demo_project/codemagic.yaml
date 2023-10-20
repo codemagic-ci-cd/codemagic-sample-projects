@@ -13,7 +13,7 @@ workflows:
         GOOGLE_PLAY_TRACK: "alpha" # <-- This must be "alpha" or above.
         CODE_COVERAGE_TARGET: 90 # <-- Expected code coverage rate
       flutter: stable
-      xcode: latest
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - name: Set up local.properties
