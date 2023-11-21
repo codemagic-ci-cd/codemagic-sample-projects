@@ -1,76 +1,118 @@
-  react-native-ios:
-    name: React Native iOS
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    environment:
-      groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
-      vars:
-        XCODE_WORKSPACE: "ios/cmreactnative.xcworkspace"
-        XCODE_SCHEME: "cmreactnative"
-        BUNDLE_ID: "io.codemagic.cmreactnative"
-        APP_STORE_APP_ID: 1571903173
-      node: 16.11.1
-      xcode: 14.3
-      cocoapods: default
-    triggering:
-      events:
-        - push
-        - tag
-        - pull_request
-      branch_patterns:
-        - pattern: develop
-          include: true
-          source: true
-    scripts:
-      - name: Install dependencies
-        script: |
-          yarn install
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios && pod install
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
-      - name: Increment build number
-        script: |
-          set -ex
-          cd ios && agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles --warn-only
-      - name: Build ipa for distribution
-        script: |
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    publishing:
-      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true # To not receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      slack:
-        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: "#ce-builds"
-        notify_on_build_start: true # To receive a notification when a build starts
-        notify:
-          success: true # To not receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+# Check out https://docs.codemagic.io/yaml/building-a-react-native-app/ for more information
+# Please review and update values
+
+workflows:
+    react-native-android:
+        name: React Native Android
+        max_build_duration: 120
+        instance_type: mac_mini_m2
+        environment:
+          android_signing:
+            - keystore_reference
+          groups:
+            - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+          vars:
+            PACKAGE_NAME: "io.codemagic.sample.reactnative" # <-- Put your package name here e.g. com.domain.myapp
+          node: v16.11.1
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+            - name: Set Android SDK location
+              script: |
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"            
+            - name: Build Android release
+              script: |
+                LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+                if [ -z LATEST_BUILD_NUMBER ]; then
+                  # fallback in case no build number was found from google play. Alternatively, you can `exit 1` to fail the build
+                  UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+                else
+                  UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+                fi
+                cd android
+                ./gradlew bundleRelease \
+                  -PversionCode=$UPDATED_BUILD_NUMBER \
+                  -PversionName=1.0.$UPDATED_BUILD_NUMBER
+        artifacts:
+            - android/app/build/outputs/**/*.aab
+        publishing:
+          email:
+            recipients:
+              - user_1@example.com
+              - user_2@example.com
+            notify:
+              success: true     # To not receive a notification when a build succeeds
+              failure: false    # To not receive a notification when a build fails
+          google_play:
+            credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+            track: alpha   # Any default or custom track that is not in ‘draft’ status
+    react-native-ios:
+        name: React Native iOS
+        max_build_duration: 120
+        instance_type: mac_mini_m2
+        integrations:
+          app_store_connect: codemagic
+        environment:
+          ios_signing:
+            distribution_type: app_store
+            bundle_identifier: io.codemagic.sample.reactnative
+          vars:
+            XCODE_WORKSPACE: "CodemagicSample.xcworkspace" # <-- Put the name of your Xcode workspace here
+            XCODE_SCHEME: "CodemagicSample" # <-- Put the name of your Xcode scheme here
+            APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+          node: v16.11.1
+          xcode: latest
+          cocoapods: default
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install
+            - name: Set Info.plist values
+              script: |
+                # This allows publishing without manually answering the question about encryption 
+                PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
+                PLIST_BUDDY=/usr/libexec/PlistBuddy
+                $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles --warn-only
+            - name: Increment build number
+              script: |
+                cd $CM_BUILD_DIR/ios
+                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+                agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa \
+                  --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                  --scheme "$XCODE_SCHEME"
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+          email:
+            recipients:
+              - user_1@example.com
+              - user_2@example.com
+            notify:
+              success: true
+              failure: false
+          app_store_connect:
+            auth: integration
+
+            # Configuration related to TestFlight (optional)
+            # Note: This action is performed during post-processing.
+            submit_to_testflight: true
+            beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+              - group name 1
+              - group name 2
+
+            # Configuration related to App Store (optional)
+            # Note: This action is performed during post-processing.
+            submit_to_app_store: false
