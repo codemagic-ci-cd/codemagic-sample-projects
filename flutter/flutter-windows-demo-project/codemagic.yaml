@@ -18,10 +18,10 @@ workflows:
         script: flutter build windows
       - name: Export bundle
         script: |
-          cd build/windows/runner/Release
+          cd build/windows/x64/runner/Release
           7z a -r ../release.zip ./*
     artifacts:
-      - build/windows/runner/*.zip
+      - build\windows\x64\runner\release.zip
     publishing:
       email:
         recipients:
