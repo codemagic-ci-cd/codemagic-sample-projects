@@ -16,6 +16,7 @@ workflows:
         script: flutter config --enable-windows-desktop
       - name: Build Windows
         script: flutter build windows
+    # It is very important to check the path in the Export bundle script below along with the path under the artifacts section. Flutter changed Windows build path to add the target architecture which landed in 3.15.0-0.0.pre and in stable release v3.16.0. So, if you are using a lower Flutter version, then `/x64` should be removed from the paths.
       - name: Export bundle
         script: |
           cd build/windows/x64/runner/Release
