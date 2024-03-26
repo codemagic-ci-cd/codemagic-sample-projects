@@ -499,6 +499,9 @@ workflows:
         - pattern: develop
           include: true
           source: true
+    cache:
+     cache_paths:
+      - $HOME/Library/Caches/CocoaPods
     scripts:
       - name: Install dependencies
         script: |
