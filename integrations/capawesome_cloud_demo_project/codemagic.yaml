@@ -1,0 +1,52 @@
+workflows:
+  ionic-capacitor-capawesome-integration-workflow:
+    name: Capawesome Cloud Integration with Codemagic
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - capawesome_crendentials # <-- (Includes Capawesoem Cloud token)
+      node: latest
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+          npm install @capawesome/cli
+          npx capawesome login --token $CAPAWESOME_TOKEN
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Build web assets
+        script: |
+          npm run build
+      - name: Sync Capacitor project
+        script: |
+          npx cap sync
+      - name: Build Android release
+        script: |
+          cd android
+          ./gradlew assembleRelease
+      - name: Deploy bundle to Capawesome Cloud
+        script: |
+          npx capawesome apps:bundles:create --appId e614f434-d0a5-402b-bebe-7eeb17d52095 --path dist
+    artifacts:
+        - android/app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - user_one@example.com
+          - user_two@example.com
+        notify:
+          success: true     # To not receive a notification when a build succeeds
+          failure: false     # To not receive a notification when a build fails
