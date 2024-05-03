@@ -127,7 +127,7 @@ To code sign the app, add the following commands in the scripts section of the c
       - name: Fetch Mac Installer Distribution certificates
         script: |  
             app-store-connect certificates list --type MAC_APP_DISTRIBUTION --save || \
-            app-store-connect certificate create --type MAC_APP_DISTRIBUTION --save
+            app-store-connect certificates create --type MAC_APP_DISTRIBUTION --save
       - name: Set up signing certificate
         script: keychain add-certificates
       - name: Set up code signing settings on Xcode project
