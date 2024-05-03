@@ -24,8 +24,8 @@ workflows:
         script: |
           # HINT: We can use MAC_APP_DISTRIBUTION if looking to package the artifact before submitting it to App Store. 
           # And please note that the certificate type must match the one we are using in the Package macOS application script down below.
-          app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save || \
-          app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save          
+          app-store-connect certificates list --type MAC_INSTALLER_DISTRIBUTION --save || \
+          app-store-connect certificate create --type MAC_INSTALLER_DISTRIBUTION --save          
       - name: Set up signing certificate
         script: |
           keychain add-certificates

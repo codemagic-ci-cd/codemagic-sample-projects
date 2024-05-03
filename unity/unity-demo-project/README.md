@@ -445,8 +445,8 @@ In this step, you can also define the build artifacts you are interested in. The
           --create
     - name: Fetch Mac Installer Distribution certificates
       script: | 
-        app-store-connect list-certificates --type MAC_INSTALLER_DISTRIBUTION --save || \
-        app-store-connect create-certificate --type MAC_INSTALLER_DISTRIBUTION --save 
+        app-store-connect certificates list --type MAC_INSTALLER_DISTRIBUTION --save || \
+        app-store-connect certificate create --type MAC_INSTALLER_DISTRIBUTION --save 
     - name: Add certs to keychain
       script: | 
         keychain add-certificates
