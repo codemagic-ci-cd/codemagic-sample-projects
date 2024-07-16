@@ -82,8 +82,9 @@ workflows:
                 xcode-project use-profiles --warn-only
             - name: Increment build number
               script: |
+                # Information about getting the latest build version can be found here: https://docs.codemagic.io/knowledge-codemagic/build-versioning/#app-store-or-testflight-latest-build-number
                 cd $CM_BUILD_DIR/ios
-                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
                 agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
             - name: Build ipa for distribution
               script: |
