@@ -1,0 +1,60 @@
+# This config was automatically generated from your source code
+# Stacks detected: deps:java:kotlin-multiplatform-mobile,deps:node:cordova/cordova-demo-project,deps:ruby:react-native/react-native-demo-project,package_manager:yarn:,tool:gradle:
+version: 2.1
+orbs:
+  node: circleci/node@5
+jobs:
+  test-node:
+    # Install node dependencies and run tests
+    executor: node/default
+    working_directory: ~/project/cordova/cordova-demo-project
+    steps:
+      - checkout:
+          path: ~/project
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: Run tests
+          command: echo \"No test specified in package.json\"
+  test-java:
+    docker:
+      - image: cimg/openjdk:17.0
+    working_directory: ~/project/kotlin-multiplatform-mobile
+    steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Calculate cache key
+          command: |-
+            find . -name 'pom.xml' -o -name 'gradlew*' -o -name '*.gradle*' | \
+                    sort | xargs cat > /tmp/CIRCLECI_CACHE_KEY
+      - restore_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
+      - run:
+          command: ./gradlew check
+      - store_test_results:
+          path: build/test-results
+      - save_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
+          paths:
+            - ~/.gradle/caches
+      - store_artifacts:
+          path: build/reports
+  deploy:
+    # This is an example deploy job, not actually used by the workflow
+    docker:
+      - image: cimg/base:stable
+    steps:
+      # Replace this with steps to deploy to users
+      - run:
+          name: deploy
+          command: '#e.g. ./deploy.sh'
+workflows:
+  build-and-test:
+    jobs:
+      - test-node
+      - test-java
+    # - deploy:
+    #     requires:
+    #       - test-node
+    #       - test-java
