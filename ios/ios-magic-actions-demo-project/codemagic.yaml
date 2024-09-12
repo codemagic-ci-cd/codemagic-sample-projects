@@ -1,7 +1,7 @@
 workflows:
     ios-swiftly:
       name: ios_swiftly
-      instance_type: mac_mini_m1
+      instance_type: mac_mini_m2
       environment:
         vars:
           XCODE_WORKSPACE: "swiftly.xcworkspace"

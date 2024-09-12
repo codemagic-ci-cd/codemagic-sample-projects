@@ -2,7 +2,7 @@ workflows:
   maui-ios-simulator-build:
     name: Dotnet MAUI iOS Simulator
     max_build_duration: 120
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     environment:
       xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       vars:

@@ -1,7 +1,7 @@
 workflows:
   ios-automatic-code-signing:
     name: iOS automatic code signing
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: ios/ios-automatic-code-signing-demo-project
     environment:
       groups:
@@ -68,7 +68,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
   ios-manual-code-signing:
     name: iOS manual code signing
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     working_directory: ios/ios-manual-code-signing-demo-project
     environment:
       groups:
