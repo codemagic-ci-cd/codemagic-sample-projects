@@ -1,7 +1,7 @@
 workflows:
   integration-emulatorwtf-native-android:
     name: Integration emulator.wtf Native Android
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     environment:
       groups:
       # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/

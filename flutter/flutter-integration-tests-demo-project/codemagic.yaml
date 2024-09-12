@@ -1,7 +1,7 @@
 workflows:
   android-workflow:
     name: Android Workflow
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     max_build_duration: 120
     environment:
       groups:
@@ -69,7 +69,7 @@ workflows:
           failure: false # To not receive a notification when a build fails
   ios-workflow:
       name: iOS Workflow
-      instance_type: mac_mini_m1
+      instance_type: mac_mini_m2
       environment:
         xcode: 13.4.1
         groups:
