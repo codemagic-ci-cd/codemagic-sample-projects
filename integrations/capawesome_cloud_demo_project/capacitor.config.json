@@ -1,0 +1,14 @@
+{
+  "appId": "com.example.app",
+  "appName": "capacitor-app",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "LiveUpdate": {
+      "appId": "e614f434-d0a5-402b-bebe-7eeb17d52095"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
