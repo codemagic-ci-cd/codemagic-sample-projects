@@ -39,7 +39,7 @@ workflows:
           ./gradlew assembleRelease
       - name: Deploy bundle to Capawesome Cloud
         script: |
-          npx capawesome apps:bundles:create --appId e614f434-d0a5-402b-bebe-7eeb17d52095 --path dist
+          npx capawesome apps:bundles:create --appId $CAPAWESOME_APP_ID --path dist
     artifacts:
         - android/app/build/outputs/**/*.apk
     publishing:
@@ -107,7 +107,7 @@ workflows:
             --scheme "$XCODE_SCHEME"
       - name: Deploy bundle to Capawesome Cloud
         script: |
-          npx capawesome apps:bundles:create --appId e614f434-d0a5-402b-bebe-7eeb17d52095 --path dist
+          npx capawesome apps:bundles:create --appId $CAPAWESOME_APP_ID --path dist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
