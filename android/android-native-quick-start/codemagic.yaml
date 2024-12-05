@@ -6,8 +6,8 @@ workflows:
     environment:
       android_signing:
         - keystore_reference
-      groups:
-        - google_play
+      # groups:
+      #   - google_play
       vars:
         PACKAGE_NAME: "io.codemagic.androidquicksample"
     scripts:
