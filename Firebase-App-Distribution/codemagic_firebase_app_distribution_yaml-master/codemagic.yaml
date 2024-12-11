@@ -5,7 +5,7 @@ workflows:
     environment:
       groups:
         - firebase_credentials
-        - google_play_credentials # HOLD $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS JSON VALUE
+        - google_play_credentials # HOLDS $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS JSON VALUE
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -73,19 +73,13 @@ workflows:
         XCODE_SCHEME: "Runner"                
         BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
         APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID. 
+      ios_signing:
+          distribution_type: app_store
+          bundle_identifier: com.codemagicFirebaseAppDistribution.io # bundle identifier that is associated with provisioning profile
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
