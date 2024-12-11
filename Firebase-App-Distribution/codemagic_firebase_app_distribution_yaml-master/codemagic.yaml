@@ -4,48 +4,32 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
-          # CM_KEYSTORE <-- Put your keystore file here
-          # CM_KEYSTORE_PASSWORD <-- Put your keystore password here
-          # CM_KEY_PASSWORD <-- Put your keystore alias password here
-          # CM_KEY_ALIAS <-- Put your keystore alias username here
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
-        - firebase_token # <-- (Includes ANDROID_FIREBASE_SECRET)
-        - other
-      vars:
-        CM_KEYSTORE_PATH: /tmp/keystore.keystore
+        - firebase_credentials
       flutter: stable
-      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      xcode: latest
       cocoapods: default
     scripts:
-      - name: Set up key properties
-        script: |
-          echo $CM_KEYSTORE | base64 --decode > $CM_KEYSTORE_PATH
-          # The following script creates key.properties file and stores the credentials in it. As we configure code signing in app/build.gradle file, the following part is unnecessary unless code signing is configured differently as explained in the documentation: https://docs.codemagic.io/flutter-code-signing/android-code-signing/
-          # cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
-          # storePassword=$CM_KEYSTORE_PASSWORD
-          # keyPassword=$CM_KEY_PASSWORD
-          # keyAlias=$CM_KEY_ALIAS
-          # storeFile=$CM_KEYSTORE_PATH
-          # EOF
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages
         script: |
-          flutter packages pub get
+          cd . && flutter packages pub get
       - name: Flutter analyze
         script: |
-          flutter analyze
+          cd . && flutter analyze
       - name: Flutter unit tests
         script: |
-          flutter test
-        ignore_failure: true
-      - name: Build AAB with Flutter
+          cd . && flutter test
+        ignore_failure: true          
+      - name: Install pods
         script: |
-          flutter build appbundle --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+          find . -name "Podfile" -execdir pod install \;
+      - name: Build APK with Flutter  
+        script: |
+          cd . && flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
     artifacts:
+      - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
       - flutter_drive.log
@@ -57,47 +41,39 @@ workflows:
         notify:
           success: true
           failure: false
-      slack:
+      slack: 
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: "#builds"
-        notify_on_build_start: true # To receive a notification when a build starts
+        channel: '#builds'
+        notify_on_build_start: true   # To receive a notification when a build starts
         notify:
-          success: true # To not receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
+          success: true               # To not receive a notification when a build succeeds
+          failure: false              # To not receive a notification when a build fails
       google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        credentials: Encrypted("")
         track: internal
         in_app_update_priority: 0
       firebase:
-        firebase_token: $ANDROID_FIREBASE_SECRET
+        firebase_service_account: $FIREBASE_SERVICE_ACCOUNT
         android:
           app_id: x:xxxxxxxxxxxx:android:xxxxxxxxxxxxxxxxxxxxxx
-          groups:
+          groups: 
             - androidTesters
 
   ios-workflow:
     name: iOS Workflow
-    # instance_type: mac_mini
     max_build_duration: 120
+    integrations:
+      app_store_connect: <App Store Connect API key name>
     environment:
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - app_store_credentials # <-- (APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
-          # APP_STORE_CONNECT_ISSUER_ID <-- Put your App Store Connect Issuer Id here
-          # APP_STORE_CONNECT_KEY_IDENTIFIER <-- Put your App Store Connect Key Identifier here
-          # APP_STORE_CONNECT_PRIVATE_KEY <-- Put your App Store Connect Private Key here
-          # See the following link for more details - https://docs.codemagic.io/code-signing-yaml/signing-ios/
-          # https://appstoreconnect.apple.com/access/api
-        - certificate_credentials # <-- (CERTIFICATE_PRIVATE_KEY - Put your Certificate Private Key here)
-        - firebase_token # <-- (Includes IOS_FIREBASE_SECRET)
-        - other
+         - firebase_credentials
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
+        XCODE_SCHEME: "Runner"                
         BUNDLE_ID: "io.codemagic.flutteryaml" # <-- Put your bundle id here
-        APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID.
+        APP_STORE_ID: 1111111111 # <-- Use the TestFlight Apple id number (An automatically generated ID assigned to your app) found under General > App Information > Apple ID. 
       flutter: stable
-      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      xcode: latest
       cocoapods: default
     scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
@@ -114,14 +90,14 @@ workflows:
           xcode-project use-profiles
       - name: Get Flutter packages
         script: |
-          flutter packages pub get
+          cd . && flutter packages pub get
       - name: Flutter analyze
         script: |
-          flutter analyze
+          cd . && flutter analyze
       - name: Flutter unit tests
         script: |
-          flutter test
-        ignore_failure: true
+          cd . && flutter test
+        ignore_failure: true          
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -142,26 +118,20 @@ workflows:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      slack:
+          success: true     # To receive a notification when a build succeeds
+          failure: false    # To not receive a notification when a build fails
+      slack: 
         # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: "#builds"
-        notify_on_build_start: true # To receive a notification when a build starts
+        notify_on_build_start: true   # To receive a notification when a build starts
         notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false # Optional boolean, defaults to false. Whether or not to submit the uploaded build to TestFlight beta review. Required for distributing to beta groups. Note: This action is performed during post-processing.
-        # beta_groups:                                  # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-        #      - group name 1
-        #      - group name 2
+          success: true               # To receive a notification when a build succeeds
+          failure: false              # To not receive a notification when a build fails
+      app_store_connect:   # https://docs.codemagic.io/publishing-yaml/distribution              
+        auth: integration 
       firebase:
-        firebase_token: $IOS_FIREBASE_SECRET
-        ios:
-          app_id: x:xxxxxxxxxxxx:ios:xxxxxxxxxxxxxxxxxxxxxx
-          groups:
-            - iosTesters
+        firebase_service_account: $FIREBASE_SERVICE_ACCOUNT
+        ios: 
+           app_id: x:xxxxxxxxxxxx:ios:xxxxxxxxxxxxxxxxxxxxxx
+           groups:
+              - iosTesters
