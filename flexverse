@@ -1,0 +1,115 @@
+// Folder: screens/
+
+// File: LoginScreen.js
+import React from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
+export default function LoginScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Login to FlexVerse</Text>
+      <TextInput style={styles.input} placeholder="Email" />
+      <TextInput style={styles.input} placeholder="Password" secureTextEntry />
+      <Button title="Login" onPress={() => navigation.navigate('Home')} />
+      <Text style={styles.switchText} onPress={() => navigation.navigate('Signup')}>Don't have an account? Sign up</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  title: { fontSize: 24, marginBottom: 20 },
+  input: { width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, marginBottom: 10 },
+  switchText: { color: 'blue', marginTop: 10 },
+});
+
+
+// File: SignupScreen.js
+import React from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
+export default function SignupScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Create a FlexVerse Account</Text>
+      <TextInput style={styles.input} placeholder="Email" />
+      <TextInput style={styles.input} placeholder="Password" secureTextEntry />
+      <TextInput style={styles.input} placeholder="Confirm Password" secureTextEntry />
+      <Button title="Sign Up" onPress={() => navigation.navigate('Login')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  title: { fontSize: 24, marginBottom: 20 },
+  input: { width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, marginBottom: 10 },
+});
+
+
+// File: HomeScreen.js
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+
+export default function HomeScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to FlexVerse</Text>
+      <Button title="AI Tools" onPress={() => navigation.navigate('AiTools')} />
+      <Button title="Games Hub" onPress={() => navigation.navigate('GamesHub')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 28, marginBottom: 20 },
+});
+
+
+// File: AiTools.js
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+
+export default function AiTools() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>AI Tools</Text>
+      <Button title="Image Creator" onPress={() => alert('Image Creator Coming Soon!')} />
+      <Button title="Essay Writer" onPress={() => alert('Essay Writer Coming Soon!')} />
+      <Button title="Convo Maker" onPress={() => alert('Convo Maker Coming Soon!')} />
+      <Button title="Edit Me (Image Editor)" onPress={() => alert('Edit Me Coming Soon!')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 24, marginBottom: 20 },
+});
+
+
+// File: GamesHub.js
+import React from 'react';
+import { View, Text, ScrollView, Button, StyleSheet } from 'react-native';
+
+export default function GamesHub() {
+  const games = Array.from({ length: 25 }, (_, i) => `Game ${i + 1}`);
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Games Hub</Text>
+      {games.map((game, index) => (
+        <Button
+          key={index}
+          title={game}
+          onPress={() => alert(`${game} launching soon!`)}
+        />
+      ))}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 20, alignItems: 'center' },
+  title: { fontSize: 24, marginBottom: 20 },
+});
