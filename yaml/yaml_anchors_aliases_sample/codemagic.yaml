@@ -1,5 +1,5 @@
 definitions:
-  instance_mac_pro: &instance_mac_pro
+  instance_mac_pro: &instance_mac_mini_m2
     instance_type: mac_pro
     max_build_duration: 120
   env_versions: &env_versions
