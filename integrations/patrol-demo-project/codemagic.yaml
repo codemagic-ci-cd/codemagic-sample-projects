@@ -1,0 +1,66 @@
+environment: &environment
+  flutter: 3.27.3
+  java: 17
+scripts:
+  - &install_patrol_cli
+    name: Install Patrol CLI
+    script: dart pub global activate patrol_cli 3.6.0
+  - &prepare_install_dependencies
+    name: Install dependencies
+    script: flutter pub get
+
+workflows:
+  patrol_android_build:
+    name: Patrol Android Build
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+
+    environment:
+      <<: *environment
+
+    scripts:
+      - *prepare_install_dependencies
+      - *install_patrol_cli
+      - name: Build apk for testing
+        script: |
+          patrol build android --verbose
+          echo "APK_PATH=build/app/outputs/apk/dev/debug/app-dev-debug.apk" >> $CM_ENV
+          echo "TEST_APK_PATH=build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk" >> $CM_ENV
+    artifacts:
+      - build/app/outputs/apk/dev/debug/app-dev-debug.apk
+      - build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk
+  patrol_ios_build:
+    name: Patrol iOS Build
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+
+    environment:
+      <<: *environment
+
+    scripts:
+      - *prepare_install_dependencies
+      - *install_patrol_cli
+      - name: Set APP ID
+        script: |
+          export APP_ID_SUFFIX=.dev 
+          export APP_ID="pl.leancode.patrol.Example$APP_ID_SUFFIX"
+          echo "APP_ID=$APP_ID" >> $CM_ENV
+          echo "TEST_APP_ID_IOS=pl.leancode.patrol.Example" >> $CM_ENV
+          echo "APP_ID set to: $APP_ID"
+      - name: Fastlane iOS
+        working_directory: ios
+        script: |
+          bundle install
+          bundle exec fastlane ios ios_patrol
+      - name: Patrol build
+        script: |
+          patrol build ios --clear-permissions --release --verbose
+      - name: Zip iOS bundle
+        working_directory: build/ios_integ/Build/Products
+        script: |
+          zip -r ios_bundle.zip .
+      - name: Copy iOS bundle
+        script: |
+          cp build/ios_integ/Build/Products/ios_bundle.zip ios_bundle.zip
+    artifacts:
+      - build/ios_integ/Build/Products/ios_bundle.zip
