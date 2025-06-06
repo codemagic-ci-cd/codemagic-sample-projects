@@ -16,6 +16,12 @@ void main() {
       await $(counterTextKey).$('1').waitUntilVisible();
       await $(incrementButtonKey).tap();
       await $(counterTextKey).$('2').waitUntilVisible();
+
+      // This is just a simple example of Patrol's capabilities.
+      // Patrol offers powerful native integration testing features:
+      // - Native UI interactions and permissions handling
+      // - Cross-platform testing on both Android and iOS
+      // Learn more at https://patrol.leancode.co/
     },
   );
 }
