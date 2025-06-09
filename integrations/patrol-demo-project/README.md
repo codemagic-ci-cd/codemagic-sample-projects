@@ -60,11 +60,16 @@ This workflow builds the iOS application bundle for Patrol integration testing o
 - `build/ios_integ/Build/Products/ios_bundle.zip` - Complete iOS test bundle
 
 **iOS Physical Device Setup:**
-For running tests on physical iOS devices, this workflow handles the code signing requirements automatically through Fastlane. The setup follows the [Patrol physical iOS devices documentation](https://patrol.leancode.co/documentation/physical-ios-devices-setup), with code signing managed via the Fastlane `ios_patrol` lane that:
+For running tests on physical iOS devices, this workflow handles the code signing requirements. The setup follows the [Patrol physical iOS devices documentation](https://patrol.leancode.co/documentation/physical-ios-devices-setup).
 
-- Sets up match profiles for both the main app (adhoc) and test runner (development)
-- Handles provisioning profiles for `RunnerUITests.xctrunner`
-- Builds in release mode as required for physical device testing
+**Two Ways to Sign iOS Apps:**
+
+1. **Codemagic Way:** Use the `ios_signing` section in codemagic.yaml with certificates and provisioning profiles uploaded to Codemagic team settings. This approach is currently configured in the workflow.
+
+2. **Fastlane Way:** Comment out the `ios_signing` section and uncomment the Fastlane iOS script in the workflow. This uses the Fastlane `ios_patrol` lane that:
+   - Sets up match profiles for both the main app (adhoc) and test runner (development)
+   - Handles provisioning profiles for `RunnerUITests.xctrunner`
+   - Builds in release mode as required for physical device testing
 
 Both workflows are optimized for CI/CD environments and handle all necessary setup steps automatically.
 

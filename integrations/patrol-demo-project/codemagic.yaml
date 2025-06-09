@@ -36,6 +36,16 @@ workflows:
 
     environment:
       <<: *environment
+      # To run iOS tests, on physical iOS devices, you need to have a development and adhoc certificate.
+      # For more information, see: https://patrol.leancode.co/documentation/physical-ios-devices-setup
+      # You can upload these certificates in codemagic team settings, see: https://docs.codemagic.io/yaml-code-signing/signing-ios/
+      ios_signing:
+        provisioning_profiles:
+          - patrol_development
+          - patrol_adhoc
+        certificates:
+          - development_certificate
+          - adhoc_certificate
 
     scripts:
       - *prepare_install_dependencies
@@ -47,11 +57,12 @@ workflows:
           echo "APP_ID=$APP_ID" >> $CM_ENV
           echo "TEST_APP_ID_IOS=pl.leancode.patrol.Example" >> $CM_ENV
           echo "APP_ID set to: $APP_ID"
-      - name: Fastlane iOS
-        working_directory: ios
-        script: |
-          bundle install
-          bundle exec fastlane ios ios_patrol
+      # Alternative way to use fastlane instead of certificates in codemagic to sign the app.
+      # - name: Fastlane iOS
+      #   working_directory: ios
+      #   script: |
+      #     bundle install
+      #     bundle exec fastlane ios ios_patrol
       - name: Patrol build
         script: |
           patrol build ios --clear-permissions --release --verbose
