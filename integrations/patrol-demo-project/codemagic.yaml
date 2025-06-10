@@ -1,13 +1,14 @@
-environment: &environment
-  flutter: 3.27.3
-  java: 17
-scripts:
-  - &install_patrol_cli
-    name: Install Patrol CLI
-    script: dart pub global activate patrol_cli 3.6.0
-  - &prepare_install_dependencies
-    name: Install dependencies
-    script: flutter pub get
+definitions:
+  environment: &environment
+    flutter: 3.27.3
+    java: 17
+  scripts:
+    - &install_patrol_cli
+      name: Install Patrol CLI
+      script: dart pub global activate patrol_cli 3.6.0
+    - &prepare_install_dependencies
+      name: Install dependencies
+      script: flutter pub get
 
 workflows:
   patrol_android_build:
