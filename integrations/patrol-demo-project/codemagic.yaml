@@ -27,6 +27,17 @@ workflows:
           patrol build android --verbose
           echo "APK_PATH=build/app/outputs/apk/dev/debug/app-dev-debug.apk" >> $CM_ENV
           echo "TEST_APK_PATH=build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk" >> $CM_ENV
+      - name: Send tests to Firebase test lab
+        script: |
+          gcloud firebase test android run \
+             --type instrumentation \
+             --use-orchestrator \
+             --app $APK_PATH \
+             --test $TEST_APK_PATH \
+             --num-flaky-test-attempts 1 \
+             --timeout 25m \
+             --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
+             --environment-variables clearPackageData=true
     artifacts:
       - build/app/outputs/apk/dev/debug/app-dev-debug.apk
       - build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk
@@ -74,5 +85,14 @@ workflows:
       - name: Copy iOS bundle
         script: |
           cp build/ios_integ/Build/Products/ios_bundle.zip ios_bundle.zip
+      - name: Send tests to Firebase test lab
+        script: |
+          gcloud firebase test ios run \
+          --test=build/ios_integ/Build/Products/ios_bundle.zip \
+          --device model=iphone14pro,version=16.6,locale=en,orientation=portrait \
+          --type=xctest \
+          --record-video \
+          --timeout=35m \
+          --client-details=matrixLabel="Physical iOS device"
     artifacts:
       - build/ios_integ/Build/Products/ios_bundle.zip

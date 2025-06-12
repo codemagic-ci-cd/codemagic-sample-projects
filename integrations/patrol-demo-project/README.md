@@ -28,6 +28,7 @@ This workflow builds the Android application and test APKs for Patrol integratio
 
 3. Build Android APKs using `patrol build android --verbose`
 4. Generate both the main app APK and the androidTest APK
+5. Send tests to Firebase Test Lab for execution on cloud devices
 
 **Artifacts:**
 
@@ -54,6 +55,7 @@ This workflow builds the iOS application bundle for Patrol integration testing o
 4. Run Fastlane `ios_patrol` lane for code signing setup
 5. Build iOS bundle using `patrol build ios --clear-permissions --release --verbose`
 6. Create a zip archive of the iOS build products
+7. Send tests to Firebase Test Lab for execution on physical iOS devices
 
 **Artifacts:**
 
@@ -73,6 +75,30 @@ For running tests on physical iOS devices, this workflow handles the code signin
 
 Both workflows are optimized for CI/CD environments and handle all necessary setup steps automatically.
 
-## Summary
+## Running Tests with Firebase Test Lab
 
-After these steps you are ready to upload test files to any CI/CD platform and run tests in tools like [Firebase Test Lab](https://patrol.leancode.co/documentation/ci/firebase-test-lab) etc.
+This project includes example scripts for running the built test artifacts on [Firebase Test Lab](https://firebase.google.com/docs/test-lab). You can replace these with your preferred testing provider's scripts.
+
+### Android Test Execution
+
+The Android workflow demonstrates how to send both the main APK and test APK to Firebase Test Lab:
+
+```bash
+gcloud firebase test android run \
+   --type instrumentation \
+   --use-orchestrator \
+   --app $APK_PATH \
+   --test $TEST_APK_PATH \
+   --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait
+```
+
+### iOS Test Execution
+
+The iOS workflow shows how to run tests on physical iOS devices using the built test bundle:
+
+```bash
+gcloud firebase test ios run \
+  --test=build/ios_integ/Build/Products/ios_bundle.zip \
+  --device model=iphone14pro,version=16.6,locale=en,orientation=portrait \
+  --type=xctest
+```
