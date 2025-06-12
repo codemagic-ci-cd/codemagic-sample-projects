@@ -1,0 +1,37 @@
+default_platform(:ios)
+
+keychain_name = ENV["MATCH_KEYCHAIN"]
+keychain_password = ENV["MATCH_PASSWORD"]
+
+platform :ios do
+  before_all do |lane, options|
+    create_keychain(
+      name: ENV["MATCH_KEYCHAIN"],
+      password: ENV["MATCH_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      add_to_search_list: true,
+      verbose: true
+    )
+  end
+  
+  desc "Codesign Patrol tests"
+  lane :ios_patrol do
+    app_store_connect_api_key(
+      in_house: false
+    )
+    match(
+      type: "adhoc",
+      app_identifier: ENV["APP_ID"],
+      keychain_name:,
+      keychain_password:,
+    )
+    match(
+      type: "development",
+      app_identifier: "#{ENV["TEST_APP_ID_IOS"]}.RunnerUITests.xctrunner",
+      keychain_name:,
+      keychain_password:,
+    )
+  end
+end
