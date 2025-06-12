@@ -9,6 +9,13 @@ definitions:
     - &prepare_install_dependencies
       name: Install dependencies
       script: flutter pub get
+    - &authorize_gcloud_cli
+      name: Authorize Google Cloud SDK
+        - google_credentials # <-- (Includes TEST_LAB_SERVICE_ACCOUNT_KEY, GCLOUD_PROJECT_ID)
+      script: |
+        echo "$TEST_LAB_SERVICE_ACCOUNT_KEY" > /tmp/gcloud.json
+        gcloud auth activate-service-account --quiet --key-file /tmp/gcloud.json
+        gcloud --quiet config set project $GCLOUD_PROJECT_ID
 
 workflows:
   patrol_android_build:
@@ -22,6 +29,7 @@ workflows:
     scripts:
       - *prepare_install_dependencies
       - *install_patrol_cli
+      - *authorize_gcloud_cli
       - name: Build apk for testing
         script: |
           patrol build android --verbose
@@ -62,6 +70,7 @@ workflows:
     scripts:
       - *prepare_install_dependencies
       - *install_patrol_cli
+      - *authorize_gcloud_cli
       - name: Set APP ID
         script: |
           export APP_ID_SUFFIX=.dev 

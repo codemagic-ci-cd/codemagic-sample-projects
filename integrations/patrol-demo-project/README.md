@@ -26,9 +26,10 @@ This workflow builds the Android application and test APKs for Patrol integratio
 
 - Make sure that the CLI version is compatible with your Patrol version in pubspec.yaml. You can check the compatibility in the [Patrol compatibility table](https://patrol.leancode.co/documentation/compatibility-table).
 
-3. Build Android APKs using `patrol build android --verbose`
-4. Generate both the main app APK and the androidTest APK
-5. Send tests to Firebase Test Lab for execution on cloud devices
+3. Authorize Google Cloud SDK for Firebase Test Lab access
+4. Build Android APKs using `patrol build android --verbose`
+5. Generate both the main app APK and the androidTest APK
+6. Send tests to Firebase Test Lab for execution on cloud devices
 
 **Artifacts:**
 
@@ -51,11 +52,12 @@ This workflow builds the iOS application bundle for Patrol integration testing o
 
 - Make sure that the CLI version is compatible with your Patrol version in pubspec.yaml. You can check the compatibility in the [Patrol compatibility table](https://patrol.leancode.co/documentation/compatibility-table).
 
-3. Configure App IDs (main app: `pl.leancode.patrol.Example.dev`, test runner: `pl.leancode.patrol.Example`)
-4. Run Fastlane `ios_patrol` lane for code signing setup
-5. Build iOS bundle using `patrol build ios --clear-permissions --release --verbose`
-6. Create a zip archive of the iOS build products
-7. Send tests to Firebase Test Lab for execution on physical iOS devices
+3. Authorize Google Cloud SDK for Firebase Test Lab access
+4. Configure App IDs (main app: `pl.leancode.patrol.Example.dev`, test runner: `pl.leancode.patrol.Example`)
+5. Run Fastlane `ios_patrol` lane for code signing setup
+6. Build iOS bundle using `patrol build ios --clear-permissions --release --verbose`
+7. Create a zip archive of the iOS build products
+8. Send tests to Firebase Test Lab for execution on physical iOS devices
 
 **Artifacts:**
 
