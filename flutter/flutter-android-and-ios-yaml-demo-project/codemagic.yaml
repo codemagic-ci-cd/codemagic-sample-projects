@@ -3,6 +3,7 @@ workflows:
     name: Android Workflow
     instance_type: mac_mini_m2
     max_build_duration: 120
+    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
     environment:
       android_signing:
         - keystore_reference
