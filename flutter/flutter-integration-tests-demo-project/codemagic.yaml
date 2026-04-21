@@ -71,7 +71,7 @@ workflows:
       name: iOS Workflow
       instance_type: mac_mini_m2
       environment:
-        xcode: 13.4.1
+        xcode: latest
         groups:
           - ios_credentials
           - gcloud_credentials
