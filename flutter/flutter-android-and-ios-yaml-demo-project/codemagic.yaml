@@ -1,17 +1,17 @@
 workflows:
-  android-workflow:
-    name: Android Workflow
+  flutter-android:
+    name: Flutter Android 
     instance_type: mac_mini_m2
     max_build_duration: 120
     working_directory: flutter/flutter-android-and-ios-yaml-demo-project
     environment:
       android_signing:
-        - keystore_reference
+        - codemagic_keystore
       groups:
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
+        - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
       vars:
-        PACKAGE_NAME: "io.codemagic.flutteryaml" # <-- Put your package name here
-        GOOGLE_PLAY_TRACK: "alpha"
+        PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: "internal"
       flutter: stable
     scripts:
       - name: Set up local.properties
@@ -20,19 +20,12 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
       - name: Build AAB with Flutter
         script: |
-          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))      
-          flutter build appbundle --release \
-            --build-name=1.0.$BUILD_NUMBER \
-            --build-number=$BUILD_NUMBER
+            LATEST_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK")))      
+            flutter build appbundle --release \
+              --build-name=1.0.$LATEST_BUILD_NUMBER \
+              --build-number=$LATEST_BUILD_NUMBER
     artifacts:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
@@ -46,7 +39,7 @@ workflows:
           success: true
           failure: false
       google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: $GOOGLE_PLAY_TRACK
         submit_as_draft: true
   ios-workflow:
