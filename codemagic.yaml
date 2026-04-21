@@ -1,0 +1,638 @@
+workflows:
+  ios-automatic-code-signing:
+    name: iOS automatic code signing
+    instance_type: mac_mini_m2
+    working_directory: ios/ios-automatic-code-signing-demo-project
+    environment:
+      groups:
+         - ios
+        # - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "swiftly.xcworkspace"
+        XCODE_SCHEME: "swiftly"
+        BUNDLE_ID: "io.codemagic.cmswiftly"
+        APP_STORE_APP_ID: 1570610860
+      # xcode: 14.3
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: "develop"
+          include: true
+          source: true
+    scripts:
+      - name: Install pods
+        script: |
+          pod install
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+      - name: Use system default keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 4))
+      - name: Build ipa for distribution
+        working_directory: ios/ios-automatic-code-signing-demo-project
+        script: |
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+      email:
+        recipients:
+          - user1@example.com
+        notify:
+          success: true
+          failure: true
+      slack:
+        channel: "#ce-builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: false # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+  ios-manual-code-signing:
+    name: iOS manual code signing
+    instance_type: mac_mini_m2
+    working_directory: ios/ios-manual-code-signing-demo-project
+    environment:
+      groups:
+        - ios_manual_signing # <-- (group contains variables: CM_PROVISIONING_PROFILE, CM_CERTIFICATE)
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
+        XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+        APP_STORE_APP_ID: 1571469558
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: "develop"
+          include: true
+          source: true
+    scripts:
+      - name: Install pods
+        script: |
+          pod install
+      - name: Initialize keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: set up provisioning profiles
+        script: |
+          PROFILES_HOME="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_HOME"
+          PROFILE_PATH="$(mktemp "$PROFILES_HOME"/$(uuidgen).mobileprovision)"
+          echo ${CM_PROVISIONING_PROFILE} | base64 --decode > "$PROFILE_PATH"
+          echo "Saved provisioning profile $PROFILE_PATH"
+      - name: Add signing certificate to keychain
+        script: |
+          echo $CM_CERTIFICATE | base64 --decode > /tmp/certificate.p12
+          keychain add-certificates --certificate /tmp/certificate.p12
+      - name: Increment build number
+        script: |
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Build .ipa
+        script: |
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user1@example.com
+        notify:
+          success: true
+          failure: true
+      slack:
+        channel: "#ce-builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: false # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+  ios-code-signing-identities:
+    name: iOS code signing identities
+    integrations:
+      app_store_connect: NC_API_KEY
+    instance_type: mac_mini_m2
+    working_directory: ios/ios-code-signing-identities-demo-project
+    environment:
+      ios_signing:
+        provisioning_profiles:
+          - swiftly-profile
+        certificates:
+          - ios-distribution
+      groups:
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Put the name of your workspace here.
+        XCODE_SCHEME: "swiftly" # <-- Put the name of your scheme here.
+        APP_STORE_APP_ID: 1570610860
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: "develop"
+          include: true
+          source: true
+    scripts:
+      - name: Install pods
+        script: |
+          pod install
+      - name: Increment build number
+        script: |
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Build .ipa
+        script: |
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user1@example.com
+        notify:
+          success: true
+          failure: true
+      slack:
+        channel: "#ce-builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: false # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      app_store_connect: # https://docs.codemagic.io/publishing-yaml/distribution
+        # Use referenced App Store Connect API key to authenticate binary upload
+        auth: integration 
+  ios-magic-actions:
+    name: ios-magic-actions
+    instance_type: mac_mini_m2
+    working_directory: ios/ios-magic-actions-demo-project
+    environment:
+      groups:
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "swiftly.xcworkspace"
+        XCODE_SCHEME: "swiftly"
+        BUNDLE_ID: "io.codemagic.cmswiftly"
+        APP_STORE_APP_ID: 1570610860
+      xcode: 14.3
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    scripts:
+      - name: Codemagic CLI Tools build
+        script: |
+          #!/bin/sh
+          set -ex
+          pip3 install codemagic-cli-tools # The Codemagic CLI tools are already installed on Codemagic servers
+          keychain initialize
+          pod init && pod install
+          app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
+          keychain add-certificates
+          xcode-project use-profiles
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+
+          # Use Codemagic to publish to take advantage of asynchronous Magic Actions otherwise use app-store-connect publish command and pass whats_new.json for release notes.
+          # app-store-connect publish --beta-build-localizations=@file:whats_new.json
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
+  ios-fastlane:
+    name: iOS Fastlane
+    instance_type: mac_mini_m2
+    working_directory: integrations/fastlane-integration-demo-project
+    environment:
+      groups:
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+        - fastlane_credentials # <-- (group contains variables: MATCH_SSH_KEY, MATCH_KEYCHAIN, MATCH_PASSWORD)
+      xcode: 14.3
+      cocoapods: default
+    scripts:
+      # - gem install bundler:2.2.27
+      - bundle install
+      - bundle exec fastlane beta
+  flutter-yaml-ios:
+    name: Flutter yaml iOS
+    instance_type: mac_mini_m2
+    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
+    max_build_duration: 120
+    environment:
+      groups:
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "io.codemagic.cmflutteryaml"
+        APP_STORE_APP_ID: 1571561263
+      flutter: stable
+      xcode: 14.3
+      cocoapods: default
+    scripts:
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Use system default keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter unit tests
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+        notify:
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: "#ce-builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
+  flutter-flavors-ios-dev:
+    name: iOS Flutter Flavors Dev
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+        # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
+        APP_STORE_APP_ID: 1589804869 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+        XCODE_CONFIG: Release-dev
+        XCODE_SCHEME: dev
+        BUNDLE_ID: io.codemagic.flutterflavors.dev
+        ENTRY_POINT: lib/main_dev.dart
+      flutter: stable
+      xcode: 14.3
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "main"
+          include: true
+          source: true
+    scripts:
+      - name: Get Flutter Packages
+        script: |
+          flutter packages pub get
+      - name: Pod install
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Add certs to keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist \
+          --flavor="$XCODE_SCHEME" \
+          -t "$ENTRY_POINT"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+  flutter-flavors-ios-prod:
+    name: iOS Flutter Flavors Prod
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
+        # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
+        APP_STORE_APP_ID: 1589804841 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+        XCODE_CONFIG: Release-prod
+        XCODE_SCHEME: prod
+        BUNDLE_ID: io.codemagic.flutterflavors.prod
+        ENTRY_POINT: lib/main_prod.dart
+      flutter: stable
+      xcode: 14.3
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "main"
+          include: true
+          source: true
+    scripts:
+      - name: Get Flutter Packages
+        script: |
+          flutter packages pub get
+      - name: Pod install
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Add certs to keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist \
+          --flavor="$XCODE_SCHEME" \
+          -t "$ENTRY_POINT"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+  react-native-ios:
+    name: React Native iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    working_directory: react-native/react-native-demo-project
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+      vars:
+        XCODE_WORKSPACE: "ios/cmreactnative.xcworkspace"
+        XCODE_SCHEME: "cmreactnative"
+        BUNDLE_ID: "io.codemagic.cmreactnative"
+        APP_STORE_APP_ID: 1571903173
+      node: 16.11.1
+      xcode: 14.3
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - tag
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    cache:
+     cache_paths:
+      - $HOME/Library/Caches/CocoaPods
+    scripts:
+      - name: Install dependencies
+        script: |
+          yarn install
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios && pod install
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+      - name: Use system default keychain
+        script: |
+          keychain add-certificates
+      - name: Increment build number
+        script: |
+          set -ex
+          cd ios && agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles --warn-only
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+        channel: "#ce-builds"
+        notify_on_build_start: true # To receive a notification when a build starts
+        notify:
+          success: true # To not receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+  unity-steam-deploy:
+    name: Unity Steam Deploy
+    instance_type: mac_pro
+    working_directory: unity/unity-deploy-steam
+    environment:
+      groups:
+        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - unity # <-- (Includes UNITY_SERIAL, UNITY_EMAIL, UNITY_PASSWORD)
+        - steam # <-- (Includes STEAM_USERNAME, STEAM_PASSWORD, CONFIG_FILE, SSFN_FILE, SSFN_FILE_NAME)
+      vars:
+        UNITY_BIN: $UNITY_HOME/Contents/MacOS/Unity
+        BUILD_SCRIPT: BuildWin64
+    scripts:
+      - name: Activate License
+        script: $UNITY_BIN -batchmode -quit -logFile -serial ${UNITY_SERIAL?} -username ${UNITY_EMAIL?} -password ${UNITY_PASSWORD?}
+      - name: Build
+        script: $UNITY_BIN -batchmode -quit -logFile -projectPath ./HelloWorldProject -executeMethod BuildScript.$BUILD_SCRIPT -nographics
+      - name: Zip Build
+        script: zip -r helloworld_win64.zip win64
+      - name: Install steamcmd
+        script: |
+          mkdir ~/Steam
+          curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_osx.tar.gz" | tar zxvf - -C ~/Steam
+      - name: decode Sentry files
+        script: |
+          echo $CONFIG_FILE | base64 --decode > steam/config.vdf
+          echo $SSFN_FILE | base64 --decode > steam/$SSFN_FILE_NAME
+      - name: Copy Sentry Files
+        script: |
+          mkdir -p ~/Library/Application\ Support/Steam/config
+          cp ~/clone/unity/unity-deploy-steam/steam/$SSFN_FILE_NAME ~/Library/Application\ Support/Steam
+          cp ~/clone/unity/unity-deploy-steam/steam/config.vdf ~/Library/Application\ Support/Steam/config
+      - name: Upload Build to Steam
+        script: |
+          ~/Steam/steamcmd.sh +login $STEAM_USERNAME $STEAM_PASSWORD +run_app_build ~/clone/unity/unity-deploy-steam/steam/app_build.vdf +quit
+    artifacts:
+      - helloworld_win64.zip
+    publishing:
+      scripts:
+        - name: Deactivate License
+          script: $UNITY_BIN -batchmode -quit -returnlicense -nographics
+
+  native-android:
+    name: Native Android
+    max_build_duration: 120
+    instance_type: linux_x2
+    working_directory: android/android-native-quick-start
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "io.codemagic.androidquicksample"
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Build Android release
+        script: |
+          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name '$PACKAGE_NAME')
+          if [ -z LATEST_BUILD_NUMBER ]; then
+              # fallback in case no build number was found from google play. Alternatively, you can `exit 1` to fail the build
+              UPDATED_BUILD_NUMBER=$BUILD_NUMBER
+          else
+              UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
+          fi
+          ./gradlew bundleRelease -PversionCode=$UPDATED_BUILD_NUMBER -PversionName=1.0.$UPDATED_BUILD_NUMBER
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    # publishing:
+    #   email:
+    #     recipients:
+    #       - user_1@example.com
+    #       - user_2@example.com
+    #     notify:
+    #       success: true
+    #       failure: false
+    #   google_play:
+    #     credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+    #     track: internal
+    #     submit_as_draft: true
