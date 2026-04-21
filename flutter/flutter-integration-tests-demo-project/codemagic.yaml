@@ -7,7 +7,7 @@ workflows:
       groups:
         - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
       vars:
-        FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_NAME" # <-- Put your Firebase Project Name here
+        FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_ID" # <-- Put your Firebase Project ID here
       flutter: stable
       xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
@@ -35,7 +35,7 @@ workflows:
         script: |
           set -ex
 
-          echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json
+          echo $GCLOUD_KEY_FILE > ./gcloud_key_file.json
 
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
 
@@ -76,14 +76,14 @@ workflows:
           - ios_credentials
           - gcloud_credentials
         vars:
-          FIREBASE_PROJECT: "flutter-integration-tests"
+          FIREBASE_PROJECT: "YOUR_FIREBASE_PROJECT_ID" # <-- Put your Firebase Project ID here
           BUNDLE_ID: "io.codemagic.ftlflutter"
           TEST_BUNDLE_ID: "io.codemagic.ftlflutter.uitests.xctrunner"
       scripts:
         - name: Configure Firebase access
           script: |
             set -e
-            echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS > ./gcloud_key_file.json          
+            echo $GCLOUD_KEY_FILE > ./gcloud_key_file.json          
             gcloud auth activate-service-account --key-file=gcloud_key_file.json
             gcloud --quiet config set project $FIREBASE_PROJECT
 

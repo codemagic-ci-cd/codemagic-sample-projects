@@ -24,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String text = "";
 
-  TextEditingController _controller;
+  late TextEditingController _controller;
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   void setText(String newText) {
@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     controller: _controller,
                     decoration: kTextInputStyle,
                     validator: (value) =>
-                        value.isEmpty ? 'Input some text!' : null,
+                        (value == null || value.isEmpty) ? 'Input some text!' : null,
                   ),
                 ),
               ),
@@ -117,11 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepOrange,
-        onPressed: () => {
-          if (_formKey.currentState.validate())
-            {setText(_controller.text)}
-          else
-            (setText(''))
+        onPressed: () {
+          if ((_formKey.currentState?.validate() ?? false)) {
+            setText(_controller.text);
+          } else {
+            setText('');
+          }
         },
         child: Icon(
           Icons.add,
