@@ -331,7 +331,55 @@ workflows:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+        
         submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
+  
+  flutter-android:
+    name: Flutter Android 
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
+      vars:
+        PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here
+        GOOGLE_PLAY_TRACK: "internal"
+      flutter: stable
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Build AAB with Flutter
+        script: |
+            LATEST_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK")))      
+            flutter build appbundle --release \
+              --build-name=1.0.$LATEST_BUILD_NUMBER \
+              --build-number=$LATEST_BUILD_NUMBER
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
+        submit_as_draft: true
+  
+  
+  
   flutter-flavors-ios-dev:
     name: iOS Flutter Flavors Dev
     instance_type: mac_mini_m2
