@@ -1,4 +1,4 @@
-package com.example.flutteryaml
+package io.codemagic.flutter
 
 import io.flutter.embedding.android.FlutterActivity
 
