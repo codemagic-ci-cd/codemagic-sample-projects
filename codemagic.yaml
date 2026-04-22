@@ -332,6 +332,106 @@ workflows:
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
+  
+  flutter-macOS-workflow:
+    name: Flutter macOS Workflow
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    working_directory: flutter/flutter-macos-demo-project
+    integrations:
+          app_store_connect: codemagic_samples2 # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+    environment:
+      flutter: stable
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+      groups:
+            - appstore_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY needed for automatic code-signing)
+      vars:
+           BUNDLE_ID: "io.codemagic.macosDesktop"
+    scripts:
+      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+        script: |
+          keychain initialize
+      - name: Fetch Mac App Distribution certificate and Mac App Store profile
+        script: |
+          app-store-connect fetch-signing-files \
+            $BUNDLE_ID \
+            --platform MAC_OS \
+            --type MAC_APP_STORE \
+            --create
+      - name: Fetch Mac Installer Distribution certificates
+        script: |
+          # HINT: We can use MAC_APP_DISTRIBUTION if looking to package the artifact before submitting it to App Store. 
+          # And please note that the certificate type must match the one we are using in the Package macOS application script down below.
+          app-store-connect certificates list --type MAC_INSTALLER_DISTRIBUTION --save || \
+          app-store-connect certificates create --type MAC_INSTALLER_DISTRIBUTION --save          
+      - name: Set up signing certificate
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Build Flutter macOS
+        script: |
+          flutter config --enable-macos-desktop && \
+          flutter build macos --release \
+            --build-name=1.0.$PROJECT_BUILD_NUMBER \
+            --build-number=$PROJECT_BUILD_NUMBER
+      - name: Package macOS application
+        script: |
+          set -x
+
+          # Command to find the path to your generated app
+          APP_NAME=$(find $(pwd) -name "*.app")
+          cd $(dirname "$APP_NAME")
+          PACKAGE_NAME=$(basename "$APP_NAME" .app).pkg
+
+          # Create an unsigned package
+          xcrun productbuild --component "$APP_NAME" /Applications/ unsigned.pkg
+
+          # Find the installer certificate commmon name in keychain
+          INSTALLER_CERT_NAME=$(keychain list-certificates \
+            | jq '.[]
+            | select(.common_name
+            | contains("Mac Developer Installer"))
+            | .common_name' \
+            | xargs)
+
+          # Sign the package
+          xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg "$PACKAGE_NAME"
+
+          # Remove unsigned package
+          rm unsigned.pkg
+    artifacts:
+      - build/macos/**/*.pkg
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      app_store_connect:
+          auth: integration
+
+          # Configuration related to TestFlight (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_testflight: true
+          beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+            - group name 1
+            - group name 2
+
+          # Configuration related to App Store (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_app_store: false
+  
   flutter-flavors-ios-dev:
     name: iOS Flutter Flavors Dev
     instance_type: mac_mini_m2

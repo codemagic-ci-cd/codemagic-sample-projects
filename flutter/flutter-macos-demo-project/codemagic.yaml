@@ -1,14 +1,19 @@
 workflows:
-  macOS-workflow:
-    name: macOS Workflow
+  flutter-macOS-workflow:
+    name: Flutter macOS Workflow
     instance_type: mac_mini_m2
     max_build_duration: 60
+    working_directory: flutter/flutter-macos-demo-project
+    integrations:
+          app_store_connect: codemagic_samples # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
     environment:
       flutter: stable
       xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
       groups:
-        - appstore_credentials # <-- (Includes APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY)
+            - appstore_credentials # <-- (Includes CERTIFICATE_PRIVATE_KEY needed for automatic code-signing)
+      vars:
+           BUNDLE_ID: "io.codemagic.macosDesktop"
     scripts:
       - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
         script: |
@@ -35,9 +40,6 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          flutter analyze
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -69,6 +71,9 @@ workflows:
 
           # Sign the package
           xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg "$PACKAGE_NAME"
+
+          # Remove unsigned package
+          rm unsigned.pkg
     artifacts:
       - build/macos/**/*.pkg
     publishing:
@@ -80,17 +85,5 @@ workflows:
           success: true
           failure: false
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-
-        # Configuration related to TestFlight (optional)
-        # Note: This action is performed during post-processing.
-        submit_to_testflight: true
-        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-          - group name 1
-          - group name 2
-
-        # Configuration related to App Store (optional)
-        # Note: This action is performed during post-processing.
-        submit_to_app_store: false
+          auth: integration
+          submit_to_testflight: true
