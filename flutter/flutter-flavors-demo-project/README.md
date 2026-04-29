@@ -4,11 +4,22 @@ The **codemagic.yaml** in this project can be used as a starter template for whi
 
 This example contains a workflow based around a Flutter iOS app, but can be adapted to work with native iOS, Android or React Native.
 
-In this example builds are triggered using the bash scrips in the .scripts folder but you can build your own application for triggering builds for specific app version or customer apps.
+In this example builds are triggered using the bash scripts in the `scripts` folder, but you can build your own application for triggering builds for specific app versions or customer apps.
 
 The scripts use the Codemagic API to trigger builds and pass environment variables to the workflow. This means a single workflow can be used to build multiple apps.
 
 When the app is built it is automatically published to App Store Connect/TestFlight.
+
+# Trigger scripts
+
+Use scripts from the `scripts/` directory to trigger specific workflows:
+
+- iOS workflow (`ios-release`):
+  - `scripts/build_dev.sh`
+  - `scripts/build_prod.sh`
+- Android workflow (`android-aab-release`):
+  - `scripts/build_android_dev.sh`
+  - `scripts/build_android_prod.sh`
 
 # Setting up multiple schemes in Xcode
 

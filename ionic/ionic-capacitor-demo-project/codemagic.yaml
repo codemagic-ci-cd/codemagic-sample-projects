@@ -4,26 +4,26 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: codemagic
-    environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: io.codemagic.ionicsample
-      vars:
-        # Ionic Xcode worskspace and scheme
-        XCODE_WORKSPACE: "App.xcworkspace"
-        XCODE_SCHEME: "App"
-        APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-      node: v16.11.1
-      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
-      cocoapods: default
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: develop
-          include: true
-          source: true
+      app_store_connect: Becca API Key
+    # environment:
+    #   ios_signing:
+    #     distribution_type: app_store
+    #     bundle_identifier: io.codemagic.ionicsample
+    #   vars:
+    #     # Ionic Xcode worskspace and scheme
+    #     XCODE_WORKSPACE: "App.xcworkspace"
+    #     XCODE_SCHEME: "App"
+    #     APP_STORE_APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+    #   node: v16.11.1
+    #   xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+    #   cocoapods: default
+    # triggering:
+    #   events:
+    #     - push
+    #   branch_patterns:
+    #     - pattern: develop
+    #       include: true
+    #       source: true
     scripts:
       - name: Install npm dependencies for Ionic project
         script: |
@@ -56,27 +56,27 @@ workflows:
       - /tmp/xcodebuild_logs/*.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    publishing:
-      email:
-        recipients:
-          - user_one@example.com
-          - user_two@example.com
-        notify:
-          success: false     # To not receive a notification when a build succeeds
-          failure: false     # To not receive a notification when a build fails
-      app_store_connect:
-        auth: integration
+    # publishing:
+    #   email:
+    #     recipients:
+    #       - user_one@example.com
+    #       - user_two@example.com
+    #     notify:
+    #       success: false     # To not receive a notification when a build succeeds
+    #       failure: false     # To not receive a notification when a build fails
+    #   app_store_connect:
+    #     auth: integration
 
-        # Configuration related to TestFlight (optional)
-        # Note: This action is performed during post-processing.
-        submit_to_testflight: true
-        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-          - group name 1
-          - group name 2
+    #     # Configuration related to TestFlight (optional)
+    #     # Note: This action is performed during post-processing.
+    #     submit_to_testflight: true
+    #     beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+    #       - group name 1
+    #       - group name 2
 
-        # Configuration related to App Store (optional)
-        # Note: This action is performed during post-processing.
-        submit_to_app_store: false
+    #     # Configuration related to App Store (optional)
+    #     # Note: This action is performed during post-processing.
+    #     submit_to_app_store: false
 
 
   ionic-capacitor-android-workflow:
