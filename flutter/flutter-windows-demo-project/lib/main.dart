@@ -1,21 +1,29 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:window_size/window_size.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowTitle('Flutter Demo');
-    setWindowMinSize(const Size(400, 300));
-    setWindowMaxSize(Size.infinite);
+    await windowManager.ensureInitialized();
+    const windowOptions = WindowOptions(
+      title: 'Flutter Demo',
+      minimumSize: Size(400, 300),
+      maximumSize: Size.infinite,
+      size: Size(400, 300),
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
   }
 
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -76,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Text(
                 '$_counter',
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
           ),
@@ -118,11 +126,11 @@ class DecrementIntent extends Intent {}
 
 class KeyBinding extends StatelessWidget {
   const KeyBinding({
-    Key? key,
+    super.key,
     required this.child,
     required this.onIncrementTriggered,
     required this.onDecrementTriggered,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final VoidCallback? onIncrementTriggered;

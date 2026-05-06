@@ -6,24 +6,21 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-  window_size:
-    git:
-      url: git://github.com/google/flutter-desktop-embedding.git
-      path: plugins/window_size
+  cupertino_icons: ^1.0.9
+  window_manager: ^0.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  msix: ^2.6.5
+  msix: ^3.16.13
 
-  flutter_lints: ^1.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
