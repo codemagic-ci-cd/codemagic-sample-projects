@@ -211,8 +211,8 @@ environment:
     # ...
   vars:
     BUNDLE_ID: "io.codemagic.sample.reactnative"
-    XCODE_WORKSPACE: "CodemagicSample.xcworkspace" # <-- Name of your Xcode workspace
-    XCODE_SCHEME: "CodemagicSample" # <-- Name of your Xcode scheme
+    XCODE_WORKSPACE: "cmreactnative.xcworkspace" # <-- Name of your Xcode workspace
+    XCODE_SCHEME: "cmreactnative" # <-- Name of your Xcode scheme
 scripts:
   # ...
   - name: Build ipa for distribution

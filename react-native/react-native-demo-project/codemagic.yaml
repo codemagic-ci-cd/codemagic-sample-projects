@@ -5,7 +5,7 @@ workflows:
     react-native-android:
         name: React Native Android
         max_build_duration: 120
-        instance_type: mac_mini_m2
+        instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
         environment:
           android_signing:
             - keystore_reference
@@ -13,7 +13,7 @@ workflows:
             - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
           vars:
             PACKAGE_NAME: "io.codemagic.sample.reactnative" # <-- Put your package name here e.g. com.domain.myapp
-          node: v19.7.0
+          node: v22.13.1
         scripts:
             - name: Install npm dependencies
               script: |
@@ -50,7 +50,7 @@ workflows:
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
-        instance_type: mac_mini_m2
+        instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
         integrations:
           app_store_connect: codemagic
         environment:
@@ -58,10 +58,10 @@ workflows:
             distribution_type: app_store
             bundle_identifier: io.codemagic.sample.reactnative
           vars:
-            XCODE_WORKSPACE: "CodemagicSample.xcworkspace" # <-- Put the name of your Xcode workspace here
-            XCODE_SCHEME: "CodemagicSample" # <-- Put the name of your Xcode scheme here
+            XCODE_WORKSPACE: "cmreactnative.xcworkspace" # <-- Put the name of your Xcode workspace here
+            XCODE_SCHEME: "cmreactnative" # <-- Put the name of your Xcode scheme here
             APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-          node: v19.7.0
+          node: v22.13.1
           xcode: latest
           cocoapods: default
         scripts:
