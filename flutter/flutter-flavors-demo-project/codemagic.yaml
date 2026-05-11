@@ -1,7 +1,7 @@
 workflows:
   ios-release:
     name: iOS release
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
     max_build_duration: 120
     integrations:
       app_store_connect: codemagic

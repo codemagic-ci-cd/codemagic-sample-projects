@@ -5,7 +5,7 @@ workflows:
     react-native-android:
         name: React Native Android
         max_build_duration: 120
-        instance_type: mac_mini_m2
+        instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
         environment:
           android_signing:
             - keystore_reference
@@ -50,7 +50,7 @@ workflows:
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
-        instance_type: mac_mini_m2
+        instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
         integrations:
           app_store_connect: codemagic
         environment:
