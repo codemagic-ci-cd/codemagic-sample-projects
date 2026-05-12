@@ -16,6 +16,7 @@
     "@capacitor/android": "^2.4.2",
     "@capacitor/cli": "^2.4.2",
     "@capacitor/core": "^2.4.2",
-    "@capacitor/ios": "^2.4.2"
+    "@capacitor/ios": "^2.4.2",
+    "@fortawesome/fontawesome-free": "^6.6.0"
   }
 }
