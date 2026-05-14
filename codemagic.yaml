@@ -311,7 +311,7 @@ workflows:
       max_build_duration: 120
       working_directory: flutter/flutter-android-and-ios-yaml-demo-project
       integrations:
-        app_store_connect: codemagic_samples
+        app_store_connect: codemagic_samples2
       environment:
         ios_signing:
           distribution_type: app_store
