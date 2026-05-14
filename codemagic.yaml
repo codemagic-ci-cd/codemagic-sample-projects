@@ -860,9 +860,7 @@ workflows:
             zip -r "ios_tests.zip" *-iphoneos *.xctestrun
         - name: Run tests in Firebase Test Lab
           script: |
-            gcloud firebase test ios run \
-              --test "build/ios_integ/Build/Products/ios_tests.zip" \
-              --device "model=iPhone 16 Pro,version=18.3,locale=en_US,orientation=PORTRAIT" \
-              --timeout 3m  
+            gcloud firebase test ios models list
+            gcloud firebase test ios run --test "build/ios_integ/Build/Products/ios_tests.zip"
       artifacts:
         - "**/ios_tests.zip"
