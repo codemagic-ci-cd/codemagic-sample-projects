@@ -92,13 +92,13 @@ flutter driver --driver=test_driver/integration_driver.dart --target=integration
 ## Configuring your Flutter Android project to run on real devices
 
 1. Create a folder called `androidTest` in `android/app/src` 
-2. Create a subfolder structure as follows that matches your package name. In this demo project the package name is "io.codemagic.integration" so the structire needs to be `androidTest/java/io/codemagic/integration`
+2. Create a subfolder structure as follows that matches your package name. In this demo project the package name is "io.codemagic.integrationtest" so the structire needs to be `androidTest/java/io/codemagic/integration`
 3. Add a file in the end folder called `MainActivityTest.java`. Add the following to its contents:
 
 ```
 
     // Change this to your package name!!
-    package io.codemagic.integration;
+    package io.codemagic.integrationtest;
 
     import androidx.test.rule.ActivityTestRule;
     import dev.flutter.plugins.integration_test.FlutterTestRunner;
@@ -106,7 +106,7 @@ flutter driver --driver=test_driver/integration_driver.dart --target=integration
     import org.junit.runner.RunWith;
 
     // Change this your_package_name.MainActivity !!
-    import io.codemagic.integration.MainActivity;
+    import io.codemagic.integrationtest.MainActivity;
 
     @RunWith(FlutterTestRunner.class)
     public class MainActivityTest {
@@ -120,7 +120,7 @@ flutter driver --driver=test_driver/integration_driver.dart --target=integration
 
 ```
     // Change this to the name of your package!!
-    package io.codemagic.integration;
+    package io.codemagic.integrationtest;
 
     import io.flutter.embedding.android.FlutterActivity
 
