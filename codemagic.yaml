@@ -863,7 +863,7 @@ workflows:
             gcloud firebase test ios models list
             gcloud firebase test ios run \
               --test "build/ios_integ/Build/Products/ios_tests.zip" \
-              --device "model=iphone16pro,version=18.3,locale=en_US,orientation=PORTRAIT" \
+              --device "model=iphone16pro,version=18.3,locale=en_US,orientation=portrait" \
               --timeout 3m  
       artifacts:
         - "**/ios_tests.zip"
