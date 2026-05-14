@@ -843,7 +843,7 @@ workflows:
           script: |
             set -ex
 
-            flutter build ios flutter/flutter-integration-tests-demo-project/integration_test/app_test.dart --release
+            flutter build ios integration_test/app_test.dart --release
 
             cd ios
             xcodebuild \
