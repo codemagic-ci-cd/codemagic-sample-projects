@@ -260,80 +260,75 @@ workflows:
       # - gem install bundler:2.2.27
       - bundle install
       - bundle exec fastlane beta
-  flutter-yaml-ios:
-    name: Flutter yaml iOS
-    instance_type: mac_mini_m2
-    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
-    max_build_duration: 120
-    environment:
-      groups:
-        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
-      vars:
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
-        BUNDLE_ID: "io.codemagic.cmflutteryaml"
-        APP_STORE_APP_ID: 1571561263
-      flutter: stable
-      xcode: 14.3
-      cocoapods: default
-    scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Flutter build ipa and automatic versioning
-        script: |
-          flutter build ipa --release \
-          --build-name=1.0.0 \
-          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1)) \
-          --export-options-plist=/Users/builder/export_options.plist
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-    publishing:
-      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
-      email:
-        recipients:
-          - user_1@example.com
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      slack:
-        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: "#ce-builds"
-        notify_on_build_start: true # To receive a notification when a build starts
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        
-        submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
-  
+
+  flutter-ios:
+      name: Flutter iOS Workflow
+      instance_type: mac_mini_m2
+      max_build_duration: 120
+      working_directory: flutter/flutter-android-and-ios-yaml-demo-project
+      integrations:
+        app_store_connect: codemagic_samples
+      environment:
+        ios_signing:
+          distribution_type: app_store
+          bundle_identifier: io.codemagic.flutter
+        flutter: stable
+        xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+        cocoapods: default
+      scripts:
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Get Flutter packages
+          script: |
+            flutter packages pub get
+        - name: Install pods
+          script: |
+            find . -name "Podfile" -execdir pod install \;
+        - name: Build versioning
+          script: |
+              cd ./ios
+              agvtool new-version -all $(($BUILD_NUMBER))
+              agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
+        - name: Flutter build ipa and automatic versioning
+          script: |
+            flutter build ipa --release \
+              --export-options-plist=/Users/builder/export_options.plist
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - flutter_drive.log
+      publishing:
+        # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+        email:
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true # To receive a notification when a build succeeds
+            failure: false # To not receive a notification when a build fails
+        slack:
+          # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+          channel: "#builds"
+          notify_on_build_start: true # To receive a notification when a build starts
+          notify:
+            success: true # To receive a notification when a build succeeds
+            failure: false # To not receive a notification when a build fails
+        app_store_connect:
+          auth: integration
+          
+          # Configuration related to TestFlight (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_testflight: true
+          beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
+            - group name 1
+            - group name 2
+
+          # Configuration related to App Store (optional)
+          # Note: This action is performed during post-processing.
+          submit_to_app_store: false
+
+
   flutter-macOS-workflow:
     name: Flutter macOS Workflow
     instance_type: mac_mini_m2
