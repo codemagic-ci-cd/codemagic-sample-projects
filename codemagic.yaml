@@ -311,11 +311,11 @@ workflows:
       max_build_duration: 120
       working_directory: flutter/flutter-android-and-ios-yaml-demo-project
       integrations:
-        app_store_connect: codemagic_samples2
+        app_store_connect: codemagic_samples
       environment:
         ios_signing:
           distribution_type: app_store
-          bundle_identifier: io.codemagic.flutter
+          bundle_identifier: io.codemagic.cmflutteryaml
         flutter: stable
         xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
         cocoapods: default
