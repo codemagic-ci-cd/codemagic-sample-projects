@@ -19,19 +19,21 @@ void main() {
   });
 
   testWidgets(
-    'Text is entered into field and Alert is shown inclucing name entered',
+    'Text is entered into field and Alert is shown including name entered',
     (WidgetTester tester) async {
       await tester.pumpWidget(MyApp());
 
-      final inputText = 'Kevin';
-      await tester.enterText(find.byKey(Key('text-field')), inputText);
+      const inputText = 'Kevin';
+
+      await tester.enterText(find.byKey(const Key('text-field')), inputText);
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 10));
 
       expect(find.text('Hey, Kevin!'), findsOneWidget);
 
-      sleep(Duration(seconds: 5));
+      await tester.pump(const Duration(seconds: 5));
 
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle();
