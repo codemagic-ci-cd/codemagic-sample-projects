@@ -877,10 +877,10 @@ workflows:
         android_signing:
           - codemagic_keystore
         groups:
-          - google_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+          - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
         vars:
-          PACKAGE_NAME: "io.codemagic.cmflutteryaml" # <-- Put your package name here e.g. com.domain.myapp
-        node: v22.13.1
+          PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here
+          node: v22.13.1
       scripts:
           - name: Install npm dependencies
             script: |
