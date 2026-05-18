@@ -103,7 +103,7 @@ workflows:
 
             # Configuration related to TestFlight (optional)
             # Note: This action is performed during post-processing.
-            submit_to_testflight: true
+            submit_to_testflight: false
             beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
               - group name 1
               - group name 2
