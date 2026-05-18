@@ -821,7 +821,10 @@ workflows:
           npx cap sync # <- update native dependencies and copy web assets to native project
       - name: Build Android release
         script: |
-          cd android
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/android
+
+          chmod +x gradlew
+          
           ./gradlew bundleRelease \
             -PversionCode=$BUILD_NUMBER \
             -PversionName=1.0.$BUILD_NUMBER
