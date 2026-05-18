@@ -36,10 +36,10 @@ Example of minimal `app.json` file. Add the `android` and/or `ios` keys:
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "io.codemagic.sample.reactnative"
+      "bundleIdentifier": "io.codemagic.cmflutteryaml"
     },
     "android": {
-      "package": "io.codemagic.sample.reactnative"
+      "package": "io.codemagic.cmflutteryaml"
     }
   }
 }
@@ -55,7 +55,7 @@ workflows:
       groups:
         # ...
       vars:
-        PACKAGE_NAME: "io.codemagic.sample.reactnative"
+        PACKAGE_NAME: "io.codemagic.cmflutteryaml"
 ```
 
 ## Expo specific build steps

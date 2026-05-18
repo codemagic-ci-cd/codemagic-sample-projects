@@ -8,7 +8,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.codemagic.sample.reactnative
+        bundle_identifier: io.codemagic.cmflutteryaml
       groups:
         - sentry_credentials #  <-- (Includes Sentry access token, Organization and Project names)
       vars:
