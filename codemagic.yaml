@@ -821,7 +821,7 @@ workflows:
           npx cap sync # <- update native dependencies and copy web assets to native project
       - name: Build Android release
         script: |
-          cd $CM_BUILD_DIR/android
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/android
           ./gradlew bundleRelease \
             -PversionCode=$BUILD_NUMBER \
             -PversionName=1.0.$BUILD_NUMBER
@@ -829,6 +829,6 @@ workflows:
       - android/app/build/outputs/**/*.aab
     publishing:
       google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         submit_as_draft: true
