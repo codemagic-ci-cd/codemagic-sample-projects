@@ -210,7 +210,7 @@ environment:
   groups:
     # ...
   vars:
-    BUNDLE_ID: "io.codemagic.cmflutteryaml"
+    BUNDLE_ID: "io.codemagic.sample.reactnative"
     XCODE_WORKSPACE: "CodemagicSample.xcworkspace" # <-- Name of your Xcode workspace
     XCODE_SCHEME: "CodemagicSample" # <-- Name of your Xcode scheme
 scripts:
