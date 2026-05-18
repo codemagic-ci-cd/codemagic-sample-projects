@@ -22,7 +22,7 @@ workflows:
                 npm install
             - name: Set Android SDK location
               script: |
-                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"            
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/react-native-demo-project/android/local.properties"            
             - name: Build Android release
               script: |
                 LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
@@ -82,7 +82,7 @@ workflows:
             - name: Build ipa for distribution
               script: |
                 xcode-project build-ipa \
-                  --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                  --workspace "$CM_BUILD_DIR/react-native/react-native-demo-project/ios/$XCODE_WORKSPACE" \
                   --scheme "$XCODE_SCHEME" \
                   --export-options-plist=/Users/builder/export_options.plist
         artifacts:
