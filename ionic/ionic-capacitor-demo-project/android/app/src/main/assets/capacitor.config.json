@@ -1,6 +1,6 @@
 {
-	"appId": "io.codemagic.dtrdic8",
-	"appName": "ionictest4",
+	"appId": "com.codemagic.ioniccapacitor",
+	"appName": "IonicCapacitor",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }
