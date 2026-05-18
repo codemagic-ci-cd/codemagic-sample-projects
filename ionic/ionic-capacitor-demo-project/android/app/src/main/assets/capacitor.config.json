@@ -1,12 +1,6 @@
 {
-  "appId": "com.codemagicionic",
-  "appName": "codemagicioniccapacitor",
-  "bundledWebRuntime": true,
-  "npmClient": "npm",
-  "webDir": "www",
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
-  }
+	"appId": "io.codemagic.dtrdic8",
+	"appName": "ionictest4",
+	"webDir": "dist",
+	"bundledWebRuntime": false
 }

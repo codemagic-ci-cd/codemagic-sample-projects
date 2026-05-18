@@ -799,22 +799,13 @@ workflows:
     working_directory: ionic/ionic-capacitor-demo-project
     environment:
       android_signing:
-        - keystore_reference
+        - codemagic_keystore
       groups:
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
       vars:
         PACKAGE_NAME: "io.codemagic.ionicsample"
         GOOGLE_PLAY_TRACK: alpha
       node: latest
-    triggering:
-      events:
-        - push
-        - tag
-        - pull_request
-      branch_patterns:
-        - pattern: develop
-          include: true
-          source: true
     scripts:
       - name: Set Android SDK location
         script: |
@@ -830,30 +821,13 @@ workflows:
           npx cap sync # <- update native dependencies and copy web assets to native project
       - name: Build Android release
         script: |
-          LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
-          if [ -z LATEST_GOOGLE_PLAY_BUILD_NUMBER ]; then
-            # fallback in case no build number was found from Google Play.
-            # Alternatively, you can `exit 1` to fail the build
-            # BUILD_NUMBER is a Codemagic built-in variable tracking the number
-            # of times this workflow has been built
-            UPDATED_BUILD_NUMBER=$BUILD_NUMBER
-          else
-            UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
-          fi
           cd $CM_BUILD_DIR/android
           ./gradlew bundleRelease \
-            -PversionCode=$UPDATED_BUILD_NUMBER \
-            -PversionName=1.0.$UPDATED_BUILD_NUMBER
+            -PversionCode=$BUILD_NUMBER \
+            -PversionName=1.0.$BUILD_NUMBER
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/**/*.aab
     publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: false
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal

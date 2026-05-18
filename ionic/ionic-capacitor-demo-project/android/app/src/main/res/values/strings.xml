@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">codemagicionic</string>
-    <string name="title_activity_main">codemagicionic</string>
-    <string name="package_name">com.codemagicioniccapacitor</string>
-    <string name="custom_url_scheme">com.codemagicioniccapacitor</string>
+    <string name="app_name">ionictest4</string>
+    <string name="title_activity_main">ionictest4</string>
+    <string name="package_name">io.codemagic.dtrdic8</string>
+    <string name="custom_url_scheme">io.codemagic.dtrdic8</string>
 </resources>
