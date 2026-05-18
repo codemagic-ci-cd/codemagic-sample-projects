@@ -1,22 +1,62 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.appdistribution'
+
+
+// used only for local testing
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+// // get version code from the specified property argument `-PversionCode` during the build call
+// def getMyVersionCode = { ->
+//     return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
+// }
+
+// // get version name from the specified property argument `-PversionName` during the build call
+// def getMyVersionName = { ->
+//     return project.hasProperty('versionName') ? versionName : "1.0"
+// }
+
+   def latestGooglePlayBuildNumber = Integer.valueOf(System.env.LATEST_GOOGLE_PLAY_BUILD_NUMBER ?: System.env.BUILD_NUMBER ?: 0)
+
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 34 //rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.codemagic.ioniccapacitor"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 34 //rootProject.ext.minSdkVersion
+        targetSdkVersion 34 //rootProject.ext.targetSdkVersion
+        versionCode latestGooglePlayBuildNumber + 1
+        versionName "1.0." + String.valueOf(latestGooglePlayBuildNumber + 1)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+
+    }
+    signingConfigs {
+
+        release {
+              if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                  storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                  storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                  keyAlias System.getenv()["CM_KEY_ALIAS"]
+                  keyPassword System.getenv()["CM_KEY_PASSWORD"]
+              } else {
+                  keyAlias keystoreProperties['keyAlias']
+                  keyPassword keystoreProperties['keyPassword']
+                  storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                  storePassword keystoreProperties['storePassword']
+                }
         }
     }
+
     buildTypes {
+
         release {
+            firebaseAppDistribution {
+                serviceCredentialsFile=System.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        }
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
