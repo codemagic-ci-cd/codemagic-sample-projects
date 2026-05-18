@@ -801,7 +801,7 @@ workflows:
       android_signing:
         - codemagic_keystore
       groups:
-        - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
       vars:
         PACKAGE_NAME: "io.codemagic.ionicsample"
         GOOGLE_PLAY_TRACK: alpha
