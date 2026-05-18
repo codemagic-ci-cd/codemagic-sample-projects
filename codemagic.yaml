@@ -779,7 +779,7 @@ workflows:
           agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
       - name: Build ipa for distribution
         script: |
-          cd $CM_BUILD_DIR/ios/App
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
           xcode-project build-ipa \
             --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME"
