@@ -774,7 +774,7 @@ workflows:
           xcode-project use-profiles
       - name: Increment build number
         script: |
-          cd $CM_BUILD_DIR/ios/App
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
           agvtool new-version -all $(($BUILD_NUMBER))
           agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
       - name: Build ipa for distribution
