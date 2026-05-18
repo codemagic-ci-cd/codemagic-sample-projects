@@ -10,7 +10,7 @@ workflows:
         instance_type: mac_mini_m2
         environment:
           android_signing:
-            - keystore_reference
+            - codemagic_keystore
           groups:
             - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
           vars:
