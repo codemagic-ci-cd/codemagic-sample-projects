@@ -10,20 +10,20 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "react": "16.13.1",
-    "react-native": "0.63.3"
+    "react": "17.0.2",
+    "react-native": "0.66.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/runtime": "^7.8.4",
-    "@react-native-community/eslint-config": "^1.1.0",
     "babel-jest": "^25.1.0",
     "detox": "^17.8.3",
     "eslint": "^6.5.1",
     "jest": "^25.5.4",
     "jest-circus": "^26.5.2",
-    "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.13.1"
+    "metro-react-native-babel-preset": "^0.66.2",
+    "@react-native-community/eslint-config": "^3.0.0",
+    "react-test-renderer": "17.0.2"
   },
   "jest": {
     "preset": "react-native"
