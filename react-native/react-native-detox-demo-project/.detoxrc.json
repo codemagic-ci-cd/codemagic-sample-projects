@@ -29,7 +29,7 @@
     },
     "ios.sim.release": {
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/detoxer.app",
-      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/detoxer.xcworkspace -UseNewBuildSystem=YES -scheme detoxer -configuration Release -sdk iphonesimulator -derivedDataPath ios/build ARCHS='arm64' EXCLUDED_ARCHS='x86_64'",
+      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/detoxer.xcworkspace -scheme detoxer -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
       "type": "ios.simulator",
       "device": {
         "type": "iPhone 17"

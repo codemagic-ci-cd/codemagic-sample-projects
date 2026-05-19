@@ -882,6 +882,10 @@ workflows:
         - name: Set up code signing settings on Xcode project
           script: |
             xcode-project use-profiles
+        - name: Fix React Native Yoga build for Xcode 26
+          script: |
+            export CFLAGS="-Wno-error=deprecated-literal-operator"
+            export CXXFLAGS="-Wno-error=deprecated-literal-operator"
         - name: Build with Detox
           script: |
             detox build -c ios.sim.release -l verbose
