@@ -835,3 +835,67 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         submit_as_draft: true
+
+  detox-react-native-ios-workflow:
+    name: Detox React Native iOS Workflow
+    instance_type: mac_mini_m2
+    working_directory: react-native/react-native-detox-demo-project
+    integrations:
+          app_store_connect: codemagic_samples2 
+    environment:
+        groups:
+            - appstore_credentials
+        vars:
+            XCODE_WORKSPACE: "detoxer.xcworkspace" # <-- Put the name of your Xcode workspace here
+            XCODE_SCHEME: "detoxer" # <-- Put the name of your Xcode scheme here
+        xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+        cocoapods: default   
+    scripts:
+        - name: Install npm dependencies
+          script: |
+            npm install
+        - name: Install detox dependencies
+          script: |
+            brew tap wix/brew
+            brew install applesimutils
+        - name: Install detox-cli
+          script: |
+            npm install -g detox-cli
+        - name: Install CocoaPods dependencies
+          script: |
+            cd ios && pod install
+        - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          script: |
+            keychain initialize
+        - name: Fetch signing files
+          script: |
+            # update your bundle id below!
+            app-store-connect fetch-signing-files "io.codemagic.detoxer" --type IOS_APP_STORE --create 
+        - name: Use system default keychain
+          script: |
+            keychain add-certificates
+        - name: Increment build number
+          script: |
+            cd $CM_BUILD_DIR/react-native/react-native-detox-demo-project/ios
+
+            agvtool new-version -all $(($BUILD_NUMBER))
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Build with Detox
+          script: |
+            detox build -c ios.sim.release -l verbose
+        - name: Test with Detox
+          script: |
+            detox test -c ios.sim.release -l verbose
+        - name: Build ipa for distribution
+          script: |
+            xcode-project build-ipa --workspace "$CM_BUILD_DIR/react-native/react-native-detox-demo-project/ios/$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+    artifacts:
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM 
+    publishing:
+      app_store_connect:
+        auth: integration
