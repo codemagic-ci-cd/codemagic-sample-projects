@@ -8,7 +8,7 @@
           "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
         "device": {
-          "avdName": "emulator"
+          "avdName": "emulator-36"
         }
     },
     "android.emu.release": {
@@ -16,7 +16,7 @@
         "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
         "device": {
-          "avdName": "emulator"
+          "avdName": "emulator-36"
         }
     },
     "ios.sim.debug": {
@@ -24,15 +24,15 @@
       "build": "xcodebuild -workspace ios/detoxer.xcworkspace -scheme detoxer -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
       "type": "ios.simulator",
       "device": {
-        "type": "iPhone 11"
+        "type": "iPhone 17"
       }
     },
     "ios.sim.release": {
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/detoxer.app",
-      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/detoxer.xcworkspace -UseNewBuildSystem=YES -scheme detoxer -configuration Release -sdk iphonesimulator -derivedDataPath ios/build",
+      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/detoxer.xcworkspace -UseNewBuildSystem=YES -scheme detoxer -configuration Release -sdk iphonesimulator -derivedDataPath ios/build ARCHS='arm64' EXCLUDED_ARCHS='x86_64'",
       "type": "ios.simulator",
       "device": {
-        "type": "iPhone 11"
+        "type": "iPhone 17"
       }
     }
 }
