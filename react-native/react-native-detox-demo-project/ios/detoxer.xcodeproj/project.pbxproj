@@ -623,7 +623,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/detoxer.app/detoxer";
 			};
@@ -643,7 +643,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/detoxer.app/detoxer";
 			};
@@ -702,7 +702,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = detoxer;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -755,7 +755,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = detoxer;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -782,7 +782,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -810,7 +810,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -837,7 +837,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/detoxer-tvOS.app/detoxer-tvOS";
@@ -864,7 +864,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detoxer;
+				PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.detox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/detoxer-tvOS.app/detoxer-tvOS";

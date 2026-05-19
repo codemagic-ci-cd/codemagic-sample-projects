@@ -46,7 +46,7 @@ workflows:
             - name: Fetch signing files
               script: |
                 # update your bundle id below!
-                app-store-connect fetch-signing-files "io.codemagic.detoxer" --type IOS_APP_STORE --create 
+                app-store-connect fetch-signing-files "io.codemagic.detox" --type IOS_APP_STORE --create 
             - name: Use system default keychain
               script: |
                 keychain add-certificates
