@@ -892,8 +892,7 @@ workflows:
           script: |
             xcode-project build-ipa \
             --workspace "$CM_BUILD_DIR/react-native/ReactNativeDetox/ios/$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME" \
-            --ar
+            --scheme "$XCODE_SCHEME" 
     artifacts:
         - build/ios/ipa/*.ipa
         - /tmp/xcodebuild_logs/*.log
