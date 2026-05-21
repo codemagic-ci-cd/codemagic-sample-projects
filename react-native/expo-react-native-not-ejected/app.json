@@ -18,14 +18,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "io.codemagic.expoapp"
+      "bundleIdentifier": "io.codemagic.cmflutteryaml"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "io.codemagic.expoapp"
+      "package": "io.codemagic.flutter"
     },
     "web": {
       "favicon": "./assets/favicon.png"
