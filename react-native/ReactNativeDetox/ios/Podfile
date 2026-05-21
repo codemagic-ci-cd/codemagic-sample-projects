@@ -1,0 +1,58 @@
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, '15.1'
+
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+# 🛑 FIXED: Changed from 'detoxer' to 'ReactNativeDetox'
+target 'ReactNativeDetox' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  # 🛑 FIXED: Changed from 'detoxerTests' to 'ReactNativeDetoxTests'
+  target 'ReactNativeDetoxTests' do
+    inherit! :complete
+  end
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+
+# 🔧 Detox / Xcode fixes
+    installer.pods_project.targets.each do |t|
+      t.build_configurations.each do |config|
+        # Existing architecture workaround
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+        
+        # 🪓 Global Yoga Fix: Suppress literal operator whitespace errors
+        if t.name.downcase.include?('yoga')
+          ['OTHER_CFLAGS', 'OTHER_CPLUSPLUSFLAGS'].each do |key|
+            config.build_settings[key] ||= ['$(inherited)']
+            if config.build_settings[key].is_a?(Array)
+              config.build_settings[key] << '-Wno-error=deprecated-literal-operator'
+              config.build_settings[key] << '-Wno-deprecated-literal-operator'
+            else
+              config.build_settings[key] = "#{config.build_settings[key]} -Wno-error=deprecated-literal-operator -Wno-deprecated-literal-operator"
+            end
+          end
+        end
+      end
+    end
+end
