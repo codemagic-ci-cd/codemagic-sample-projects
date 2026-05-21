@@ -14,7 +14,6 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-# 🛑 FIXED: Changed from 'detoxer' to 'ReactNativeDetox'
 target 'ReactNativeDetox' do
   config = use_native_modules!
 
@@ -23,7 +22,6 @@ target 'ReactNativeDetox' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # 🛑 FIXED: Changed from 'detoxerTests' to 'ReactNativeDetoxTests'
   target 'ReactNativeDetoxTests' do
     inherit! :complete
   end
@@ -35,13 +33,11 @@ target 'ReactNativeDetox' do
       :mac_catalyst_enabled => false
     )
 
-# 🔧 Detox / Xcode fixes
+    # 🔧 Detox / Xcode fixes
     installer.pods_project.targets.each do |t|
       t.build_configurations.each do |config|
-        # Existing architecture workaround
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
         
-        # 🪓 Global Yoga Fix: Suppress literal operator whitespace errors
         if t.name.downcase.include?('yoga')
           ['OTHER_CFLAGS', 'OTHER_CPLUSPLUSFLAGS'].each do |key|
             config.build_settings[key] ||= ['$(inherited)']
@@ -55,4 +51,5 @@ target 'ReactNativeDetox' do
         end
       end
     end
-end
+  end 
+end 
