@@ -6,7 +6,7 @@ workflows:
   expo-react-native-android:
       name: Expo React Native Android
       max_build_duration: 120
-      working_directory: react-native/expo-react-native-demo-project
+      working_directory: react-native/expo-react-native-not-ejected
       instance_type: mac_mini_m2
       environment:
         android_signing:
@@ -26,7 +26,7 @@ workflows:
             mv ./support-files/build.gradle android/app
         - name: Set Android SDK location
           script: |
-            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-demo-project/android/local.properties"          
+            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/android/local.properties"          
         - name: Build Android release
           script: |
             LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
@@ -56,7 +56,7 @@ workflows:
   expo-react-native-ios:
       name: Expo React Native iOS
       max_build_duration: 120
-      working_directory: react-native/expo-react-native-demo-project
+      working_directory: react-native/expo-react-native-not-ejected
       instance_type: mac_mini_m2
       integrations:
         app_store_connect: codemagic_samples2
@@ -80,7 +80,7 @@ workflows:
             npx expo prebuild --platform ios
         - name: Set Info.plist values
           script: |
-            PLIST=$FCI_BUILD_DIR/react-native/expo-react-native-demo-project/ios/$XCODE_SCHEME/Info.plist
+            PLIST=$FCI_BUILD_DIR/react-native/expo-react-native-not-ejected/ios/$XCODE_SCHEME/Info.plist
             PLIST_BUDDY=/usr/libexec/PlistBuddy
             $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
         - name: Install CocoaPods dependencies
@@ -92,7 +92,7 @@ workflows:
         - name: Build ipa for distribution
           script: |
             xcode-project build-ipa \
-              --workspace "$CM_BUILD_DIR/react-native/expo-react-native-demo-project/ios/$XCODE_WORKSPACE" \
+              --workspace "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/ios/$XCODE_WORKSPACE" \
               --scheme "$XCODE_SCHEME"
       artifacts:
           - build/ios/ipa/*.ipa
