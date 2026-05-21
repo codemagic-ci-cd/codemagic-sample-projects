@@ -27,7 +27,7 @@ workflows:
             mv ./support-files/build.gradle android/app
         - name: Set Android SDK location
           script: |
-            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"          
+            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-demo-project/android/local.properties"          
         - name: Build Android release
           script: |
             LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
@@ -82,7 +82,7 @@ workflows:
             expo eject
         - name: Set Info.plist values
           script: |
-            PLIST=$FCI_BUILD_DIR/$XCODE_SCHEME/Info.plist
+            PLIST=$FCI_BUILD_DIR/react-native/expo-react-native-demo-project/ios/$XCODE_SCHEME/Info.plist
             PLIST_BUDDY=/usr/libexec/PlistBuddy
             $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
         - name: Install CocoaPods dependencies
@@ -94,7 +94,7 @@ workflows:
         - name: Build ipa for distribution
           script: |
             xcode-project build-ipa \
-              --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+              --workspace "$CM_BUILD_DIR/react-native/expo-react-native-demo-project/ios/$XCODE_WORKSPACE" \
               --scheme "$XCODE_SCHEME"
       artifacts:
           - build/ios/ipa/*.ipa
