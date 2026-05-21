@@ -19,12 +19,12 @@
     "ios.debug": {
       "type": "ios.app",
       "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/ReactNativeDetox.app",
-      "build": "xcodebuild -workspace ios/ReactNativeDetox.xcworkspace -scheme ReactNativeDetox -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -destination 'platform=iOS Simulator,name=iPhone 17' ONLY_ACTIVE_ARCH=YES"
+      "build": "xcodebuild -workspace ios/ReactNativeDetox.xcworkspace -scheme ReactNativeDetox -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -destination 'generic/platform=iOS Simulator' ONLY_ACTIVE_ARCH=YES"
     },
     "ios.release": {
       "type": "ios.app",
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/ReactNativeDetox.app",
-      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ReactNativeDetox.xcworkspace -scheme ReactNativeDetox -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -destination 'platform=iOS Simulator,name=iPhone 17' ONLY_ACTIVE_ARCH=YES"
+      "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ReactNativeDetox.xcworkspace -scheme ReactNativeDetox -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -destination 'generic/platform=iOS Simulator' ONLY_ACTIVE_ARCH=YES"
     }
   },
   "devices": {
