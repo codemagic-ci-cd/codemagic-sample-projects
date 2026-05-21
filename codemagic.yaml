@@ -20,8 +20,7 @@ workflows:
         - name: Install dependencies and Expo CLI, and eject app
           script: |
             yarn install
-            yarn global add expo-cli
-            expo eject
+            npx expo prebuild --platform android
         - name: Set up app/build.gradle
           script: |
             mv ./support-files/build.gradle android/app
@@ -78,8 +77,7 @@ workflows:
         - name: Install dependencies, Expo CLI and eject app
           script: |
             yarn install
-            yarn global add expo-cli
-            expo eject
+            npx expo prebuild --platform ios
         - name: Set Info.plist values
           script: |
             PLIST=$FCI_BUILD_DIR/react-native/expo-react-native-demo-project/ios/$XCODE_SCHEME/Info.plist
