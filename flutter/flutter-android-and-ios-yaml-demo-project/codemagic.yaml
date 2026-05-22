@@ -1,9 +1,8 @@
 workflows:
   flutter-android:
     name: Flutter Android 
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m2 # Other available machine types: mac_mini_m4, mac_studio_m4_max, linux_x2, linux_x4, windows_x2
     max_build_duration: 120
-    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
     environment:
       android_signing:
         - codemagic_keystore
@@ -42,18 +41,17 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: $GOOGLE_PLAY_TRACK
         submit_as_draft: true
-  ios-workflow:
-    name: iOS Workflow
-    instance_type: mac_mini_m2
+
+  flutter-ios:
+    name: Flutter iOS Workflow
+    instance_type: mac_mini_m2 # Other available machine types: mac_mini_m4, mac_studio_m4_max
     max_build_duration: 120
     integrations:
-      app_store_connect: codemagic
+      app_store_connect: codemagic_samples
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.codemagic.flutteryaml
-      vars:
-        APP_ID: 1111111111 # <-- Put your APP ID here
+        bundle_identifier: io.codemagic.flutter
       flutter: stable
       xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
@@ -67,19 +65,14 @@ workflows:
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Flutter analyze
+      - name: Build versioning
         script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
+            cd ./ios
+            agvtool new-version -all $(($BUILD_NUMBER))
+            agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
       - name: Flutter build ipa and automatic versioning
         script: |
-          # See the following link about getting the latest App Store or TestFlight version - https://docs.codemagic.io/knowledge-codemagic/build-versioning/#app-store-or-testflight-latest-build-number
           flutter build ipa --release \
-            --build-name=1.0.0 \
-            --build-number=$(($(app-store-connect get-latest-testflight-build-number --platform=IOS "$APP_ID") + 1)) \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -142,6 +135,3 @@ workflows:
       email:
         recipients:
           - user_1@example.com
-
-
-
