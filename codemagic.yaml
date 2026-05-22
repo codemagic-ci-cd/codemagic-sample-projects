@@ -88,7 +88,7 @@ workflows:
           - name: Build ipa for distribution
             script: |
               xcode-project build-ipa \
-                --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                --workspace "$CM_BUILD_DIR/eact-native/expo-react-native-not-ejected/ios/$XCODE_WORKSPACE" \
                 --scheme "$XCODE_SCHEME" \
                 --export-options-plist=/Users/builder/export_options.plist
       artifacts:
