@@ -10,7 +10,7 @@ workflows:
           android_signing:
             - keystore_reference
           groups:
-            - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
+            - google_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
           vars:
             PACKAGE_NAME: "io.codemagic.sample.reactnative" # <-- Put your package name here e.g. com.domain.myapp
           node: v22.13.1
@@ -52,7 +52,7 @@ workflows:
         max_build_duration: 120
         instance_type: mac_mini_m2 # Instance types mac_mini_m4, linux_x2, linux_x4, and windows_x2 are available for teams and users with billing enabled.
         integrations:
-          app_store_connect: codemagic
+          app_store_connect: Codemagic
         environment:
           ios_signing:
             distribution_type: app_store
@@ -84,7 +84,8 @@ workflows:
               script: |
                 xcode-project build-ipa \
                   --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
-                  --scheme "$XCODE_SCHEME"
+                  --scheme "$XCODE_SCHEME" \
+                  --export-options-plist=/Users/builder/export_options.plist
         artifacts:
             - build/ios/ipa/*.ipa
             - /tmp/xcodebuild_logs/*.log
