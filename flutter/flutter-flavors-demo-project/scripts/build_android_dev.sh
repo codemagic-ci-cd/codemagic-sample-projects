@@ -5,7 +5,7 @@
 
 curl -H "Content-Type: application/json" -H "x-auth-token: ${CM_API_KEY}" \
 --data '{
-    "appId": "6560a19c5141c1ce6d3a8deb",
+    "appId": "69e60691a9b343d841eeaa77",
     "workflowId": "android-aab-release",
     "branch": "main",
     "environment": {

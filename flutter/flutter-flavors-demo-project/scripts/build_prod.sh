@@ -4,7 +4,7 @@
 
 curl -H "Content-Type: application/json" -H "x-auth-token: ${CM_API_KEY}" \
 --data '{
-    "appId": "60b8a0dd639c3e293b8bc002",
+    "appId": "69e60691a9b343d841eeaa77",
     "workflowId": "ios-release",
     "branch": "main",
     "environment": {

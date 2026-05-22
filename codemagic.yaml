@@ -468,11 +468,18 @@ workflows:
     environment:
       groups:
         - codemagic_api # <-- (Includes CM_API_KEY)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "flutter-update"
+          include: true
+          source: true
     scripts:
       - name: Trigger iOS dev build via API
         script: |
           chmod +x scripts/build_dev.sh
-          ./scripts/build_dev.sh
+          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_dev.sh | bash
   flutter-flavors-ios-prod:
     name: iOS Flutter Flavors Prod
     instance_type: mac_mini_m2
@@ -481,11 +488,18 @@ workflows:
     environment:
       groups:
         - codemagic_api # <-- (Includes CM_API_KEY)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "flutter-update"
+          include: true
+          source: true
     scripts:
       - name: Trigger iOS prod build via API
         script: |
           chmod +x scripts/build_prod.sh
-          ./scripts/build_prod.sh
+          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_prod.sh | bash
   flutter-flavors-android-dev:
     name: Android Flutter Flavors Dev
     instance_type: mac_mini_m2
@@ -494,11 +508,18 @@ workflows:
     environment:
       groups:
         - codemagic_api # <-- (Includes CM_API_KEY)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "flutter-update"
+          include: true
+          source: true
     scripts:
       - name: Trigger Android dev build via API
         script: |
           chmod +x scripts/build_android_dev.sh
-          ./scripts/build_android_dev.sh
+          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_android_dev.sh | bash
   flutter-flavors-android-prod:
     name: Android Flutter Flavors Prod
     instance_type: mac_mini_m2
@@ -507,11 +528,18 @@ workflows:
     environment:
       groups:
         - codemagic_api # <-- (Includes CM_API_KEY)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "flutter-update"
+          include: true
+          source: true
     scripts:
       - name: Trigger Android prod build via API
         script: |
           chmod +x scripts/build_android_prod.sh
-          ./scripts/build_android_prod.sh
+          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_android_prod.sh | bash
   react-native-ios:
     name: React Native iOS
     max_build_duration: 120
