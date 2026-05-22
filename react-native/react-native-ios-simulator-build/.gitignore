@@ -34,6 +34,14 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
+.bundle/
+.bundle/config
+vendor/
+
+# Xcode user and workspace files
+ios/.xcode.env
+ios/.xcode.env.local
+ios/ios_simulator_build.xcworkspace/
 
 # BUCK
 buck-out/

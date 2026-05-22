@@ -130,6 +130,8 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    namespace "com.ios_simulator_build"
+
     defaultConfig {
         applicationId "com.ios_simulator_build"
         minSdkVersion rootProject.ext.minSdkVersion
