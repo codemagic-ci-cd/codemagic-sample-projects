@@ -2,13 +2,13 @@ workflows:
     react-native-ios:
         name: React Native iOS
         max_build_duration: 120
-        instance_type: mac_pro
+        instance_type: mac_mini_m2
         environment:
             vars:
                 XCODE_WORKSPACE: "ios/ios_simulator_build.xcworkspace" # <-- Put the name of your Xcode workspace here
                 XCODE_SCHEME: "ios_simulator_build" # <-- Put the name of your Xcode scheme here
-            node: v16.11.1
-            xcode: 13.0
+            node: v22.13.1
+            xcode: latest
             cocoapods: default
         scripts:
             - name: Install npm dependencies
@@ -19,7 +19,7 @@ workflows:
                 cd ios && pod install
             - name: Build ipa for distribution
               script: |
-                xcodebuild build -workspace "$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12 Pro,OS=14.5' -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO 
+                xcodebuild build -workspace "$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.3.1' -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO 
         artifacts:
             - /tmp/xcodebuild_logs/*.log
             - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
