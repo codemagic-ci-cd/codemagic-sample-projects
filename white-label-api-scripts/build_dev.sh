@@ -5,7 +5,7 @@
 curl -H "Content-Type: application/json" -H "x-auth-token: ${CM_API_KEY}" \
 --data '{
     "appId": "60b8a0dd639c3e293b8bc002", 
-    "workflowId": "ios-flutter-flavors",
+    "workflowId": "flutter-flavors-ios-release",
     "branch": "update/flutter-flavors", 
     "environment": { 
         "variables": { 

@@ -5,15 +5,15 @@ workflows:
     max_build_duration: 120
     integrations:
       app_store_connect: codemagic
-    environment:
+    environment:   
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.flutter.app.FlutterApplication
+        bundle_identifier: io.codemagic.flutterflavors # <-- Put your bundle identifier here
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         APP_STORE_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         XCODE_SCHEME: _   # <-- Put Your Xcode scheme here
-        BUNDLE_ID: io.flutter.app.FlutterApplication
+        BUNDLE_ID: io.codemagic.flutterflavors # <-- Put your bundle identifier here
         ENTRY_POINT: _    # <-- Put Your Entry point to your flutter application here
       flutter: stable
       xcode: latest
@@ -80,10 +80,10 @@ workflows:
       groups:
         - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS)
       vars:
-        PACKAGE_NAME: io.nevercode.flutterapp.prod
+        PACKAGE_NAME: io.codemagic.flutterflavors.prod # <-- Put your package name here
         GOOGLE_PLAY_TRACK: internal
-        ANDROID_FLAVOR: prod
-        ENTRY_POINT: lib/main_prod.dart
+        ANDROID_FLAVOR: prod # <-- Put your Android flavor here
+        ENTRY_POINT: lib/main_prod.dart # <-- Put your entry point here
       flutter: stable
     triggering:
       events:

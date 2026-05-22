@@ -467,70 +467,12 @@ workflows:
     working_directory: flutter/flutter-flavors-demo-project
     environment:
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
-      vars:
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
-        # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
-        APP_STORE_APP_ID: 1589804869 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-        XCODE_CONFIG: Release-dev
-        XCODE_SCHEME: dev
-        BUNDLE_ID: io.codemagic.flutterflavors.dev
-        ENTRY_POINT: lib/main_dev.dart
-      flutter: stable
-      xcode: 14.3
-      cocoapods: default
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "main"
-          include: true
-          source: true
+        - codemagic_api # <-- (Includes CM_API_KEY)
     scripts:
-      - name: Get Flutter Packages
+      - name: Trigger iOS dev build via API
         script: |
-          flutter packages pub get
-      - name: Pod install
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Add certs to keychain
-        script: |
-          keychain add-certificates
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Flutter build ipa and automatic versioning
-        script: |
-          flutter build ipa --release \
-          --build-name=1.0.0 \
-          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
-          --export-options-plist=/Users/builder/export_options.plist \
-          --flavor="$XCODE_SCHEME" \
-          -t "$ENTRY_POINT"
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: true
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+          chmod +x scripts/build_dev.sh
+          ./scripts/build_dev.sh
   flutter-flavors-ios-prod:
     name: iOS Flutter Flavors Prod
     instance_type: mac_mini_m2
@@ -538,70 +480,38 @@ workflows:
     working_directory: flutter/flutter-flavors-demo-project
     environment:
       groups:
-        # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
-        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
-      vars:
-        XCODE_WORKSPACE: "ios/Runner.xcworkspace" # <-- Put your encrypted Certificate Private Key here
-        # Environment variable values provided when triggering build with Codemagic API. Alternatively add the required values below.
-        APP_STORE_APP_ID: 1589804841 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-        XCODE_CONFIG: Release-prod
-        XCODE_SCHEME: prod
-        BUNDLE_ID: io.codemagic.flutterflavors.prod
-        ENTRY_POINT: lib/main_prod.dart
-      flutter: stable
-      xcode: 14.3
-      cocoapods: default
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "main"
-          include: true
-          source: true
+        - codemagic_api # <-- (Includes CM_API_KEY)
     scripts:
-      - name: Get Flutter Packages
+      - name: Trigger iOS prod build via API
         script: |
-          flutter packages pub get
-      - name: Pod install
+          chmod +x scripts/build_prod.sh
+          ./scripts/build_prod.sh
+  flutter-flavors-android-dev:
+    name: Android Flutter Flavors Dev
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    environment:
+      groups:
+        - codemagic_api # <-- (Includes CM_API_KEY)
+    scripts:
+      - name: Trigger Android dev build via API
         script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
+          chmod +x scripts/build_android_dev.sh
+          ./scripts/build_android_dev.sh
+  flutter-flavors-android-prod:
+    name: Android Flutter Flavors Prod
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    environment:
+      groups:
+        - codemagic_api # <-- (Includes CM_API_KEY)
+    scripts:
+      - name: Trigger Android prod build via API
         script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Add certs to keychain
-        script: |
-          keychain add-certificates
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Flutter build ipa and automatic versioning
-        script: |
-          flutter build ipa --release \
-          --build-name=1.0.0 \
-          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1)) \
-          --export-options-plist=/Users/builder/export_options.plist \
-          --flavor="$XCODE_SCHEME" \
-          -t "$ENTRY_POINT"
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: true
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
+          chmod +x scripts/build_android_prod.sh
+          ./scripts/build_android_prod.sh
   react-native-ios:
     name: React Native iOS
     max_build_duration: 120
@@ -894,18 +804,18 @@ workflows:
               --timeout 3m  
       artifacts:
         - "**/ios_tests.zip"
-    publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: true
+      publishing:
+        email:
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true
+            failure: false
+        google_play:
+          credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+          track: internal
+          submit_as_draft: true
 
   ionic-capacitor-ios-workflow:
     name: Ionic Capacitor iOS Workflow
