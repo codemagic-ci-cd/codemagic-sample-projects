@@ -1,96 +1,56 @@
-# React Native sample project using Expo without ejecting
+# Welcome to your Expo app 👋
 
-This sample project illustrates all of the necessary steps to successfully build and publish a React Native Android and iOS apps with Codemagic when using Expo and without having to eject the app beforehand. It covers the basic steps such as build versioning, code signing and publishing.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-You can find more detailed instructions as well numerous guides to advanced features in our [official documentation](https://docs.codemagic.io/yaml-quick-start/building-a-react-native-app/).
+## Get started
 
-> **Note**: This project is nearly identical to the [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project) project. The only differences are a couple of extra steps specific to building Expo projects without ejecting.
+1. Install dependencies
 
-## Using Expo without ejecting
+   ```bash
+   npm install
+   ```
 
-To run a build on CI/CD we need to have the `ios` and `android` project folders. If you can't or don’t want to permanently eject Expo from your app, then you can do it on the build server each time you run a build. Follow the steps below to get started.
+2. Start the app
 
-1. Clone your repository to a temporary new location or create a new branch. in order to eject Expo once and get the `android/app/build.gradle` file.
-2. Eject Expo once by running the following command:
+   ```bash
+   npx expo start
+   ```
+
+In the output, you'll find options to open the app in a
+
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Get a fresh project
+
+When you're ready, run:
+
 ```bash
-expo eject
-```
-3. Copy the `android/app/build.gradle` file from the ejected project and add it to your main repository. In our example, we create a `support-files` folder and store the `build.gradle` inside.
-
-4. Follow the steps in [React Native Android and iOS](https://github.com/codemagic-ci-cd/codemagic-sample-projects/tree/main/react-native/react-native-demo-project) guide and whenever it calls for making changes to the `android/app/build.gradle`, apply these changes to the `support-files/build.gradle` file instead.
-
-5. Apply the additional steps listed below to install the expo cli tools on the VM, run the scripts to copy the `build.gradle` file to the correct location and use other tools to adjust iOS settings in the `info.plist` file.
-
-
-## Setting up the Android package name and iOS bundle identifier
-Configure Android package name and iOS bundle identifier by adding the corresponding variables in the `codemagic.yaml` and editing the `app.json` files.
-
-Example of minimal `app.json` file. Add the `android` and/or `ios` keys:
-``` json
-{
-  "expo": {
-    "name": "codemagicSample",
-    "slug": "codemagicSample",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "bundleIdentifier": "io.codemagic.cmflutteryaml"
-    },
-    "android": {
-      "package": "io.codemagic.cmflutteryaml"
-    }
-  }
-}
+npm run reset-project
 ```
 
-### Android
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-``` yaml
-workflows:
-  react-native-android:
-    # ....
-    environment:
-      groups:
-        # ...
-      vars:
-        PACKAGE_NAME: "io.codemagic.cmflutteryaml"
-```
+### Other setup steps
 
-## Expo specific build steps
-Add these script steps in addition to the ones described in the general React Native guide.
+- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
+- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
+- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
 
-### Android
-Add the following scripts just after the **Install npm dependencies** step:
+## Learn more
 
-``` yaml
-scripts:
-  - name: Install Expo CLI and eject
-    script: | 
-      npm install -g expo-cli
-      expo eject
-  - name: Set up app/build.gradle
-    script: | 
-      mv ./support-files/build.gradle android/app
-```
+To learn more about developing your project with Expo, look at the following resources:
 
-### iOS
-Add the following scripts at the start of the scripts section:
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-``` yaml
-scripts:
-  - name: Install Expo CLI and eject
-    script: | 
-      yarn install
-      yarn global add expo-cli
-      expo eject
-  - name: Set Info.plist values
-    script: | 
-      PLIST=$CM_BUILD_DIR/$XCODE_SCHEME/Info.plist
-      PLIST_BUDDY=/usr/libexec/PlistBuddy
-      $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
-  - name: Install CocoaPods dependencies
-    script: | 
-      cd ios && pod install
-```
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

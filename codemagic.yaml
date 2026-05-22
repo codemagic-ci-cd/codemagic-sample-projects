@@ -17,29 +17,28 @@ workflows:
           PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here e.g. com.domain.myapp
         node: v22.13.1
       scripts:
-        - name: Install dependencies and Expo CLI, and eject app
-          script: |
-            yarn install
-            npx expo prebuild --platform android
-        - name: Set up app/build.gradle
-          script: |
-            mv ./support-files/build.gradle android/app
-        - name: Set Android SDK location
-          script: |
-            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/android/local.properties"          
-        - name: Build Android release
-          script: |
-            LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
-            if [ -z LATEST_BUILD_NUMBER ]; then
+          - name: Install npm dependencies
+            script: |
+              npm install
+          - name: Generate Android project
+            script: |
+              npx expo prebuild --platform android
+          - name: Set Android SDK location
+            script: |
+              echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/android/local.properties"            
+          - name: Build Android release
+            script: |
+              LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
+              if [ -z "$LATEST_GOOGLE_PLAY_BUILD_NUMBER" ]; then
                 # fallback in case no build number was found from google play. Alternatively, you can `exit 1` to fail the build
                 UPDATED_BUILD_NUMBER=$BUILD_NUMBER
-            else
+              else
                 UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
-            fi
-            cd android
-            ./gradlew bundleRelease \
-              -PversionCode=$UPDATED_BUILD_NUMBER \
-              -PversionName=1.0.$UPDATED_BUILD_NUMBER
+              fi
+              cd android
+              ./gradlew bundleRelease \
+                -PversionCode=$UPDATED_BUILD_NUMBER \
+                -PversionName=1.0.$UPDATED_BUILD_NUMBER
       artifacts:
           - android/app/build/outputs/**/*.aab
       publishing:
@@ -67,33 +66,31 @@ workflows:
           certificates:
             - ios distribution May10_2026
         vars:
-          XCODE_WORKSPACE: "ExpoApp.xcworkspace" # <-- Put the name of your Xcode workspace here
-          XCODE_SCHEME: "ExpoApp" # <-- Put the name of your Xcode scheme here
+          XCODE_WORKSPACE: "exporeactnative.xcworkspace" # <-- Put the name of your Xcode workspace here
+          XCODE_SCHEME: "exporeactnative" # <-- Put the name of your Xcode scheme here
           APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         node: v22.13.1
         xcode: latest
         cocoapods: default
       scripts:
-        - name: Install dependencies, Expo CLI and eject app
-          script: |
-            yarn install
-            npx expo prebuild --platform ios
-        - name: Set Info.plist values
-          script: |
-            PLIST=$FCI_BUILD_DIR/react-native/expo-react-native-not-ejected/ios/$XCODE_SCHEME/Info.plist
-            PLIST_BUDDY=/usr/libexec/PlistBuddy
-            $PLIST_BUDDY -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
-        - name: Install CocoaPods dependencies
-          script: |
-            cd ios && pod install
-        - name: Set up code signing settings on Xcode project
-          script: |
-            xcode-project use-profiles --warn-only
-        - name: Build ipa for distribution
-          script: |
-            xcode-project build-ipa \
-              --workspace "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/ios/$XCODE_WORKSPACE" \
-              --scheme "$XCODE_SCHEME"
+          - name: Install npm dependencies
+            script: |
+              npm install
+          - name: Generate iOS project
+            script: |
+              npx expo prebuild --platform ios
+          - name: Install CocoaPods dependencies
+            script: |
+              cd ios && pod install
+          - name: Set up code signing settings on Xcode project
+            script: |
+              xcode-project use-profiles --warn-only
+          - name: Build ipa for distribution
+            script: |
+              xcode-project build-ipa \
+                --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                --scheme "$XCODE_SCHEME" \
+                --export-options-plist=/Users/builder/export_options.plist
       artifacts:
           - build/ios/ipa/*.ipa
           - /tmp/xcodebuild_logs/*.log
