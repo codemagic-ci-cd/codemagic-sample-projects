@@ -839,7 +839,7 @@ workflows:
   detox-react-native-ios-workflow:
     name: Detox React Native iOS Workflow
     instance_type: mac_mini_m2
-    working_directory: react-native/ReactNativeDetox
+    working_directory: react-native/react-native-detox
     integrations:
           app_store_connect: codemagic_samples2 
     environment:
@@ -876,7 +876,7 @@ workflows:
             keychain add-certificates
         - name: Increment build number
           script: |
-            cd $CM_BUILD_DIR/react-native/ReactNativeDetox/ios
+            cd $CM_BUILD_DIR/react-native/react-native-detox/ios
 
             agvtool new-version -all $(($BUILD_NUMBER))
         - name: Set up code signing settings on Xcode project
@@ -891,7 +891,7 @@ workflows:
         - name: Build ipa for distribution
           script: |
             xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/react-native/ReactNativeDetox/ios/$XCODE_WORKSPACE" \
+            --workspace "$CM_BUILD_DIR/react-native/react-native-detox/ios/$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME" 
     artifacts:
         - build/ios/ipa/*.ipa
