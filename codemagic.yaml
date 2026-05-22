@@ -769,12 +769,12 @@ workflows:
           set -ex
           cd android
           ./gradlew app:assembleAndroidTest
-          ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart"
+          ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/flutter/flutter-integration-tests-demo-project/integration_test/app_test.dart"
       - name: Run Firebase Test Lab tests
         script: |
           set -ex
 
-          echo $GCLOUD_KEY_FILE > ./gcloud_key_file.json
+          echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS > ./gcloud_key_file.json
 
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
 
@@ -810,27 +810,33 @@ workflows:
       name: Flutter Integration Tests Demo iOS Workflow
       working_directory: flutter/flutter-integration-tests-demo-project
       instance_type: mac_mini_m2
+      integrations:
+        app_store_connect: codemagic_samples2
       environment:
-        xcode: latest
+        ios_signing:
+          distribution_type: app_store
+          bundle_identifier: io.codemagic.cmflutteryaml
+        flutter: stable
+        xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+        cocoapods: default
         groups:
-          - ios_credentials
-          - gcloud_credentials
+          - flutter_integration_test_credentials
         vars:
           FIREBASE_PROJECT: "flutter-integration-test-dd885" # <-- Put your Firebase Project ID here
-          BUNDLE_ID: "io.codemagic.ftlflutter"
-          TEST_BUNDLE_ID: "io.codemagic.ftlflutter.uitests.xctrunner"
+          BUNDLE_ID: "io.codemagic.cmflutteryaml"
+          TEST_BUNDLE_ID: "io.codemagic.cmflutteryaml.uitests.xctrunner"
       scripts:
         - name: Configure Firebase access
           script: |
             set -e
-            echo $GCLOUD_KEY_FILE > ./gcloud_key_file.json          
+            echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS > ./gcloud_key_file.json          
             gcloud auth activate-service-account --key-file=gcloud_key_file.json
             gcloud --quiet config set project $FIREBASE_PROJECT
 
-        - keychain initialize
-        - app-store-connect fetch-signing-files ${BUNDLE_ID} --create
-        - app-store-connect fetch-signing-files ${TEST_BUNDLE_ID} --create
-        - keychain add-certificates
+        # - keychain initialize
+        # - app-store-connect fetch-signing-files ${BUNDLE_ID} --create
+        # - app-store-connect fetch-signing-files ${TEST_BUNDLE_ID} --create
+        # - keychain add-certificates
         - xcode-project use-profiles --code-signing-setup-verbose-logging
 
         - name: Build app for testing
@@ -853,6 +859,11 @@ workflows:
             cd ./build/ios_integ/Build/Products
             zip -r "ios_tests.zip" *-iphoneos *.xctestrun
         - name: Run tests in Firebase Test Lab
-          script: gcloud firebase test ios run --test "build/ios_integ/Build/Products/ios_tests.zip"     
+          script: |
+            gcloud firebase test ios models list
+            gcloud firebase test ios run \
+              --test "build/ios_integ/Build/Products/ios_tests.zip" \
+              --device "model=iphone16pro,version=18.3,locale=en_US,orientation=portrait" \
+              --timeout 3m  
       artifacts:
         - "**/ios_tests.zip"
