@@ -260,79 +260,106 @@ workflows:
       # - gem install bundler:2.2.27
       - bundle install
       - bundle exec fastlane beta
-  flutter-yaml-ios:
-    name: Flutter yaml iOS
-    instance_type: mac_mini_m2
-    working_directory: flutter/flutter-android-and-ios-yaml-demo-project
-    max_build_duration: 120
-    environment:
-      groups:
-        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
-      vars:
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
-        BUNDLE_ID: "io.codemagic.cmflutteryaml"
-        APP_STORE_APP_ID: 1571561263
-      flutter: stable
-      xcode: 14.3
-      cocoapods: default
-    scripts:
-      - name: Set up keychain to be used for codesigning using Codemagic CLI 'keychain' command
-        script: |
-          keychain initialize
-      - name: Fetch signing files
-        script: |
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-      - name: Use system default keychain
-        script: |
-          keychain add-certificates
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Flutter build ipa and automatic versioning
-        script: |
-          flutter build ipa --release \
-          --build-name=1.0.0 \
-          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1)) \
-          --export-options-plist=/Users/builder/export_options.plist
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-    publishing:
-      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
-      email:
-        recipients:
-          - user_1@example.com
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      slack:
-        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
-        channel: "#ce-builds"
-        notify_on_build_start: true # To receive a notification when a build starts
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY # Contents of the API key, can also reference environment variable such as $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER # Alphanumeric value that identifies the API key, can also reference environment variable such as $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID # Alphanumeric value that identifies who created the API key, can also reference environment variable such as $APP_STORE_CONNECT_ISSUER_ID
-        
-        submit_to_testflight: false # Boolean use to indicate if you want to submit to TestFlight review so external testers can test your app
+  
+  flutter-android:
+      name: Flutter Android 
+      instance_type: mac_mini_m2
+      max_build_duration: 120
+      working_directory: flutter/flutter-android-and-ios-yaml-demo-project
+      environment:
+        android_signing:
+          - codemagic_keystore
+        groups:
+          - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
+        vars:
+          PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here
+          GOOGLE_PLAY_TRACK: "internal"
+        flutter: stable
+      scripts:
+        - name: Set up local.properties
+          script: |
+            echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+        - name: Get Flutter packages
+          script: |
+            flutter packages pub get
+        - name: Build AAB with Flutter
+          script: |
+              LATEST_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK")))      
+              flutter build appbundle --release \
+                --build-name=1.0.$LATEST_BUILD_NUMBER \
+                --build-number=$LATEST_BUILD_NUMBER
+      artifacts:
+        - build/**/outputs/**/*.aab
+        - build/**/outputs/**/mapping.txt
+        - flutter_drive.log
+      publishing:
+        email:
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true
+            failure: false
+        google_play:
+          credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+          track: $GOOGLE_PLAY_TRACK
+          submit_as_draft: true
+  
+  flutter-ios:
+      name: Flutter iOS Workflow
+      instance_type: mac_mini_m2
+      max_build_duration: 120
+      working_directory: flutter/flutter-android-and-ios-yaml-demo-project
+      integrations:
+        app_store_connect: codemagic_samples2
+      environment:
+        ios_signing:
+          distribution_type: app_store
+          bundle_identifier: io.codemagic.cmflutteryaml
+        flutter: stable
+        xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+        cocoapods: default
+      scripts:
+        - name: Set up code signing settings on Xcode project
+          script: |
+            xcode-project use-profiles
+        - name: Get Flutter packages
+          script: |
+            flutter packages pub get
+        - name: Install pods
+          script: |
+            find . -name "Podfile" -execdir pod install \;
+        - name: Build versioning
+          script: |
+              cd ./ios
+              agvtool new-version -all $(($BUILD_NUMBER))
+              agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
+        - name: Flutter build ipa and automatic versioning
+          script: |
+            flutter build ipa --release \
+              --export-options-plist=/Users/builder/export_options.plist
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - flutter_drive.log
+      publishing:
+        # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+        email:
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true # To receive a notification when a build succeeds
+            failure: false # To not receive a notification when a build fails
+        slack:
+          # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
+          channel: "#builds"
+          notify_on_build_start: true # To receive a notification when a build starts
+          notify:
+            success: true # To receive a notification when a build succeeds
+            failure: false # To not receive a notification when a build fails
+        app_store_connect:
+          auth: integration
   
   flutter-macOS-workflow:
     name: Flutter macOS Workflow
@@ -867,3 +894,113 @@ workflows:
               --timeout 3m  
       artifacts:
         - "**/ios_tests.zip"
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  ionic-capacitor-ios-workflow:
+    name: Ionic Capacitor iOS Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    working_directory: ionic/ionic-capacitor-demo-project
+    integrations:
+      app_store_connect: codemagic_samples2
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.codemagic.ioniccapacitor
+      vars:
+        # Ionic Xcode worskspace and scheme
+        XCODE_WORKSPACE: "App.xcworkspace"
+        XCODE_SCHEME: "App"
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+
+    scripts:
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Cocoapods installation
+        script: |
+          cd ios/App && pod install
+      - name: Compile web code to dist folder
+        script: npm run build
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
+          agvtool new-version -all $(($BUILD_NUMBER))
+          agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
+      - name: Build ipa for distribution
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - ios/App/build/ios/ipa/App.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+
+  ionic-capacitor-android-workflow:
+    name: Ionic Capacitor Android Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    working_directory: ionic/ionic-capacitor-demo-project
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+      vars:
+        PACKAGE_NAME: "io.codemagic.ionicsample"
+        GOOGLE_PLAY_TRACK: alpha
+      node: latest
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Compile web code to dist folder
+        script: npm run build
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Build Android release
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/android
+
+          chmod +x gradlew
+          
+          ./gradlew bundleRelease \
+            -PversionCode=$BUILD_NUMBER \
+            -PversionName=1.0.$BUILD_NUMBER
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
