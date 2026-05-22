@@ -1,119 +1,27 @@
-
-# Check out https://docs.codemagic.io/yaml/building-a-react-native-app/ for more information
-# Please review and update values
-
 workflows:
-  expo-react-native-android:
-      name: Expo React Native Android
+  react-native-ios:
+      name: React Native iOS
       max_build_duration: 120
-      working_directory: react-native/expo-react-native-not-ejected
+      working_directory: react-native/react-native-ios-simulator-build
       instance_type: mac_mini_m2
       environment:
-        android_signing:
-          - codemagic_keystore
-        groups:
-          - google_play # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put your google-services.json)
-        vars:
-          PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here e.g. com.domain.myapp
-        node: v22.13.1
+          vars:
+              XCODE_WORKSPACE: "ios/ios_simulator_build.xcworkspace" # <-- Put the name of your Xcode workspace here
+              XCODE_SCHEME: "ios_simulator_build" # <-- Put the name of your Xcode scheme here
+          node: v22.13.1
+          xcode: latest
+          cocoapods: default
       scripts:
           - name: Install npm dependencies
             script: |
               npm install
-          - name: Generate Android project
-            script: |
-              npx expo prebuild --platform android
-          - name: Set Android SDK location
-            script: |
-              echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/android/local.properties"            
-          - name: Build Android release
-            script: |
-              LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
-              if [ -z "$LATEST_GOOGLE_PLAY_BUILD_NUMBER" ]; then
-                # fallback in case no build number was found from google play. Alternatively, you can `exit 1` to fail the build
-                UPDATED_BUILD_NUMBER=$BUILD_NUMBER
-              else
-                UPDATED_BUILD_NUMBER=$(($LATEST_GOOGLE_PLAY_BUILD_NUMBER + 1))
-              fi
-              cd android
-              ./gradlew bundleRelease \
-                -PversionCode=$UPDATED_BUILD_NUMBER \
-                -PversionName=1.0.$UPDATED_BUILD_NUMBER
-      artifacts:
-          - android/app/build/outputs/**/*.aab
-      publishing:
-        email:
-          recipients:
-            - user_1@example.com
-            - user_2@example.com
-          notify:
-            success: true     # To not receive a notification when a build succeeds
-            failure: false    # To not receive a notification when a build fails
-        # google_play:
-        #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        #   track: alpha   # Any default or custom track that is not in ‘draft’ status
-  expo-react-native-ios:
-      name: Expo React Native iOS
-      max_build_duration: 120
-      working_directory: react-native/expo-react-native-not-ejected
-      instance_type: mac_mini_m2
-      integrations:
-        app_store_connect: codemagic_samples2
-      environment:
-        ios_signing:
-          provisioning_profiles:
-            - Flutter_IOS_May10_2026
-          certificates:
-            - ios distribution May10_2026
-        vars:
-          XCODE_WORKSPACE: "exporeactnative.xcworkspace" # <-- Put the name of your Xcode workspace here
-          XCODE_SCHEME: "exporeactnative" # <-- Put the name of your Xcode scheme here
-          APP_ID: 1555555551 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
-        node: v22.13.1
-        xcode: latest
-        cocoapods: default
-      scripts:
-          - name: Install npm dependencies
-            script: |
-              npm install
-          - name: Generate iOS project
-            script: |
-              npx expo prebuild --platform ios
           - name: Install CocoaPods dependencies
             script: |
               cd ios && pod install
-          - name: Set up code signing settings on Xcode project
-            script: |
-              xcode-project use-profiles --warn-only
           - name: Build ipa for distribution
             script: |
-              xcode-project build-ipa \
-                --workspace "$CM_BUILD_DIR/react-native/expo-react-native-not-ejected/ios/$XCODE_WORKSPACE" \
-                --scheme "$XCODE_SCHEME" \
-                --export-options-plist=/Users/builder/export_options.plist
+              xcodebuild build -workspace "$XCODE_WORKSPACE" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.3.1' -configuration Debug CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO 
       artifacts:
-          - build/ios/ipa/*.ipa
           - /tmp/xcodebuild_logs/*.log
           - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
           - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-      publishing:
-        email:
-          recipients:
-            - user_1@example.com
-            - user_2@example.com
-          notify:
-            success: true
-            failure: false
-        # app_store_connect:
-        #   auth: integration
-
-        #   # Configuration related to TestFlight (optional)
-        #   # Note: This action is performed during post-processing.
-        #   submit_to_testflight: false
-        #   beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
-        #     - group name 1
-        #     - group name 2
-
-        #   # Configuration related to App Store (optional)
-        #   # Note: This action is performed during post-processing.
-        #   submit_to_app_store: false
