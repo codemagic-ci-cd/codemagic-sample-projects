@@ -1,48 +1,64 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.appdistribution'
+
+
+// used only for local testing
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+// // get version code from the specified property argument `-PversionCode` during the build call
+// def getMyVersionCode = { ->
+//     return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
+// }
+
+// // get version name from the specified property argument `-PversionName` during the build call
+// def getMyVersionName = { ->
+//     return project.hasProperty('versionName') ? versionName : "1.0"
+// }
+
+   def latestGooglePlayBuildNumber = Integer.valueOf(System.env.LATEST_GOOGLE_PLAY_BUILD_NUMBER ?: System.env.BUILD_NUMBER ?: 0)
+
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    
-    def appVersionCode = Integer.valueOf(System.env.BUILD_NUMBER ?: 1)
+    compileSdkVersion 34 //rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.codemagicioniccapacitor"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode appVersionCode
-        versionName "1.0"
+        applicationId "com.codemagic.ioniccapacitor"
+        minSdkVersion 34 //rootProject.ext.minSdkVersion
+        targetSdkVersion 34 //rootProject.ext.targetSdkVersion
+        versionCode latestGooglePlayBuildNumber + 1
+        versionName "1.0." + String.valueOf(latestGooglePlayBuildNumber + 1)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
-    
     signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
+
         release {
-                if (System.getenv()["CI"]) {                    
-                    storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
-                    storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
-                    keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
-                    keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
-                } else {
-                    storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-                    storePassword System.getenv()['CM_KEYSTORE_PASSWORD']
-                    keyAlias System.getenv()['CM_KEY_ALIAS_USERNAME']
-                    keyPassword System.getenv()['CM_KEY_ALIAS_PASSWORD']
+              if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                  storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                  storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                  keyAlias System.getenv()["CM_KEY_ALIAS"]
+                  keyPassword System.getenv()["CM_KEY_PASSWORD"]
+              } else {
+                  keyAlias keystoreProperties['keyAlias']
+                  keyPassword keystoreProperties['keyPassword']
+                  storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                  storePassword keystoreProperties['storePassword']
                 }
         }
     }
+
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
+
         release {
-            // Caution! In production, you need to generate your own keystore file.
+            firebaseAppDistribution {
+                serviceCredentialsFile=System.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        }
             signingConfig signingConfigs.release
             minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -56,6 +72,8 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
@@ -71,5 +89,5 @@ try {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.warn("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }

@@ -260,7 +260,7 @@ workflows:
       # - gem install bundler:2.2.27
       - bundle install
       - bundle exec fastlane beta
-
+  
   flutter-android:
       name: Flutter Android 
       instance_type: mac_mini_m2
@@ -360,9 +360,7 @@ workflows:
             failure: false # To not receive a notification when a build fails
         app_store_connect:
           auth: integration
-
-
-
+  
   flutter-macOS-workflow:
     name: Flutter macOS Workflow
     instance_type: mac_mini_m2
@@ -754,15 +752,113 @@ workflows:
           ./gradlew bundleRelease -PversionCode=$UPDATED_BUILD_NUMBER -PversionName=1.0.$UPDATED_BUILD_NUMBER
     artifacts:
       - android/app/build/outputs/**/*.aab
-    # publishing:
-    #   email:
-    #     recipients:
-    #       - user_1@example.com
-    #       - user_2@example.com
-    #     notify:
-    #       success: true
-    #       failure: false
-    #   google_play:
-    #     credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-    #     track: internal
-    #     submit_as_draft: true
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  ionic-capacitor-ios-workflow:
+    name: Ionic Capacitor iOS Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    working_directory: ionic/ionic-capacitor-demo-project
+    integrations:
+      app_store_connect: codemagic_samples2
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.codemagic.ioniccapacitor
+      vars:
+        # Ionic Xcode worskspace and scheme
+        XCODE_WORKSPACE: "App.xcworkspace"
+        XCODE_SCHEME: "App"
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+
+    scripts:
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Cocoapods installation
+        script: |
+          cd ios/App && pod install
+      - name: Compile web code to dist folder
+        script: npm run build
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
+          agvtool new-version -all $(($BUILD_NUMBER))
+          agvtool new-marketing-version 1.0.$(($BUILD_NUMBER))
+      - name: Build ipa for distribution
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/ios/App
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - ios/App/build/ios/ipa/App.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+
+  ionic-capacitor-android-workflow:
+    name: Ionic Capacitor Android Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    working_directory: ionic/ionic-capacitor-demo-project
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play_credentials # <-- (Includes GCLOUD_SERVICE_ACCOUNT_CREDENTIALS <-- Put CONTENTS of your Gloud crendentials file here)
+      vars:
+        PACKAGE_NAME: "io.codemagic.ionicsample"
+        GOOGLE_PLAY_TRACK: alpha
+      node: latest
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Install npm dependencies for Ionic project
+        script: |
+          npm install
+      - name: Compile web code to dist folder
+        script: npm run build
+      - name: Update dependencies and copy web assets to native project
+        script: |
+          # npx cap copy # <- use this is you don't need to update native dependencies
+          npx cap sync # <- update native dependencies and copy web assets to native project
+      - name: Build Android release
+        script: |
+          cd $CM_BUILD_DIR/ionic/ionic-capacitor-demo-project/android
+
+          chmod +x gradlew
+          
+          ./gradlew bundleRelease \
+            -PversionCode=$BUILD_NUMBER \
+            -PversionName=1.0.$BUILD_NUMBER
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
