@@ -466,7 +466,7 @@ workflows:
     max_build_duration: 120
     working_directory: flutter/flutter-flavors-demo-project
     integrations:
-      app_store_connect: codemagic
+      app_store_connect: codemagic_samples2
     environment:
       ios_signing:
         distribution_type: app_store
@@ -518,7 +518,7 @@ workflows:
           - group name 1
           - group name 2
         submit_to_app_store: false
-  android-aab-release:
+  flutter-flavors-android:
     name: Flutter Flavors Android AAB release
     instance_type: mac_mini_m2
     max_build_duration: 120
