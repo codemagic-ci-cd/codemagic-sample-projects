@@ -5,8 +5,7 @@ workflows:
     working_directory: ios/ios-automatic-code-signing-demo-project
     environment:
       groups:
-         - ios
-        # - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
+        - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
         XCODE_WORKSPACE: "swiftly.xcworkspace"
         XCODE_SCHEME: "swiftly"
@@ -41,9 +40,8 @@ workflows:
           xcode-project use-profiles
       - name: Increment build number
         script: |
-          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 4))
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))
       - name: Build ipa for distribution
-        working_directory: ios/ios-automatic-code-signing-demo-project
         script: |
           xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
     artifacts:
@@ -139,7 +137,7 @@ workflows:
   ios-code-signing-identities:
     name: iOS code signing identities
     integrations:
-      app_store_connect: NC_API_KEY
+      app_store_connect: codemagic_samples2
     instance_type: mac_mini_m2
     working_directory: ios/ios-code-signing-identities-demo-project
     environment:
@@ -147,7 +145,7 @@ workflows:
         provisioning_profiles:
           - swiftly-profile
         certificates:
-          - ios-distribution
+          - ios distribution May10_2026
       groups:
         - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
