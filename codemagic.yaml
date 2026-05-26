@@ -459,87 +459,113 @@ workflows:
           # Configuration related to App Store (optional)
           # Note: This action is performed during post-processing.
           submit_to_app_store: false
+
+  flutter-flavors-ios:
+    name: Flutter Flavors iOS release
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.flutterflavors
+      vars:
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
+        APP_STORE_ID: 1555555551
+        XCODE_SCHEME: dev <!-- dev or prod -->
+        BUNDLE_ID: io.codemagic.flutterflavors.dev <!-- io.codemagic.flutterflavors.dev or io.codemagic.flutterflavors.prod -->
+        ENTRY_POINT: lib/main_dev.dart <!-- lib/main_dev.dart or lib/main_prod.dart -->
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter Packages
+        script: |
+          flutter packages pub get
+      - name: Pod install
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+          --build-name=1.0.0 \
+          --build-number=$(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_ID") + 1)) \
+          --export-options-plist=/Users/builder/export_options.plist \
+          --flavor="$XCODE_SCHEME" \
+          -t "$ENTRY_POINT"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - group name 1
+          - group name 2
+        submit_to_app_store: false
+  android-aab-release:
+    name: Flutter Flavors Android AAB release
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    working_directory: flutter/flutter-flavors-demo-project
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: io.codemagic.flutterflavors.prod
+        GOOGLE_PLAY_TRACK: internal
+        ANDROID_FLAVOR: prod
+        ENTRY_POINT: lib/main_prod.dart
+      flutter: stable
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Build AAB with Flutter flavors
+        script: |
+          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks "$GOOGLE_PLAY_TRACK") + 1))
+          flutter build appbundle --release \
+            --build-name=1.0.$BUILD_NUMBER \
+            --build-number=$BUILD_NUMBER \
+            --flavor="$ANDROID_FLAVOR" \
+            -t "$ENTRY_POINT"
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - user_1@example.com
+          - user_2@example.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
+        submit_as_draft: true
   
-  flutter-flavors-ios-dev:
-    name: iOS Flutter Flavors Dev
-    instance_type: mac_mini_m2
-    max_build_duration: 120
-    working_directory: flutter/flutter-flavors-demo-project
-    environment:
-      groups:
-        - codemagic_api # <-- (Includes CM_API_KEY)
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "flutter-update"
-          include: true
-          source: true
-    scripts:
-      - name: Trigger iOS dev build via API
-        script: |
-          chmod +x scripts/build_dev.sh
-          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_dev.sh | bash
-  flutter-flavors-ios-prod:
-    name: iOS Flutter Flavors Prod
-    instance_type: mac_mini_m2
-    max_build_duration: 120
-    working_directory: flutter/flutter-flavors-demo-project
-    environment:
-      groups:
-        - codemagic_api # <-- (Includes CM_API_KEY)
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "flutter-update"
-          include: true
-          source: true
-    scripts:
-      - name: Trigger iOS prod build via API
-        script: |
-          chmod +x scripts/build_prod.sh
-          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_prod.sh | bash
-  flutter-flavors-android-dev:
-    name: Android Flutter Flavors Dev
-    instance_type: mac_mini_m2
-    max_build_duration: 120
-    working_directory: flutter/flutter-flavors-demo-project
-    environment:
-      groups:
-        - codemagic_api # <-- (Includes CM_API_KEY)
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "flutter-update"
-          include: true
-          source: true
-    scripts:
-      - name: Trigger Android dev build via API
-        script: |
-          chmod +x scripts/build_android_dev.sh
-          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_android_dev.sh | bash
-  flutter-flavors-android-prod:
-    name: Android Flutter Flavors Prod
-    instance_type: mac_mini_m2
-    max_build_duration: 120
-    working_directory: flutter/flutter-flavors-demo-project
-    environment:
-      groups:
-        - codemagic_api # <-- (Includes CM_API_KEY)
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "flutter-update"
-          include: true
-          source: true
-    scripts:
-      - name: Trigger Android prod build via API
-        script: |
-          chmod +x scripts/build_android_prod.sh
-          sed 's/"branch": "main"/"branch": "'"${CM_BRANCH}"'"/' scripts/build_android_prod.sh | bash
   react-native-ios:
     name: React Native iOS
     max_build_duration: 120
