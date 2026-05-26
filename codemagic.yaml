@@ -147,7 +147,7 @@ workflows:
         provisioning_profiles:
           - swiftly-profile
         certificates:
-          - ios-distribution
+          - ios distribution May10_2026
       groups:
         - ios_creds # <-- (group contains variables: APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY, CERTIFICATE_PRIVATE_KEY)
       vars:
