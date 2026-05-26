@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 // used only for local testing
@@ -12,7 +12,7 @@ if (keystorePropertiesFile.exists()) {
 
 // get version code from the specified property argument `-PversionCode` during the build call
 def getMyVersionCode = { ->
-    return project.hasProperty('versionCode') ? versionCode.toInteger() : -1
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
 }
 
 // get version name from the specified property argument `-PversionName` during the build call
@@ -21,18 +21,19 @@ def getMyVersionName = { ->
 }
 
 android {
-    compileSdk 32
+    namespace = "io.codemagic.androidquicksample"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId "io.codemagic.androidquicksample"
-        minSdk 21
-        targetSdk 32
-        versionCode getMyVersionCode()
-        versionName getMyVersionName()
+        applicationId = "io.codemagic.androidquicksample"
+        minSdk = 23
+        targetSdk = 36
+        versionCode = getMyVersionCode()
+        versionName = getMyVersionName()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
     }
     signingConfigs {
@@ -52,23 +53,17 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        compose = true
     }
     packagingOptions {
         resources {
@@ -79,15 +74,18 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation platform('androidx.compose:compose-bom:2026.05.01')
+    androidTestImplementation platform('androidx.compose:compose-bom:2026.05.01')
+
+    implementation 'androidx.core:core-ktx:1.18.0'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
+    implementation 'androidx.activity:activity-compose:1.13.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
 }

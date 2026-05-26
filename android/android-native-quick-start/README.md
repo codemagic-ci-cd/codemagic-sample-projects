@@ -150,7 +150,7 @@ scripts:
   - name: Build Android release
     script: | 
       LATEST_GOOGLE_PLAY_BUILD_NUMBER=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME")
-      if [ -z LATEST_BUILD_NUMBER ]; then
+      if [ -z "$LATEST_GOOGLE_PLAY_BUILD_NUMBER" ]; then
         # fallback in case no build number was found from Google Play.
         # Alternatively, you can `exit 1` to fail the build
         # BUILD_NUMBER is a Codemagic built-in variable tracking the number
@@ -169,7 +169,7 @@ scripts:
 
 // get version code from the specified property argument `-PversionCode` during the build call
 def getMyVersionCode = { ->
-    return project.hasProperty('versionCode') ? versionCode.toInteger() : -1
+    return project.hasProperty('versionCode') ? versionCode.toInteger() : 1
 }
 
 // get version name from the specified property argument `-PversionName` during the build call
