@@ -525,7 +525,7 @@ workflows:
       - name: Package Windows
         script: |
           flutter pub add msix
-          flutter pub run msix:create --display-name='Flutter Windows Demo' --publisher-display-name='Flutter Windows Demo' --publisher='Flutter Windows Demo' --identity-name='Flutter Windows Demo' --version=1.0.0.0 --logo-path='./logo/flutter_windows_demo.png' --store
+          flutter pub run msix:create --display-name='Flutter Windows Demo' --publisher-display-name='Flutter Windows Demo' --publisher='Flutter Windows Demo' --identity-name='FlutterWindowsDemo' --version=1.0.0.0 --logo-path='./logo/flutter_windows_demo.png' --store
       # ----------------------------------------------------------------------------------
     artifacts:
       - build/windows/**/*.msix
