@@ -270,7 +270,7 @@ workflows:
         android_signing:
           - codemagic_keystore
         groups:
-          - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
+          - google_play_credentials # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
         vars:
           PACKAGE_NAME: "io.codemagic.flutter" # <-- Put your package name here
           GOOGLE_PLAY_TRACK: "internal"
