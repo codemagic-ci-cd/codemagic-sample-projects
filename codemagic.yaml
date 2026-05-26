@@ -528,12 +528,12 @@ workflows:
       # ----------------------------------------------------------------------------------
     artifacts:
       - build/windows/**/*.msix
-    publishing:
-      partner_center:
-        store_id: $PARTNER_STORE_ID # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
-        tenant_id: $PARTNER_TENANT_ID # <-- You will get `tenant_id` from the Azure AD Overview page.
-        client_id: $PARTNER_CLIENT_ID # <-- You will also get `client_id` from the Azure AD Overview page.
-        client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
+    # publishing:
+    #   partner_center:
+    #     store_id: $PARTNER_STORE_ID # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
+    #     tenant_id: $PARTNER_TENANT_ID # <-- You will get `tenant_id` from the Azure AD Overview page.
+    #     client_id: $PARTNER_CLIENT_ID # <-- You will also get `client_id` from the Azure AD Overview page.
+    #     client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
     #   email:
     #     recipients:
     #       - user_1@example.com
