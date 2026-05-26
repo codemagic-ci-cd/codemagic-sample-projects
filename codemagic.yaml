@@ -473,10 +473,10 @@ workflows:
         bundle_identifier: io.codemagic.flutterflavors.dev
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
-        APP_STORE_ID: 1555555551
-        XCODE_SCHEME: dev <!-- dev or prod -->
-        BUNDLE_ID: io.codemagic.flutterflavors.dev <!-- io.codemagic.flutterflavors.dev or io.codemagic.flutterflavors.prod -->
-        ENTRY_POINT: lib/main_dev.dart <!-- lib/main_dev.dart or lib/main_prod.dart -->
+        APP_STORE_ID: 1589804869
+        XCODE_SCHEME: dev # <-- dev or prod 
+        BUNDLE_ID: io.codemagic.flutterflavors.dev # <-- io.codemagic.flutterflavors.dev or io.codemagic.flutterflavors.prod
+        ENTRY_POINT: lib/main_dev.dart # <-- lib/main_dev.dart or lib/main_prod.dart
       flutter: stable
       xcode: latest
       cocoapods: default
