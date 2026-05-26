@@ -470,7 +470,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.codemagic.flutterflavors
+        bundle_identifier: io.codemagic.flutterflavors.dev
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         APP_STORE_ID: 1555555551
