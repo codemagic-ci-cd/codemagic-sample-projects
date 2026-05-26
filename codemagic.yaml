@@ -527,7 +527,8 @@ workflows:
       android_signing:
         - codemagic_keystore
       groups:
-        - google_play
+        # - google_play
+        - google_play_credentials
       vars:
         PACKAGE_NAME: io.codemagic.flutterflavors.prod
         GOOGLE_PLAY_TRACK: internal
