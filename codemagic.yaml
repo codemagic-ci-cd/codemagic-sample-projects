@@ -514,9 +514,9 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        beta_groups:
-          - group name 1
-          - group name 2
+        # beta_groups:
+        #   - group name 1
+        #   - group name 2
         submit_to_app_store: false
   flutter-flavors-android:
     name: Flutter Flavors Android AAB release
