@@ -732,7 +732,7 @@ workflows:
     environment:
       java: 21
       android_signing:
-        - keystore_reference
+        - codemagic_keystore
       groups:
         - google_play
       vars:
