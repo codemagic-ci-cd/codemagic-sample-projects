@@ -106,13 +106,13 @@ Add the following script after the **Build Flutter Windows** step:
     - name: Create package
       script: | 
         # if you did not add the msix pub package to your project:
-        flutter pub add msix  
+        flutter pub add msix
         #
         # if you have specified configuration in pubspec.yaml:
-        flutter pub run msix:create
+        dart run msix:create
         #
         # if you did not modify `pubspec.yaml`:
-        #flutter pub run msix:create --store \
+        #dart run msix:create --store \
         #  --publisher-display-name=MyName \
         #  --display-name=MyAppName \
         #  --publisher=CN=xx-yy-zz \
@@ -158,10 +158,10 @@ For publishing, Codemagic makes use of the [Microsoft Store submission API](http
 ```yaml
 publishing:
   partner_center:
-    store_id: $STORE_ID
-    tenant_id: $TENANT_ID
-    client_id: $CLIENT_ID
-    client_secret: $CLIENT_SECRET
+    store_id: $PARTNER_STORE_ID
+    tenant_id: $PARTNER_TENANT_ID
+    client_id: $PARTNER_CLIENT_ID
+    client_secret: $PARTNER_CLIENT_SECRET
 ```
 
 ## Conclusion

@@ -31,5 +31,5 @@ msix_config:
   identity_name: <PublisherName.AppName>
   publisher: <PublisherID>
   msix_version: 1.0.0.0
-  logo_path: ./logo/<file_name.png>
+  logo_path: ./logo/flutter-desktop-logo-256x256.png
   store: true
