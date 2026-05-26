@@ -499,13 +499,14 @@ workflows:
     max_build_duration: 60
     working_directory: flutter/flutter-windows-demo-project
     environment:
-      # groups:
-      #   - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
+      groups:
+        - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
       flutter: master
     cache:
       cache_paths:
         - ~/.pub-cache
     scripts:
+    
       - name: Get Flutter packages
         script: flutter packages pub get
       - name: Configure for Windows
@@ -516,24 +517,24 @@ workflows:
       # 2. If you have defined the MSIX build configurations inside the pubspec.yaml, 
       #    then you can just use "msix:create" without passing any parameters.
       #    [NOTE: This project has the configurations defined in the pubspec.yaml file]
-      - name: Package Windows
-        script: flutter pub run msix:create
+      # - name: Package Windows
+        # script: flutter pub run msix:create
       # If you don't have the configurations created inside pubspec.yaml, then you need 
       # to pass the configurations as parameters. Use the following script in that case:
       # ----------------------------------------------------------------------------------
-      # - name: Package Windows
-      #   script: |
-      #     flutter pub add msix
-      #     flutter pub run msix:create --display-name='<AppName>' --publisher-display-name='<PublisherName>' --publisher='<PublisherID>' --identity-name='<PublisherName.AppName>' --version=1.0.0.0 --logo-path='./logo/<file_name.png>' --store=true
+      - name: Package Windows
+        script: |
+          flutter pub add msix
+          flutter pub run msix:create --display-name='Flutter Windows Demo' --publisher-display-name='Flutter Windows Demo' --publisher='Flutter Windows Demo' --identity-name='Flutter Windows Demo' --version=1.0.0.0 --logo-path='./logo/flutter_windows_demo.png' --store=true
       # ----------------------------------------------------------------------------------
     artifacts:
       - build/windows/**/*.msix
-    # publishing:
-    #   partner_center:
-    #     store_id: $STORE_ID # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
-    #     tenant_id: $TENANT_ID # <-- You will get `tenant_id` from the Azure AD Overview page.
-    #     client_id: $CLIENT_ID # <-- You will also get `client_id` from the Azure AD Overview page.
-    #     client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
+    publishing:
+      partner_center:
+        store_id: $PARTNER_STORE_ID # <-- You can find the `store_id` inside your Partner Center app by going to [Product management > Product Identity].
+        tenant_id: $PARTNER_TENANT_ID # <-- You will get `tenant_id` from the Azure AD Overview page.
+        client_id: $PARTNER_CLIENT_ID # <-- You will also get `client_id` from the Azure AD Overview page.
+        client_secret: $PARTNER_CLIENT_SECRET # <-- `client_secret` is retrieved from the application environment variable
     #   email:
     #     recipients:
     #       - user_1@example.com
