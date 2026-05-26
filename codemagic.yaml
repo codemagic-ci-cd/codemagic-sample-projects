@@ -139,7 +139,7 @@ workflows:
   ios-code-signing-identities:
     name: iOS code signing identities
     integrations:
-      app_store_connect: NC_API_KEY
+      app_store_connect: codemagic_samples2
     instance_type: mac_mini_m2
     working_directory: ios/ios-code-signing-identities-demo-project
     environment:
@@ -894,18 +894,18 @@ workflows:
               --timeout 3m  
       artifacts:
         - "**/ios_tests.zip"
-    publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: false
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: true
+      publishing:
+        email:
+          recipients:
+            - user_1@example.com
+            - user_2@example.com
+          notify:
+            success: true
+            failure: false
+        google_play:
+          credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+          track: internal
+          submit_as_draft: true
 
   ionic-capacitor-ios-workflow:
     name: Ionic Capacitor iOS Workflow
