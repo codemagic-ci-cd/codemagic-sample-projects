@@ -499,8 +499,8 @@ workflows:
     max_build_duration: 60
     working_directory: flutter/flutter-windows-demo-project
     environment:
-      groups:
-        - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
+      # groups:
+      #   - windows-signing # <-- (Includes PARTNER_CLIENT_SECRET)
       flutter: master
     cache:
       cache_paths:
