@@ -527,8 +527,7 @@ workflows:
       android_signing:
         - codemagic_keystore
       groups:
-        # - google_play
-        - google_play_credentials
+        - google_play # <-- (Includes GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS)
       vars:
         PACKAGE_NAME: io.codemagic.flutterflavors.prod
         GOOGLE_PLAY_TRACK: internal
@@ -563,7 +562,7 @@ workflows:
           success: true
           failure: true
       google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
         track: $GOOGLE_PLAY_TRACK
         submit_as_draft: true
   
