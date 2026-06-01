@@ -65,7 +65,7 @@ workflows:
     scripts:
       - name: Set up code signing settings on Xcode project
         script: |
-          cd $CM_BUILD_DIR/iosApp
+          cd $CM_BUILD_DIR/kotlin-multiplatform-mobile/iosApp
           xcode-project use-profiles
       - name: Increment build number
         script: |
