@@ -314,7 +314,7 @@
                                         "-framework",
                                         shared,
                                 );
-                                PRODUCT_BUNDLE_IDENTIFIER = com.codemagickmm.iosapp;
+                                PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.cmflutteryaml;
                                 PRODUCT_NAME = "$(TARGET_NAME)";
                                 PROVISIONING_PROFILE_SPECIFIER = "KMM sample app ios_app_store 1656408281";
                                 SWIFT_VERSION = 5.0;
@@ -342,7 +342,7 @@
                                         "-framework",
                                         shared,
                                 );
-                                PRODUCT_BUNDLE_IDENTIFIER = com.codemagickmm.iosapp;
+                                PRODUCT_BUNDLE_IDENTIFIER = io.codemagic.cmflutteryaml;
                                 PRODUCT_NAME = "$(TARGET_NAME)";
                                 PROVISIONING_PROFILE_SPECIFIER = "KMM sample app ios_app_store 1656408281";
                                 SWIFT_VERSION = 5.0;

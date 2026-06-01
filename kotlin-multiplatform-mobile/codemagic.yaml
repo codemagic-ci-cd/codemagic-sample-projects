@@ -65,7 +65,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.codemagickmm.iosapp
+        bundle_identifier: io.codemagic.cmflutteryaml
       vars:
         XCODE_PROJECT: "iosApp.xcodeproj" # <-- Put your xcode project name here
         XCODE_SCHEME: "iosApp" # <-- Put your bundle xcode scheme here
