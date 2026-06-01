@@ -1,4 +1,4 @@
-package com.codemagickmm.android
+package io.codemagic.flutter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
