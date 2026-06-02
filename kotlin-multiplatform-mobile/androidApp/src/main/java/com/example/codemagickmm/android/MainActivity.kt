@@ -1,4 +1,4 @@
-package com.codemagickmm.android
+package io.codemagic.kmmsample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
