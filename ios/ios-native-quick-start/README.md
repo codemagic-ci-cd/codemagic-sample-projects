@@ -106,24 +106,28 @@ In this step you can also define the build artifacts you are interested in. Thes
 
 
 ``` yaml
-ios-native:
-  environment:
-    vars:
-      BUNDLE_ID: "io.codemagic.sample.iosnative"
-      XCODE_WORKSPACE: "CodemagicSample.xcworkspace" # <-- Name of your Xcode workspace
-      XCODE_SCHEME: "CodemagicSample" # <-- Name of your Xcode scheme
-scripts:
+  ios-native-quick-start:
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: io.codemagic.cmswiftly
+      vars:
+        BUNDLE_ID: "io.codemagic.cmswiftly"
+        XCODE_WORKSPACE: "swiftly.xcworkspace" # <-- Name of your Xcode workspace
+        XCODE_SCHEME: "swiftly" # <-- Name of your Xcode scheme
+        APP_STORE_APPLE_ID: 1555555551
+    scripts:
   # ...
-  - name: Build ipa for distribution
-    script: | 
-      xcode-project build-ipa \
-        --workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
-        --scheme "$XCODE_SCHEME"
-artifacts:
-  - build/ios/ipa/*.ipa
-  - /tmp/xcodebuild_logs/*.log
-  - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-  - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 ```
 
 > **Note**: If you don't have a workspace, use `--project "MyXcodeProject.xcodeproj"` instead of the `--workspace "MyXcodeWorkspace.xcworkspace"` option.
