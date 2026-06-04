@@ -8,29 +8,29 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: io.codemagic.sample.iosnative
+        bundle_identifier: io.codemagic.cmswiftly
       vars:
-        BUNDLE_ID: "io.codemagic.sample.iosnative"
-        XCODE_WORKSPACE: "CodemagicSample.xcworkspace"
-        XCODE_SCHEME: "CodemagicSample"
+        BUNDLE_ID: "io.codemagic.cmswiftly"
+        XCODE_WORKSPACE: "swiftly.xcworkspace"
+        XCODE_SCHEME: "swiftly"
         APP_STORE_APPLE_ID: 1555555551
       xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
       cocoapods: default
     scripts:
       - name: Install CocoaPods dependencies
-        script: | 
+        script: |
           pod install
       - name: Set up provisioning profiles settings on Xcode project
         script: xcode-project use-profiles
       - name: Increment build number
-        script: | 
+        script: |
           cd $CM_BUILD_DIR
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
       - name: Build ipa for distribution
-        script: | 
+        script: |
           xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
+            --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
