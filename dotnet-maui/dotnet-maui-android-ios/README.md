@@ -110,9 +110,9 @@ Default environment variables are assigned by Codemagic for the values on the bu
 ### Creating the App Store Connect API key
 Signing iOS applications requires [Apple Developer Program](https://developer.apple.com/programs/enroll/) membership.
 
-It is recommended to create a dedicated App Store Connect API key for Codemagic in [App Store Connect](https://appstoreconnect.apple.com/access/api). To do so:
+It is recommended to create a dedicated App Store Connect API key for Codemagic in [App Store Connect](https://appstoreconnect.apple.com/access/integrations/api). To do so:
 
-1. Log in to App Store Connect and navigate to **Users and Access > Keys**.
+1. Log in to App Store Connect and navigate to **Users and Access > Integrations > Keys > App Store Connect API**.
 2. Click on the + sign to generate a new API key.
 3. Enter the name for the key and select an access level. We recommend choosing `App Manager` access rights, read more about Apple Developer Program role permissions [here](https://help.apple.com/app-store-connect/#/deve5f9a89d7).
 4. Click **Generate**.
